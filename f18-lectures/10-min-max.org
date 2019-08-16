@@ -1,0 +1,463 @@
+#+TITLE: Minimization/maximization of functions
+#+AUTHOR: John Kitchin
+#+OX-IPYNB-KEYWORD-METADATA: keywords
+#+KEYWORDS: scipy.optimize.minimize
+
+* Function extrema
+
+It is pretty common to need to find extreme values of a function in engineering analysis. An extreme value is often a maximum or minimum in a function, and we seek them when we want to maximize a profit function, or minimize a cost function, identify a maximum safe operating condition, etc.
+
+Let's consider an example function with a graphical solution approach. We want a quantitative estimate of the minimum in this function.
+
+#+BEGIN_SRC ipython
+import numpy as np
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+def f(x):
+    return x**2 + np.exp(-5 * x**2)
+
+x = np.linspace(0, 2)
+y = f(x)
+plt.plot(x, y)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[13]:
+# text/plain
+: [<matplotlib.lines.Line2D at 0x110c07c88>]
+
+
+
+# image/png
+[[file:obipy-resources/baab0982fed766ced9ac305dd57e067d-90490fZG.png]]
+:END:
+
+You can see there is a minimum near 0.6. We can find the minimum in a crude kind of way by finding the index of the minimum value in the y-array, and then getting the corresponding value of the x-array. You control the accuracy of this answer by the number of points you discretize the function over.
+
+#+BEGIN_SRC ipython
+x = np.linspace(0, 2, 50)
+y = f(x)
+i = np.argmin(y)
+x[i]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[20]:
+# text/plain
+: 0.56735044900299336
+:END:
+
+What are the pros and cons of this method:
+
+Pros:
+1. It is /easy/.
+2. You /see/ the whole domain you are looking at, and it is easy to see how many extrema their are
+
+Cons:
+1. /Lot's/ of function evaluations. Imagine if it took a long time to compute each value.
+2. Somewhat tedious.
+3. Not so easy to reproduce
+4. Not scalable to large problems, your time to do this becomes a limiting factor.
+
+** Find the derivative, and solve for where it is zero
+
+We can also derive the first derivative:
+
+$y' = 2 * x + e^{-5 x^2} (-10 * x)$
+
+and solve it for zero using fsolve.
+
+#+BEGIN_SRC ipython
+def yp(x):
+    return 2 * x + np.exp(-5 * x**2) * (-10 * x)
+
+from scipy.optimize import fsolve
+fsolve(yp, 0.5)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[33]:
+# text/plain
+: array([ 0.56735137])
+:END:
+
+These two answer agree to 5 decimal places.
+
+This depends on your ability to correctly derive and implement the derivative. It is good to know you can solve this problem by more than one method. Here, we use a numerical derivative in the function instead to check our derivative. You can check the convergence of the derivative by varying the dx.
+
+#+BEGIN_SRC ipython
+from scipy.misc import derivative
+
+def ypd(x):
+    return derivative(f, x, dx=1e-6)
+
+fsolve(ypd, 0.5)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[37]:
+# text/plain
+: array([ 0.56735137])
+:END:
+
+These look the same within tolerance. This is not a beautiful solution, but it is hard to argue with success here!
+
+** Newton-Raphson method of minima finding
+
+To use the Newton-Raphson method to get the minimum, we use an iterative approach with:
+
+$x_{n+1} = x_n - \frac{y'(x_n)}{y''(x_n)}$.
+
+We have to derive these formulas if you want to use analytical derivatives:
+
+$y' = 2 * x + e^{-5 x^2} (-10 * x)$
+
+$y'' = 2 + e^{-5 x^2} (-10 * x)^2 - 10 e^{-5 x^2}$
+
+Alternatively, we can estimate the derivatives numerically using ~scipy.misc.derivative~. This has the downside of numerical instability for dx that is too small, or low accuracy if it is too large, and the need to check if you made a good choice for it. On the plus side, it avoids making mistakes in the derivative derivation and implementation.
+
+#+BEGIN_SRC ipython
+from scipy.misc import derivative
+
+x0 = 0.2
+f0 = f(x0)
+
+for i in range(15):
+    yp = derivative(f, x0, dx=1e-6, n=1)
+    ypp = derivative(f, x0, dx=1e-6, n=2)
+    xnew = x0 - yp / ypp
+    fnew = f(xnew)
+
+    if np.abs(yp) <= 1e-6:
+        break
+    x0 = xnew
+    f0 = fnew
+
+
+xnew, fnew, yp, i
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[32]:
+# text/plain
+: (0.56735137479655973, 0.5218875824868201, 3.3306690738754696e-10, 5)
+:END:
+
+This answer also agrees to at least 5 decimal places. This is the gist of what happens in fsolve.
+
+As we have seen many times, finding minima is such a common task that there are dedicated functions available for doing it. One of the is ~scipy.optimize.fmin~. This has a similar signature as ~scipy.optimize.fsolve~, you give it a function and an initial guess, and it iteratively searches for a minimum.
+
+* scipy.optimize.minimize
+
+#+BEGIN_SRC ipython
+from scipy.optimize import minimize
+minimize?
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[17]:
+:END:
+
+Here is the basic use of fmin. As always, we should plot the answer where feasible to make sure it is the minimum we wanted.
+
+#+BEGIN_SRC ipython
+def f(x):
+    return x**2 + np.exp(-5 * x**2)
+
+guess = 0.5
+sol = minimize(f, guess)
+sol
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[20]:
+# text/plain
+:       fun: 0.5218875824868201
+:  hess_inv: array([[ 0.15524504]])
+:       jac: array([  4.47034836e-08])
+:   message: 'Optimization terminated successfully.'
+:      nfev: 15
+:       nit: 3
+:      njev: 5
+:    status: 0
+:   success: True
+:         x: array([ 0.56735137])
+:END:
+
+#+BEGIN_SRC ipython
+x = np.linspace(0, 2)
+y = f(x)
+
+plt.plot(x, y, 'b-')
+plt.plot(sol.x, f(sol.x), 'ro')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend(['f(x)', 'fmin'])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[22]:
+
+
+
+
+# image/png
+[[file:obipy-resources/baab0982fed766ced9ac305dd57e067d-90490HHI.png]]
+:END:
+
+Note this answer is only the same in the first 4 decimal places. Remember that these iterative approaches stop when a tolerance is met. Check the defaults on fmin!
+
+** Multiple minima
+
+It is possible for functions to have more than one minimum. In this case, your guess will determine which minimum is found. Here is an example where there is a minimum near 2.2, and one near 4.5.
+
+#+BEGIN_SRC ipython
+def h(x):
+    return 2 + np.cos(x) + np.cos(2*x - 0.5) / 2
+
+x = np.linspace(0, 2 * np.pi)
+
+plt.plot(x, h(x))
+plt.xlabel('x')
+plt.ylabel('h(x)')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[24]:
+
+
+
+
+# image/png
+[[file:obipy-resources/baab0982fed766ced9ac305dd57e067d-90490hbU.png]]
+:END:
+
+This guess finds the one near 2.2:
+
+#+BEGIN_SRC ipython
+minimize(h, 2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[25]:
+# text/plain
+:       fun: 1.0448871783746694
+:  hess_inv: array([[ 0.52336689]])
+:       jac: array([ -2.98023224e-08])
+:   message: 'Optimization terminated successfully.'
+:      nfev: 15
+:       nit: 3
+:      njev: 5
+:    status: 0
+:   success: True
+:         x: array([ 2.26106174])
+:END:
+
+and this guess finds the one near 4.5
+
+#+BEGIN_SRC ipython
+minimize(h, 4)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[26]:
+# text/plain
+:       fun: 1.4758979742813512
+:  hess_inv: array([[ 0.94727664]])
+:       jac: array([ -9.08970833e-07])
+:   message: 'Optimization terminated successfully.'
+:      nfev: 21
+:       nit: 5
+:      njev: 7
+:    status: 0
+:   success: True
+:         x: array([ 4.35545599])
+:END:
+
+You have to decide which one is better for the problem at hand. If this were a cost function, the one at the lower cost is probably better! Note that all we can say here is which one is lower in the interval we are looking at. By inspection of the function, you can see it will be periodic, so there will be many other minima that also exist.
+
+** Finding maxima
+
+~fmin~ is for finding /minima/. We can use it to find maxima though, but finding the /minima/ of $-f(x)$. You can see here that when we plot $-h(x)$ the minima become maxima, and vice-versa. Now you can see there are two definite minima, one near zero, and one near 3.5, which correspond to the maxima of $h(x)$.
+
+#+BEGIN_SRC ipython
+plt.plot(x, -h(x))
+plt.xlabel('x')
+plt.ylabel('-h(x)')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[27]:
+
+
+
+
+# image/png
+[[file:obipy-resources/baab0982fed766ced9ac305dd57e067d-90490ula.png]]
+:END:
+
+The standard way to use fmin is to define an optional argument for the sign that defaults to one. Then, when we call fmin, we will pass -1 as the sign to the function, so we find the minimum of -h(x). Then, we evaluate h(x) at that x-value to get the actual value of the maximum. It is not necessary do this, you can also manually pass around the sign and try to keep it straight.
+
+Here is an example to find the maximum near 3.5.
+
+#+BEGIN_SRC ipython
+def h(x, sign=1):
+    return sign * (2 + np.cos(x) + np.cos(2*x - 0.5) / 2)
+
+sol = minimize(h, 3.5, args=(-1,))  # set sign=-1 here to minimize -h(x)
+print(h(sol.x))  # sign defaults to 1 here, so we get the maximum value
+
+plt.plot(x, h(x))
+plt.plot(sol.x, h(sol.x), 'ro')
+plt.xlabel('x')
+plt.ylabel('h(x)')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[28]:
+# output
+: [ 1.56120872]
+:
+
+
+
+
+# image/png
+[[file:obipy-resources/baab0982fed766ced9ac305dd57e067d-904907vg.png]]
+:END:
+
+Once again, here you have to decide which maximum is relevant
+
+** Application to maximizing profit in a PFR
+
+Compound X with concentration of $C_{X0} = 2.5$ kmol / m^{3} at a flow rate of 12 m^{3}/min is converted to Y in a first order reaction with a rate constant of 30 1/min in a tubular reactor. The value of Y is $1.5/kmol. The cost of operation is $2.50 per minute per m^{3}. Find the reactor length that maximizes the profit (profit is value of products minus operating costs).
+
+First, consider why there is a maximum. At low volumes the operating cost is low, and the production of Y is low. At high volumes, you maximize production of Y, so you have the most value, but the operating costs go up (to infinity for complete conversion!). Somewhere in the middle is where a maximum is.
+
+Here are some relevant constants.
+
+#+BEGIN_SRC ipython
+cost = 2.5  # dollar/min/m**3
+y_value  = 1.5 # dollar / mol
+
+Cx0 = 2.5 # kmol / m**3
+v0 = 12.0 # m**3 / min
+
+k = 30.0 # 1/min
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[29]:
+:END:
+
+To compute the profit as a function of reactor volume, we need to compute how much Y is produced, then multiply that by the value of Y and subtract the operating cost. To compute how much Y is produced, we use a mole balance on X and Y, and integrate it to the volume to get the molar flows of X and Y. I like to write mole balances like this.
+
+#+BEGIN_SRC ipython
+def dFdV(V, F):
+    'PFR mole balances on X and Y.'
+    Fx, Fy = F
+    Cx = Fx / v0
+    rx = -k * Cx
+    ry = -rx
+
+    dFdX = rx
+    dFdY = ry
+    return [dFdX, dFdY]
+
+F0 = [Cx0 * v0,  # Fx0
+      0.0]       # Fy0
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[30]:
+:END:
+
+Now, we can write a profit function. It will take a V as the argument, integrate the PFR to that volume to find the molar exit flow rates, and then compute the profit.
+
+#+BEGIN_SRC ipython
+import numpy as np
+from scipy.integrate import solve_ivp
+
+def profit(V, sign=1):
+    Vspan = (0, V)
+    sol = solve_ivp(dFdV, Vspan, F0)
+    Fx, Fy = sol.y
+    Fy_exit = Fy[-1]
+    return sign * (Fy_exit * y_value - cost * V)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[31]:
+:END:
+
+It is always a good idea to plot the profit function. We use a list comprehension here because the profit function is not /vectorized/, which means we cannot pass an array of volumes in and get an array of profits out.
+
+#+BEGIN_SRC ipython
+Vspan = np.linspace(0, 4)
+profit_array = [profit(V) for V in Vspan]
+
+%matplotlib inline
+import matplotlib.pyplot as plt
+plt.plot(Vspan, profit_array)
+plt.xlabel('V')
+plt.ylabel('profit')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[32]:
+
+
+
+
+# image/png
+[[file:obipy-resources/baab0982fed766ced9ac305dd57e067d-90490I6m.png]]
+:END:
+
+You can see from this plot there is a maximum near V=1.5. We can use that as a guess for fmin.
+
+#+BEGIN_SRC ipython
+from scipy.optimize import fmin
+sol = minimize(profit, 1.5, args=(-1,))
+
+print(f'The optimal volume is {sol.x[0]:1.2f} m^3 with a profit of ${profit(sol.x[0]):1.2f}.')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[36]:
+# output
+: The optimal volume is 1.52 m^3 with a profit of $40.19.
+:
+:END:
+
+
+
+This problem highlights the opportunities we have to integrate many ideas together to solve complex problems. We have integration of an ODE, nonlinear algebra/minimization, with graphical estimates of the solution.
+
+*Challenge* Can you solve this with an event and solve_ivp?
+
+* Summary
+
+Today we introduced the concept of finding minima/maxima in functions. This is an iterative process, much like finding the roots of a nonlinear function. You can think of it as finding the zeros of the derivative of a nonlinear function! This method is the root of many important optimization problems including regression.
+
+~scipy.optimize.minimize~ is the preferred function for doing minimization. There are other more specific ones described at https://docs.scipy.org/doc/scipy/reference/optimize.html, but ~minimize~ has a more consistent interface and provides almost all the functionality of those other methods.
+
+Next time, we will look at how to apply minimization to regression problems.

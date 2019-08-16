@@ -1,0 +1,205 @@
+#+TITLE: Syllabus for  06-623 Mathematical Modeling of Chemical Engineering Processes
+#+AUTHOR: John Kitchin
+#+DATE: Fall 2019
+#+options: toc:nil
+\maketitle
+
+* Course details
+
+Instructor: Prof. John Kitchin (jkitchin@andrew.cmu.edu) Doherty Hall A207F
+    - Office hours by appointment
+
+Teaching assistants:
+
+- Mingjie Liu :: mingjie1@andrew.cmu.edu
+- Yilin Yang :: yiliny2@andrew.cmu.edu
+
+Class will be on Monday and Wednesday from 3:30-5:20pm in Baker Hall A53.
+
+We will not be using a textbook. The course notes will be provided for you, and supplementary materials as required.
+
+You may need to install some software for this course. If you are an incoming MS student, this software should already be installed on the laptop assigned to you. If you are using your own laptop, or are not part of the incoming MS class you need to install these software packages on your computer.
+
+1. Anaconda Python 3.7.
+   1. Go to https://www.anaconda.com/download/ and install the 3.7 version for your operating system.
+2. Git
+   1. I recommend you get it from https://git-scm.com/downloads.
+
+Then, at a command line you need to run this to install the package needed for the course:
+
+#+BEGIN_SRC sh
+pip install techela
+#+END_SRC
+
+To access these course materials, you will type at the command line:
+
+#+BEGIN_SRC sh
+techela f19-06623
+#+END_SRC
+
+This will open a browser with the course site open. The first time you will be prompted for your andrewid and full name. Follow the directions on the screen. You can find a manual for the course at [[./lectures/techela-manual.org]]. We will go over this in class.
+
+** Course description
+
+Numerical approaches to solving problems relevant to chemical engineering applications.  In this course, advanced mathematical topics relevant to chemical engineering will be used to solve complex problems.  Topics include linear algebra, nonlinear equation solving, initial value and boundary value problems for solution of differential equations, numerical optimization, probability and stochastic methods.  Focus will be placed on numerical rather than analytical solution to problems.  Unlike a typical numerical methods course, we will also focus on modeling problems, choice of appropriate solution technique, and presentation of solution.
+
+** Course objectives
+
+After completing this course you will able to use Python to solve problems involving the:
+
+*** Use Jupyter notebooks to create and document scientific programming solutions
+
+Jupyter notebooks are one approach to integrating narrative text with code to solve scientific problems.
+
+*** Mathematical modeling of engineering systems
+
+You will be able to generate equations that model an engineering process using principles of conservation laws, and other physical principles.
+
+*** Computational solutions to ordinary differential equations
+
+You will be able to generate computational solutions to ordinary differential equations, and evaluate them for engineering design problems.
+
+*** Computational solutions to linear algebraic systems
+*** Computational solutions to nonlinear algebraic systems
+*** Computational solutions to optimization problems
+*** Determination of parameters in linear and nonlinear models including uncertainty
+*** Use scientific data to build interpolation or regression models
+
+
+** Course schedule
+
+The course schedule is listed here: [[./course-schedule.org]].
+
+** Grading
+
+Each assignment will be in one of these categories. Your final grade will be determined by the weighted sum of all your grades.
+
+#+BEGIN_SRC python :results raw
+import json
+import numpy as np
+from pycse.orgmode import *
+
+with open('f19-06623.json') as f:
+    data = json.loads(f.read())
+
+categories = [['Category', 'weight'], None]
+categories += zip(*data['categories'])
+categories += [None]
+categories += [['Total', sum(data['categories'][1])]]
+
+table(categories,
+      name='categories', caption='Categories and weights for graded assignments.')
+#+END_SRC
+
+#+RESULTS:
+#+caption: Categories and weights for graded assignments.
+#+name: categories
+| Category   | weight |
+|------------+--------|
+| homework   |    0.1 |
+| quiz       |   0.25 |
+| exam-1     |   0.15 |
+| exam-2     |    0.2 |
+| final-exam |    0.3 |
+|------------+--------|
+| Total      |    1.0 |
+
+
+Each assignment will receive two grades, one for the technical work, and one for the presentation. The technical aspect counts for 90% of the total grade, and the presentation accounts for 10% of the total grade.
+
+Homeworks will be assigned one to three times a week. Each assignment will typically be one problem that should take 30-90 minutes to complete.
+
+Quizzes will be given in class. You should be prepared to take a quiz at any time. These will typically be short, timed problems.
+
+Exams will be given during class, and you must be present in class for them.
+
+You should bring your computer to class every day. You will need it to follow the lecture notes, to participate in class exercises, and to complete quizzes and exams. You are responsible for ensuring the battery is charged, that you can connect to the internet, and that the software required for the course is installed and working. There will not be any makeup assignments.
+
+*** Grading criteria
+
+You are transitioning into a young professional at this point. That means assignments are done professionally too. In addition to the technical correctness of your work, we will also be assessing the professionalism with which it is presented. Each assignment will show the rubric it will be graded with at the top of the file.
+
+There will be a straight scale (no curve) so you will always know exactly what your grade is at all times. Each problem will be graded considering the approach used, the correctness of the answer, the neatness and quality of presentation, etc... Each category of the rubric will be given a letter grade that indicates your level of performance in that category.
+
+"A" work has the following characteristics: The correct approach is used and the problem is set up correctly. The work is not over-simplified and it is easy to see it is done correctly. Any assumptions made were stated and justified. The answers are correct or only the most trivial errors are present, and were identified by the student. All of the correct units were used. The presentation is complete, clear, logical, neat and in order. Error analysis was performed if appropriate. Any figures used have properly labeled axes with units, and a legend if there is more than one curve. Essentially everything that should have been done was done and done correctly. This is the kind of work an employer wants their employees to do, and the kind of work you will be promoted for doing. You should be proud of this work.
+
+"B" work is deficient in one or more of the properties of "A" work. It might be basically right, but essential details are missing such as units, or the presentation is sloppy. You will get by with this kind of work, but you should not expect to be praised for it.
+
+"C" quality work is deficient in more than two of the properties of "A" work. You would probably not get fired for this kind of work, but you may be notified you need to improve and you should not expect any kind of promotion. This is the bare minimum of expected performance.
+
+"D" work is not considered acceptable performance. Repeat offenses could lead to the loss of your job.
+
+"R" work is totally unacceptable performance. You will be fired.
+
+plus/minus modifiers will be used to provide finer grained grades.
+
+Each problem will have a point value associated with it. The letter grade you get serves as a multiplier on that point value. The multipliers are:
+
+| Lettergrade | multiplier |
+|-------------+------------|
+| A++         |          1 |
+| A+          |       0.95 |
+| A           |        0.9 |
+| A-          |       0.85 |
+| A/B         |        0.8 |
+| B+          |       0.75 |
+| B           |        0.7 |
+| B-          |       0.65 |
+| B/C         |        0.6 |
+| C+          |       0.55 |
+| C           |        0.5 |
+| C-          |       0.45 |
+| C/D         |        0.4 |
+| D+          |       0.35 |
+| D           |        0.3 |
+| D-          |       0.25 |
+| D/R         |        0.2 |
+| R+          |       0.15 |
+| R           |        0.1 |
+| R-          |       0.05 |
+| R- -        |        0.0 |
+
+At the end of the semester I will calculate what fraction of the possible points you have earned, and your grade will be based on this distribution:
+
+| 80% >= grade      | A |
+| 60% >= grade < 80 | B |
+| 40% >= grade < 60 | C |
+| 20% >= grade < 40 | D |
+| grade < 20%       | R |
+
+Note that the standard grade for correct work is an "A", which is not equal to "100%". It is worth 90%, which is well above the cutoff for an A. The A+ and A++ designations are reserved for work that is well above "correct".
+
+
+
+** Academic honesty
+
+All work is expected to be your original work. You may work with class members to solve the homework problems, but you must turn in your own solutions. It is cheating to turn in someone else's work as your own. If you use code from the internet or the course notes, you should note this in your solution. Duplicated assignments (e.g. two students who turn in the same work) will receive zeros and a warning. Repeat offenses will be reported as academic dishonesty.
+
+When in doubt, review this website: http://www.cmu.edu/academic-integrity/, and ask if anything is unclear /before/ you get in trouble. In particular see these definitions:
+  - https://www.cmu.edu/student-affairs/ocsi/academic-integrity/definitions.html
+
+** Religious holidays
+
+We will accommodate religious holidays when possible. If your work will be affected by a religious holiday, you must inform Professor Kitchin as early as possible to work out an accommodation in advance.
+
+** Take care of yourself
+
+Do your best to maintain a healthy lifestyle this semester by eating well, exercising, avoiding drugs and alcohol, getting enough sleep and taking some time to relax. This will help you achieve your goals and cope with stress.
+
+All of us benefit from support during times of struggle. You are not alone. There are many helpful resources available on campus and an important part of the college experience is learning how to ask for help. Asking for support sooner rather than later is often helpful.
+
+If you or anyone you know experiences any academic stress, difficult life events, or feelings like anxiety or depression, we strongly encourage you to seek support. Counseling and Psychological Services (CaPS) is here to help: call 412-268-2922 and visit their website at http://www.cmu.edu/counseling/. Consider reaching out to a friend, faculty or family member you trust for help getting connected to the support that can help.
+
+If you or someone you know is feeling suicidal or in danger of self-harm, call someone immediately, day or night:
+
+CaPS: 412-268-2922
+
+Resolve Crisis Network: 888-796-8226
+
+If the situation is life threatening, call the police:
+
+           On campus: CMU Police: 412-268-2323
+
+           Off campus: 911
+
+If you have questions about this or your coursework, please let me know.

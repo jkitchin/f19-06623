@@ -1,0 +1,21 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{autograd.numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
+\PYG{n}{k} \PYG{o}{=} \PYG{l+m+mf}{1e\PYGZhy{}3}
+\PYG{n}{sigma\PYGZus{}k} \PYG{o}{=} \PYG{l+m+mf}{1e\PYGZhy{}4}
+
+\PYG{n}{Ca0} \PYG{o}{=} \PYG{l+m+mf}{1.0}
+\PYG{n}{sigma\PYGZus{}Ca0} \PYG{o}{=} \PYG{l+m+mf}{0.01}
+
+
+\PYG{n}{X} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.9}\PYG{p}{,} \PYG{l+m+mi}{5000}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{trapz}\PYG{p}{(}\PYG{n}{y}\PYG{p}{,} \PYG{n}{x}\PYG{p}{):}
+    \PYG{n}{d} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{diff}\PYG{p}{(}\PYG{n}{x}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{((}\PYG{n}{y}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{+} \PYG{n}{y}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{:])} \PYG{o}{*} \PYG{n}{d} \PYG{o}{/} \PYG{l+m+mi}{2}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{t}\PYG{p}{(}\PYG{n}{k}\PYG{p}{,} \PYG{n}{Ca0}\PYG{p}{):}
+    \PYG{n}{integrand} \PYG{o}{=} \PYG{l+m+mf}{1.}\PYG{o}{/}\PYG{p}{(}\PYG{n}{k}\PYG{o}{*}\PYG{n}{Ca0}\PYG{p}{)}\PYG{o}{*}\PYG{p}{(}\PYG{l+m+mf}{1.}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{o}{\PYGZhy{}}\PYG{n}{X}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{trapz}\PYG{p}{(}\PYG{n}{integrand}\PYG{p}{,} \PYG{n}{X}\PYG{p}{)}
+
+\PYG{k}{print}\PYG{p}{(}\PYG{n}{t}\PYG{p}{(}\PYG{n}{k}\PYG{p}{,} \PYG{n}{Ca0}\PYG{p}{))}
+\end{Verbatim}

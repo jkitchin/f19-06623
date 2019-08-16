@@ -1,0 +1,113 @@
+* Review
+
+** Initial guess methods
+
+It is hard to find initial guesses. If you can plot the functions you should. This works for two or three variables. With two variables you can plot the functions. With three variables,  you can use contour plots (see http://kitchingroup.cheme.cmu.edu/blog/2013/02/05/Constrained-minimization-to-find-equilibrium-compositions/ for an example).
+
+If you can't plot them, you have to do some analysis, use prior knowledge, or be clever. This kind of analysis is the subject of dedicated courses in optimization.
+
+Sometimes you can solve a simpler problem first http://kitchingroup.cheme.cmu.edu/blog/2013/02/22/Method-of-continuity-for-nonlinear-equation-solving/. Another approach is to fix some variables, and then iteratively solve the problem.
+
+In the worst case scenario, you can try a brute force grid search, or random search.
+
+** fsolve questions
+
+Why do we write the , in the args below?
+
+#+BEGIN_SRC ipython
+def objective(x, k):
+    return x - k**2
+
+x0 = 2
+fsolve(objective, x0, args=(2,))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[13]:
+# text/plain
+: array([ 4.])
+:END:
+
+In questions like this, we start with the documentation.
+
+#+BEGIN_SRC ipython
+from scipy.optimize import fsolve
+?fsolve
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[4]:
+:END:
+
+Now, let's look at some syntax:
+
+#+BEGIN_SRC ipython
+k = 0.2
+type(k)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[14]:
+# text/plain
+: float
+:END:
+
+Parentheses by themselves are just for grouping. They do not change the type.
+
+#+BEGIN_SRC ipython
+args = (k)
+type(args)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[2]:
+# text/plain
+: float
+:END:
+
+When we want a tuple with a single element in it, we add a , to make it a tuple.
+
+#+BEGIN_SRC ipython
+args = (k,)
+type(args)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[3]:
+# text/plain
+: tuple
+:END:
+
+It turns out fsolve is flexible in this case, and we can get away with writing:
+
+#+BEGIN_SRC ipython
+fsolve(objective, 1, args=2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[16]:
+# text/plain
+: array([ 4.])
+:END:
+
+** What is the difference between the standard error of the mean and standard deviation?
+
+The standard deviation represents the spread, or deviation, in a dataset from its mean. The standard deviation is a feature of a data set.
+
+The standard error of the mean is how far is the estimated mean likely to be from the true population mean. The standard error arises because we /estimate/ the average from a small number of data points, so we never know it exactly. The standard error tends towards zero, however, as the number of data points gets large. That does not mean there is no noise in the data, just that we have no uncertainty about the average.
+
+$SE = \frac{sd}{\sqrt{n}}$
+
+In lecture 11, we looked at the confidence intervals of an average where we used: =std_x / np.sqrt(n)=. Here we have to compute the standard error from the standard deviations.
+
+Later, in the regression, we used:
+
+=p + sigma * tval=
+
+Here, =sigma= came from the square root of the covariance matrix diagonal, which is defined as the standard error, so we do not divide by the square root of N in this case.

@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{from} \PYG{n+nn}{math} \PYG{k+kn}{import} \PYG{n}{factorial}
+
+\PYG{n}{factorial}\PYG{p}{(}\PYG{l+m+mi}{4}\PYG{p}{)}
+\end{Verbatim}

@@ -1,0 +1,758 @@
+#+TITLE:  More Linear algebra
+#+AUTHOR: John Kitchin
+#+OX-IPYNB-KEYWORD-METADATA: keywords
+#+KEYWORDS: numpy.linalg.solve, scipy.interpolate.interp1d, numpy.linalg.eigvals, numpy.linalg.eig, numpy.argsort
+
+* Interpolating between data points
+
+It is a common need to interpolate between data points, especially when we don't have knowledge of the function relating the data. There are a variety of approaches you can use for interpolation. We will consider a few approaches that use linear algebra here. Given $N$ points, construct an $N^{th}$ order polynomial that goes through all the points, and that can be used to estimate new values between the points.
+
+First we consider some data.
+
+#+BEGIN_SRC ipython
+import numpy as np
+
+x = np.array([1.2, 2.9, 4.1])
+y = np.array([4.4, 5.5, 8.9])
+
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+plt.plot(x, y)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[159]:
+# text/plain
+: [<matplotlib.lines.Line2D at 0x12baa9048>]
+
+
+
+# image/png
+[[file:obipy-resources/e021eb5cde8c0f560ad245cab4a1f678-559298FK.png]]
+:END:
+
+We would like an equation like $y(x) = a_2 x^2 + a_1 x + a_0$. If we write these out for each data point we get:
+
+$y_0 = a_2 x_0^2 + a_1 x_0 + a_0$
+
+$y_1 = a_2 x_1^2 + a_1 x_1 + a_0$
+
+and so on. Here, the things we don't know are the parameters $\mathbf{a} [a_2, a_1, a_0]$. We can write these as:
+
+$\mathbf{X} \mathbf{a} = \mathbf{y}$
+
+Where $\mathbf{X} = [\mathbf{x^2}, \mathbf{x}, \mathbf{1}]$, and is called a Vandermonde matrix. We can readily create these with ~numpy.vander~.
+
+#+BEGIN_SRC ipython
+np.vander?
+#+END_SRC
+
+#+BEGIN_SRC ipython
+np.vander([2, 3, 4], 3)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[166]:
+# text/plain
+: array([[ 4,  2,  1],
+:        [ 9,  3,  1],
+:        [16,  4,  1]])
+:END:
+
+The first column is $x^2$, the second column is $x$, and the last column is all ones. To compute the polynomial coefficients, we just make the $\mathbf{X}$ array and solve the equations.
+
+#+BEGIN_SRC ipython
+X = np.vander(x, 3)
+a = np.linalg.solve(X, y)
+a
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[167]:
+# text/plain
+: array([ 0.75, -2.44,  6.25])
+:END:
+
+Now, we can use the parameters to compute new values.
+
+#+BEGIN_SRC ipython
+xfit = np.linspace(0, 5)
+Y = np.vander(xfit, 3) @ a
+
+plt.plot(x, y, 'bo', xfit, Y);
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[171]:
+
+
+# image/png
+[[file:obipy-resources/e021eb5cde8c0f560ad245cab4a1f678-5592994o.png]]
+:END:
+
+What we have done here is fit an N^{th} order polynomial to $N$ data points. There is a possibility that we have overfit this data, and extrapolation is not reliable. However, interpolation by this method may be useful. We will return to this for larger data sets where $N$ is much larger than the order of the polynomial when we talk about linear regression next week.
+
+** Interpolation libraries
+
+There are several interpolating functions available in [[https://docs.scipy.org/doc/scipy/reference/interpolate.html][scipy.interpolate]]. These are usually more flexible and convenient than writing your own interpolating code. They are more sophisticated, and have some /features/ you should be aware of.
+
+#+BEGIN_SRC ipython
+from scipy.interpolate import interp1d
+
+interp1d?
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[170]:
+:END:
+
+Linear interpolation is the default, and we have to explicitly allow extrapolation.
+
+#+BEGIN_SRC ipython
+xfit = np.linspace(0, 5)
+Y = interp1d(x, y, bounds_error=False, fill_value='extrapolate')
+
+plt.plot(x, y, 'bo', X, Y(xfit));
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[176]:
+
+
+# image/png
+[[file:obipy-resources/e021eb5cde8c0f560ad245cab4a1f678-55929XN1.png]]
+:END:
+
+We can also specify quadratic spline interpolation.
+
+#+BEGIN_SRC ipython
+Y = interp1d(x, y, kind='quadratic', bounds_error=False, fill_value='extrapolate')
+
+plt.plot(x, y, 'bo', X, Y(xfit));
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[181]:
+
+
+# image/png
+[[file:obipy-resources/e021eb5cde8c0f560ad245cab4a1f678-55929JXE.png]]
+:END:
+
+With more data points you can also use cubic interpolation, which fits a cubic polynomial between the points, and ensures smoothness and continuity of the derivatives at the endpoints.
+
+# https://en.wikiversity.org/wiki/Cubic_Spline_Interpolation for linear algebra way to get coefficients.
+
+# http://mathworld.wolfram.com/CubicSpline.html
+
+Note that you have to make some decisions about how to interpolate. These functions can introduce /wiggles/ that are not real. Especially when there are step or sharp changes  in values.
+
+#+BEGIN_SRC ipython
+x = np.array([1, 2, 3, 4, 5, 6, 7])
+y = np.array([1, 2, 1, 1, 0, 0, 0])
+
+s = interp1d(x, y, kind='cubic')
+X = np.linspace(1, 7)
+Y = s(X)
+
+plt.plot(x, y, 'bo', X, Y)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[188]:
+# text/plain
+: [<matplotlib.lines.Line2D at 0x12da87a90>,
+:  <matplotlib.lines.Line2D at 0x12da87c18>]
+
+
+
+# image/png
+[[file:obipy-resources/e021eb5cde8c0f560ad245cab4a1f678-55929XUp.png]]
+:END:
+
+Interpolation is a kind of data driven model for developing a mathematical model from data that can be used to predict new values. These models are not based on physics, but they can be used for predicting new values, estimating derivatives, integrals, etc. Of course, you must be careful with extrapolation; all polynomials tend to \pm infinity eventually, which is probably not physically relevant in most cases.
+
+There are multidimensional interpolation functions in ~scipy.interpolate~,
+
+
+* Eigenvalues
+
+Eigenvalues and eigenvectors form an important class of linear algebra problems. They are an unusual class of problems though. Recall that we can interpret the equation $\mathbf{A}\mathbf{x} = \mathbf{b}$ as a linear transformation of the vector $\mathbf{x}$ into the vector $\mathbf{b}$. This will in general lead to rotation and stretching of the input vector. /Sometimes/ though the new vector $\mathbf{b}$ is simply a rescaling of the original vector, i.e. $\mathbf{b} = \lambda \mathbf{x}$. \lambda is the scaling factor, and it just changes the magnitude of the $\mathbf{x}$ vector. In this case, we call \lambda an \eigenvalue\, and $\mathbf{x}$ and \eigenvector\ of the matrix $\mathbf{A}$.
+
+When you see a problem in the form:
+
+$\mathbf{A}\mathbf{x} = \lambda \mathbf{x}$
+
+It is called an eigenvalue problem. It is conventional to write it in the following form:
+
+$(\mathbf{A} - \lambda \mathbf{I})\mathbf{x} = \mathbf{0}$
+
+Based on this equation, since $\mathbf{x}$ can be anything, it is necessary for the determinant of the matrix on the left to be zero. The eigenvalues of $\mathbf{A}$ are the ones that are solutions to
+
+$det(\mathbf{A} - \lambda \mathbf{I}) = 0$
+
+Computing the determinant leads to a /characteristic polynomial/ in \lambda, and the roots of this polynomial are the eigenvalues of the matrix.
+
+For an $N \times N$ array there will be $N$ eigenvalues, although some may be degenerate. The eigenvalues can be real or complex. For some matrices, we know some properties of the eigenvalues. We will consider some of them here.
+
+For example, the eigenvalues of a symmetric matrix are always real. We can make a symmetric matrix with some algebra:
+
+#+BEGIN_SRC ipython
+A = np.random.rand(3,3)
+A += A.T  # This makes a symmetric matrix
+A
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[189]:
+# text/plain
+: array([[ 1.44,  1.  ,  0.46],
+:        [ 1.  ,  0.67,  0.97],
+:        [ 0.46,  0.97,  0.72]])
+:END:
+
+ We get the eigenvalues with ~numpy.linalg.eigvals~.
+
+#+BEGIN_SRC ipython
+np.linalg.eigvals(A)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[190]:
+# text/plain
+: array([ 2.61,  0.62, -0.39])
+:END:
+
+You can see these are all real.
+
+The /trace/ of a matrix is the sum of the diagonal elements. You can do this manually, or use ~numpy.trace~.
+
+#+BEGIN_SRC ipython
+np.sum(np.diag(A)), np.trace(A)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[191]:
+# text/plain
+: (2.8302306710535605, 2.8302306710535605)
+:END:
+
+It is a property that the sum of the eigenvalues is equal to the trace:
+
+$trace \mathbf{A} = \sum \lambda_k$
+
+#+BEGIN_SRC ipython
+np.sum(np.linalg.eigvals(A))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[192]:
+# text/plain
+: 2.8302306710535627
+:END:
+
+It is also true that the product of the eigenvalues is equal to the determinant:
+
+$det \mathbf{A} = \prod \lambda_k$
+
+#+BEGIN_SRC ipython
+np.prod(np.linalg.eigvals(A)), np.linalg.det(A)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[193]:
+# text/plain
+: (-0.63229403451500454, -0.63229403451500354)
+:END:
+
+We can also see the eigenvectors. The ~numpy.linalg.eig~ function returns /both/ eigenvalues and eigenvectors. The eigenvectors are in /columns/
+
+#+BEGIN_SRC ipython
+e, v = np.linalg.eig(A)
+e, v
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[200]:
+# text/plain
+: (array([ 2.61,  0.62, -0.39]), array([[-0.68, -0.68,  0.29],
+:         [-0.58,  0.25, -0.78],
+:         [-0.46,  0.69,  0.56]]))
+:END:
+
+These eigenvectors have the property that the are normalized to unit length:
+
+#+BEGIN_SRC ipython
+[np.linalg.norm(v[:, i]) for i in [0, 1, 2]]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[213]:
+# text/plain
+: [1.0, 0.99999999999999989, 1.0]
+:END:
+
+The eigenvectors are in columns in the order corresponding to the order of the eigenvalues (these are not necessarily sorted). Here, we show that the eigenvalue/eigenvector pairs satisfy $\mathbf{A} \mathbf{v} = \lambda \mathbf{v}$.
+
+#+BEGIN_SRC ipython
+[np.allclose(A @ v[:, 0], e[0] * v[:, 0]),
+ np.allclose(A @ v[:, 1], e[1] * v[:, 1]),
+ np.allclose(A @ v[:, 2], e[2] * v[:, 2])]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[216]:
+# text/plain
+: [True, True, True]
+:END:
+
+If you mix and match these, they do not satisfy the equations.
+
+#+BEGIN_SRC ipython
+[np.allclose(A @ v[:, 0], e[1] * v[:, 2]),
+ np.allclose(A @ v[:, 1], e[0] * v[:, 1]),
+ np.allclose(A @ v[:, 2], e[2] * v[:, 0])]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[219]:
+# text/plain
+: [False, False, False]
+:END:
+
+The eigenvalues are not sorted. It is often useful to know the smallest, or largest eigenvalue, and to have the eigenvalues sorted. The tricky point to consider is the eigenvectors have to be sorted in the same order. It is also tricky that the eigenvectors are stored in columns, but sorting is done on rows. You can simply transpose the eigenvector array, sort on rows, and then transpose it back to columns.
+
+#+BEGIN_SRC ipython
+i = np.argsort(e)
+
+sorted_e = e[i]
+sorted_v = v.T[i].T
+sorted_e, sorted_v
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[225]:
+# text/plain
+: (array([-0.39,  0.62,  2.61]), array([[ 0.29, -0.68, -0.68],
+:         [-0.78,  0.25, -0.58],
+:         [ 0.56,  0.69, -0.46]]))
+:END:
+
+/As always/ it is a good idea to check that we did not mess up:
+
+#+BEGIN_SRC ipython
+for i, se in enumerate(sorted_e):
+    sv = sorted_v[:, i]
+    print(np.allclose(A @ sv, se * sv))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[227]:
+# output
+: True
+: True
+: True
+:
+:END:
+
+
+
+** Application to roots of a polynomial
+
+ The eigenvalues of a matrix are related to the roots of the characteristic polynomial of the matrix. We can leverage this to find the roots of a polynomial by constructing a matrix that has as its characteristic polynomial the polynomial we want the roots for. Then, the roots of the polynomial are just the eigenvalues of that matrix.
+
+ This example is adapted from http://www.math.utah.edu/~gustafso/s2018/2270/labs/lab7-polyroot-qrmethod.pdf
+
+ First, we construct the /companion matrix/. For the polynomial $p(x) = a_0 + a_1 x + ... + a_{n-1} x^{n-1} + x^n$ we construct:
+
+ \(C = \left[\begin{array}{ccccc}
+ 0 & 1 & 0 & ... & 0\\
+ 0 & 0 & 1 & ... & 0\\
+ ... & ... & ... & \ddots & \vdots \\
+ 0 & 0 & 0 & ... & 1\\
+ -a_0 & -a_1 & -a_2 & ... & -a_{n-1}
+ \end{array}\right]\)
+
+ Then, the eigenvalues of this matrix are equal to the roots of the polynomial. This matrix has ones on the diagonal above the main diagonal, and the coefficients up to the leading power on the bottom row. Note the coefficients are in the opposite order as we usually define them for ~np.roots~.
+
+ The main diagonal has =N= elements in it, and the diagonal above that has =N-2= elements in it.
+
+ There are a few ways to reverse the coefficients, here we use ~numpy.flipud~ which reverses the elements.
+
+ Let $p(x) = 4 x^2 + 3x - 1$. We write the coefficient vector in the same order as used in np.roots.
+
+ #+BEGIN_SRC ipython
+p = np.array([4, 3, -1])
+N = len(p)
+
+C = np.diag(np.ones(N - 2), 1)
+C[-1, :] = np.flipud(-p[1:] / p[0])
+C
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[38]:
+ # text/plain
+ : array([[ 0.  ,  1.  ],
+ :        [ 0.25, -0.75]])
+ :END:
+
+ Now the roots are found as the eigenvalues of the matrix.
+
+ #+BEGIN_SRC ipython
+np.linalg.eigvals(C)
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[37]:
+ # text/plain
+ : array([ 0.25, -1.  ])
+ :END:
+
+
+ This is essentially what the ~np.roots~ function does, although it uses a slightly different way to define the companion matrix.
+
+ #+BEGIN_SRC ipython
+import numpy as np
+??np.roots
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[229]:
+ :END:
+
+ #+BEGIN_SRC ipython
+p = [4, 3, -1]
+np.roots(p)
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[18]:
+ # text/plain
+ : array([-1.  ,  0.25])
+ :END:
+
+The order of the roots is not important; they may or may not be sorted.
+
+** Applications to optimization
+
+ We can use eigenvalues to detect what kind of stationary point (f'(x) = 0) we are at. We have to know the [[https://en.wikipedia.org/wiki/Hessian_matrix][Hessian matrix]] at the stationary point. The eigenvalues of this matrix tell us about the stationary point.
+
+ 1. If all the eigenvalues are all positive, the matrix is called positive definite, and it means the stationary point is a minimum.
+ 2. If all the eigenvalues are negative, the matrix is called negative definite, and it means the stationary point is a maximum.
+ 3. If the signs of the eigenvalues are mixed then the stationary point is a saddle point.
+ 4. If there are zeros, it is inconclusive, and further analysis is needed.
+
+ Let's consider an example:
+
+ #+BEGIN_SRC ipython
+def f(X):
+    x, y = X
+    return 2 * x**2 + 2 * x * y + 2 * y**2 - 6 * x
+
+sol = minimize(f, [0, 0])
+sol
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[68]:
+ # text/plain
+ :       fun: -6.0
+ :  hess_inv: array([[ 0.33333333, -0.16666667],
+ :        [-0.16666667,  0.33333333]])
+ :       jac: array([ 0.,  0.])
+ :   message: 'Optimization terminated successfully.'
+ :      nfev: 24
+ :       nit: 4
+ :      njev: 6
+ :    status: 0
+ :   success: True
+ :         x: array([ 1.99999999, -0.99999999])
+ :END:
+
+ We get an estimate of the inverse hessian here, so we convert it to a hessian first.
+
+ #+BEGIN_SRC ipython
+h = np.linalg.inv(sol['hess_inv'])
+h
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[65]:
+ # text/plain
+ : array([[ 3.99999998,  1.99999997],
+ :        [ 1.99999997,  3.99999996]])
+ :END:
+
+ Now we check the eigenvalues:
+
+ #+BEGIN_SRC ipython
+np.linalg.eigvals(h)
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[66]:
+ # text/plain
+ : array([ 5.99999994,  2.        ])
+ :END:
+
+ We have two positive eigenvalues, so the Hessian is positive definite, and we are at a minimum.
+
+ We can also use tools to compute the Hessian more directly (of course you can derive the partial derivatives by hand also):
+
+ #+BEGIN_SRC ipython
+import numdifftools as nd
+H = nd.Hessian(f)
+np.linalg.eigvals(H(sol.x))
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[69]:
+ # text/plain
+ : array([ 2.,  6.])
+ :END:
+
+ Note the order of the eigenvalues is not important.
+
+We will see more about numerical tools for computing Hessians and derivatives after Thanksgiving.
+
+
+* Summary
+
+Today we introduced the ideas behind interpolation which is a data-drive approach to model building that involves locally fitting functions to a few data points. We also introduced eigenvalues and eigenvectors, and some applications of how they are used.
+
+Next week we will conclude linear algebra with linear regression.
+
+
+* TODO Applications in BVPS                                        :noexport:
+** Application in Boundary value problems                          :noexport:
+
+
+ I don't know why this is not working. The eigenvectors appear to have the right shape, but they are are obviously not solutions to the equation. Maybe they are, they are just a scale factor off, which does not affect the solution.
+
+ y'' = -\lambda y
+
+ #+BEGIN_SRC ipython
+import numpy as np
+
+N = 100  # You need to use enough points to make sure the derivatives are
+        # reasonably approximated
+
+x, h = np.linspace(0, np.pi, N, retstep=True)
+
+A = np.eye(len(x) - 2) * -2
+L = np.diag(np.ones(len(x) - 3), -1) # lower diagonal
+U = np.diag(np.ones(len(x) - 3), 1) # upper diagonal
+A = -(A + L + U) / h**2
+
+np.set_printoptions(precision=2)
+e, v = np.linalg.eig(A)
+
+i = np.argsort(e)
+e = e[i]
+v = v.T[i].T
+
+
+nu = 1
+s = np.concatenate([[0.0], v[:, nu - 1], [0.0]])
+
+f = 1 / (max(s) / max(np.sin(nu * x)))
+print(f,)
+
+#print(e)
+%matplotlib inline
+import matplotlib.pyplot as plt
+plt.plot(x, s * f)
+plt.plot(x, np.sin(nu * x))
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[131]:
+ # output
+ : 7.03562363973
+ :
+ # text/plain
+ : [<matplotlib.lines.Line2D at 0x1203680f0>]
+
+
+
+ # image/png
+ [[file:obipy-resources/e021eb5cde8c0f560ad245cab4a1f678-55929J7z.png]]
+ :END:
+
+ #+BEGIN_SRC ipython
+y = v[:, nu - 1]
+A @ y - y
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[132]:
+ # text/plain
+ : array([ -3.78e-07,  -7.56e-07,  -1.13e-06,  -1.51e-06,  -1.88e-06,
+ :         -2.26e-06,  -2.63e-06,  -3.00e-06,  -3.36e-06,  -3.72e-06,
+ :         -4.08e-06,  -4.43e-06,  -4.78e-06,  -5.13e-06,  -5.47e-06,
+ :         -5.80e-06,  -6.13e-06,  -6.45e-06,  -6.76e-06,  -7.07e-06,
+ :         -7.37e-06,  -7.67e-06,  -7.95e-06,  -8.23e-06,  -8.50e-06,
+ :         -8.76e-06,  -9.01e-06,  -9.26e-06,  -9.49e-06,  -9.72e-06,
+ :         -9.93e-06,  -1.01e-05,  -1.03e-05,  -1.05e-05,  -1.07e-05,
+ :         -1.08e-05,  -1.10e-05,  -1.11e-05,  -1.13e-05,  -1.14e-05,
+ :         -1.15e-05,  -1.16e-05,  -1.17e-05,  -1.17e-05,  -1.18e-05,
+ :         -1.19e-05,  -1.19e-05,  -1.19e-05,  -1.19e-05,  -1.19e-05,
+ :         -1.19e-05,  -1.19e-05,  -1.19e-05,  -1.18e-05,  -1.17e-05,
+ :         -1.17e-05,  -1.16e-05,  -1.15e-05,  -1.14e-05,  -1.13e-05,
+ :         -1.11e-05,  -1.10e-05,  -1.08e-05,  -1.07e-05,  -1.05e-05,
+ :         -1.03e-05,  -1.01e-05,  -9.93e-06,  -9.72e-06,  -9.49e-06,
+ :         -9.26e-06,  -9.01e-06,  -8.76e-06,  -8.50e-06,  -8.23e-06,
+ :         -7.95e-06,  -7.67e-06,  -7.37e-06,  -7.07e-06,  -6.76e-06,
+ :         -6.45e-06,  -6.13e-06,  -5.80e-06,  -5.47e-06,  -5.13e-06,
+ :         -4.78e-06,  -4.43e-06,  -4.08e-06,  -3.72e-06,  -3.36e-06,
+ :         -3.00e-06,  -2.63e-06,  -2.26e-06,  -1.88e-06,  -1.51e-06,
+ :         -1.13e-06,  -7.56e-07,  -3.78e-07])
+ :END:
+
+ #+BEGIN_SRC ipython
+np.linalg.norm(np.sin(nu * x))
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[133]:
+ # text/plain
+ : 7.0356236397351442
+ :END:
+
+ #+BEGIN_SRC ipython
+(np.gradient(np.gradient(s, x, edge_order=2), x, edge_order=2)) + s
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[134]:
+ # text/plain
+ : array([ -3.38e-03,  -1.13e-03,   3.03e-06,   4.53e-06,   6.04e-06,
+ :          7.54e-06,   9.03e-06,   1.05e-05,   1.20e-05,   1.34e-05,
+ :          1.49e-05,   1.63e-05,   1.77e-05,   1.91e-05,   2.05e-05,
+ :          2.19e-05,   2.32e-05,   2.45e-05,   2.58e-05,   2.71e-05,
+ :          2.83e-05,   2.95e-05,   3.07e-05,   3.18e-05,   3.29e-05,
+ :          3.40e-05,   3.50e-05,   3.61e-05,   3.70e-05,   3.80e-05,
+ :          3.89e-05,   3.97e-05,   4.05e-05,   4.13e-05,   4.20e-05,
+ :          4.27e-05,   4.34e-05,   4.40e-05,   4.46e-05,   4.51e-05,
+ :          4.56e-05,   4.60e-05,   4.64e-05,   4.67e-05,   4.70e-05,
+ :          4.72e-05,   4.74e-05,   4.76e-05,   4.76e-05,   4.77e-05,
+ :          4.77e-05,   4.76e-05,   4.76e-05,   4.74e-05,   4.72e-05,
+ :          4.70e-05,   4.67e-05,   4.64e-05,   4.60e-05,   4.56e-05,
+ :          4.51e-05,   4.46e-05,   4.40e-05,   4.34e-05,   4.27e-05,
+ :          4.20e-05,   4.13e-05,   4.05e-05,   3.97e-05,   3.89e-05,
+ :          3.80e-05,   3.70e-05,   3.61e-05,   3.50e-05,   3.40e-05,
+ :          3.29e-05,   3.18e-05,   3.07e-05,   2.95e-05,   2.83e-05,
+ :          2.71e-05,   2.58e-05,   2.45e-05,   2.32e-05,   2.19e-05,
+ :          2.05e-05,   1.91e-05,   1.77e-05,   1.63e-05,   1.49e-05,
+ :          1.34e-05,   1.20e-05,   1.05e-05,   9.03e-06,   7.54e-06,
+ :          6.04e-06,   4.53e-06,   3.03e-06,  -1.13e-03,  -3.38e-03])
+ :END:
+
+ #+BEGIN_SRC ipython
+
+ #+END_SRC
+
+** Application in a boundary value problem in quantum              :noexport:
+
+ this also is not quite working. Trying toa dapt this from https://www.reed.edu/physics/courses/P202NML.S17/downloads/files/Eigenvalues.pdf.
+
+ #+BEGIN_SRC ipython
+import numpy as np
+
+N = 50  # You need to use enough points to make sure the derivatives are
+        # reasonably approximated
+
+x, h = np.linspace(0, 20, N, retstep=True)
+
+A = np.eye(len(x) - 2) * -2 - np.diag(2 / x[1:-1])
+L = np.diag(np.ones(len(x) - 3), -1) # lower diagonal
+U = np.diag(np.ones(len(x) - 3), 1) # upper diagonal
+A = -(A + L + U) #/ h**2
+A
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[149]:
+ # text/plain
+ : array([[ 6.9 , -1.  , -0.  , ..., -0.  , -0.  , -0.  ],
+ :        [-1.  ,  4.45, -1.  , ..., -0.  , -0.  , -0.  ],
+ :        [-0.  , -1.  ,  3.63, ..., -0.  , -0.  , -0.  ],
+ :        ...,
+ :        [-0.  , -0.  , -0.  , ...,  2.11, -1.  , -0.  ],
+ :        [-0.  , -0.  , -0.  , ..., -1.  ,  2.1 , -1.  ],
+ :        [-0.  , -0.  , -0.  , ..., -0.  , -1.  ,  2.1 ]])
+ :END:
+
+ #+BEGIN_SRC ipython
+np.set_printoptions(precision=2)
+e, v = np.linalg.eig(A)
+
+i = np.argsort(e)
+e = e[i]
+v = v.T[i].T
+print(e)
+
+nu = 2
+s = np.concatenate([[0.0], v[:, nu], [0.0]])
+
+#print(e)
+%matplotlib inline
+import matplotlib.pyplot as plt
+plt.plot(x, s**2)
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[154]:
+ # output
+ : [ 0.15  0.19  0.25  0.3   0.36  0.43  0.5   0.58  0.66  0.75  0.84  0.94
+ :   1.04  1.15  1.26  1.37  1.49  1.61  1.74  1.86  1.99  2.12  2.25  2.38
+ :   2.51  2.63  2.76  2.89  3.01  3.13  3.24  3.36  3.46  3.56  3.66  3.75
+ :   3.83  3.91  3.97  4.03  4.08  4.12  4.16  4.23  4.35  4.58  5.16  7.29]
+ :
+ # text/plain
+ : [<matplotlib.lines.Line2D at 0x12b6f79b0>]
+
+
+
+ # image/png
+ [[file:obipy-resources/e021eb5cde8c0f560ad245cab4a1f678-55929JJc.png]]
+ :END:
+
+ #+BEGIN_SRC ipython
+
+ #+END_SRC

@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{yf} \PYG{o}{=} \PYG{k}{lambda} \PYG{n}{x}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mi}{4} \PYG{o}{\PYGZhy{}} \PYG{n}{yp}\PYG{o}{.}\PYG{n}{sol}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{])} \PYG{o}{/} \PYG{n}{y3}\PYG{o}{.}\PYG{n}{sol}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{*} \PYG{n}{y3}\PYG{o}{.}\PYG{n}{sol}\PYG{p}{(}\PYG{n}{x}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{+} \PYG{n}{yp}\PYG{o}{.}\PYG{n}{sol}\PYG{p}{(}\PYG{n}{x}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]}
+
+\PYG{k+kn}{from} \PYG{n+nn}{scipy.misc} \PYG{k+kn}{import} \PYG{n}{derivative}
+\PYG{n}{\PYGZus{}yp} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{gradient}\PYG{p}{(}\PYG{n}{yf}\PYG{p}{(}\PYG{n}{xspan}\PYG{p}{),} \PYG{n}{xspan}\PYG{p}{,} \PYG{n}{edge\PYGZus{}order}\PYG{o}{=}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{n}{\PYGZus{}ypp} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{gradient}\PYG{p}{(}\PYG{n}{\PYGZus{}yp}\PYG{p}{,} \PYG{n}{xspan}\PYG{p}{,} \PYG{n}{edge\PYGZus{}order}\PYG{o}{=}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{n}{\PYGZus{}yppp} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{gradient}\PYG{p}{(}\PYG{n}{\PYGZus{}ypp}\PYG{p}{,} \PYG{n}{xspan}\PYG{p}{,} \PYG{n}{edge\PYGZus{}order}\PYG{o}{=}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{}yppp = [derivative(yf, x, n=3, order=7, dx=1e\PYGZhy{}6) for x in xspan]}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{plot}\PYG{p}{(}\PYG{n}{xspan}\PYG{p}{,} \PYG{n}{\PYGZus{}yppp} \PYG{o}{\PYGZhy{}} \PYG{n}{xspan}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{yf}\PYG{p}{(}\PYG{n}{xspan}\PYG{p}{)} \PYG{o}{+} \PYG{n}{xspan}\PYG{o}{**}\PYG{l+m+mi}{4}\PYG{p}{)}
+\end{Verbatim}

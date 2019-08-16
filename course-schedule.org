@@ -1,0 +1,55 @@
+#+TITLE: Course schedule
+
+This page lists the days of class, and the topics we will probably cover on those days. If there is no topic on a day, that just means I have not decided what we will talk about on that day. Do not be surprised if these are updated only a few days in advance.
+
+* Class schedule
+** <2019-08-26 Mon 08:30> Introduction  [[./lectures/00-intro.org]]
+** <2019-08-28 Wed 08:30> Python/Jupyter [[./lectures/01-jupyter.org]]
+** <2019-09-02 Mon 08:30> *NO CLASS* Labor day
+** <2019-09-04 Wed 08:30> Numerical integration [[./lectures/02-integration-1.org]]
+** <2019-09-09 Mon 08:30> First order ordinary differential equations [[./lectures/03-fode-1.org]]
+** <2019-09-11 Wed 08:30> Systems of first-order differential equations [[./lectures/04-fode-2.org]]
+** <2019-09-16 Mon 08:30> Nth order odes [[./lectures/05-nth-odes.org]]
+** <2019-09-18 Wed 08:30> Review  [[./lectures/review-1.org]]
+** <2019-09-23 Mon 08:30> Exam 1
+** <2019-09-25 Wed 08:30> Nonlinear algebra [[./lectures/07-nla-1.org]]
+** <2019-09-30 Mon 08:30> Nonlinear algebra-2 [[./lectures/08-nla-2.org]]
+** <2019-10-02 Wed 08:30> *NO CLASS*
+** <2019-10-07 Mon 08:30> nonlinear BVP [[./lectures/09-bvp.org]]
+** <2019-10-09 Wed 08:30> Minimization/maximizing functions [[./lectures/10-min-max.org]]
+** <2019-10-14 Mon 08:30> Nonlinear regression [[./lectures/11-regression.org]]
+** <2019-10-16 Wed 08:30> Nonlinear regression - part 2 [[./lectures/12-nonlinear-regression-2.org]]
+** <2019-10-21 Mon 08:30> Review [[./lectures/13-review.org]]
+** <2019-10-23 Wed 08:30> Exam 2
+** <2019-10-28 Mon 08:30> [[./lectures/14-constrained-minimization.org]]
+** <2019-10-30 Wed 08:30> Linear algebra - introduction [[./lectures/15-intro-linear-algebra.org]]
+** <2019-11-04 Mon 08:30> Linear algebra applications [[./lectures/16-linear-algebra.org]]
+** <2019-11-06 Wed 08:30> [[ ./lectures/17-linear-algebra-2.org]]
+** <2019-11-11 Mon 08:30> ? AICHE
+** <2019-11-13 Wed 08:30> ? AICHE
+** <2019-11-18 Mon 08:30> [[./lectures/18-linear-regression.org]] Linear regression
+** <2019-11-20 Wed 08:30> [[./lectures/19-introduction-to-autograd.org]] autograd for derivatives
+** <2019-11-25 Mon 08:30> [[./lectures/20-autograd-applications.org]] autograd for applications
+** <2019-11-27 Wed 08:30> *NO CLASS* Thanksgiving
+** <2019-12-02 Mon 08:30> [[./lectures/21-machine-learning.org]] autograd for machine learning
+** <2019-12-04 Wed 08:30> [[./lectures/22-final-review.org]] Review
+
+
+* Code                                                             :noexport:
+
+#+name: generate-schedule
+#+BEGIN_SRC emacs-lisp :results output raw
+(princ "* Class schedule\n")
+(let ((t1 (org-2ft "<2018-08-27 Mon 08:30>"))
+      (t2 (org-2ft "<2018-08-29 Wed 08:30>"))
+      (week (*  60 60 24 7))
+      (last-day (org-2ft "<2018-12-07>")))
+  (while (and (time-less-p t1 last-day)
+	      (time-less-p t2 last-day))
+    (princ
+     (format-time-string "** <%Y-%m-%d %a 08:30>\n" t1))
+    (princ
+     (format-time-string "** <%Y-%m-%d %a 08:30>\n" t2))
+    (setq t1 (time-add t1 week)
+	  t2 (time-add t2 week))))
+#+END_SRC

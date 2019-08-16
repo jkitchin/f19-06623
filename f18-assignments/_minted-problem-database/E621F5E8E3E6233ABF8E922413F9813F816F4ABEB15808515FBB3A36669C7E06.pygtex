@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{dtdk} \PYG{o}{=} \PYG{n}{grad}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{n}{dtdC} \PYG{o}{=} \PYG{n}{grad}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
+
+\PYG{n}{sigma\PYGZus{}t} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{dtdk}\PYG{p}{(}\PYG{n}{k}\PYG{p}{,} \PYG{n}{Ca0}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{sigma\PYGZus{}k}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{+} \PYG{n}{dtdC}\PYG{p}{(}\PYG{n}{k}\PYG{p}{,} \PYG{n}{Ca0}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{sigma\PYGZus{}Ca0}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{n}{sigma\PYGZus{}t}
+\end{Verbatim}

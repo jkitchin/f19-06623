@@ -1,0 +1,23 @@
+#+OPTIONS: toc:nil
+* Announcements
+
+- [2019-08-26 Mon] A curated list of awesome scientific Python resources. https://github.com/rossant/awesome-scientific-python
+
+* build                                                            :noexport:
+#+OPTIONS: tex:dvipng
+
+#+BEGIN_SRC emacs-lisp
+(with-current-buffer (find-file-noselect (org-html-export-to-html nil nil t t))
+  (goto-char (point-min))
+  (while (re-search-forward "<img src=\"\\([^\"]*?\\)\" alt=[^>]*?/>" nil t)
+    (let* ((img (match-string 1))
+	   (b64 (with-temp-buffer
+		  (save-match-data
+		    (insert-file-contents img)
+		    (base64-encode-string (buffer-string))))))
+
+      (replace-match (format "<img src=\"data:image/png;base64,%s\"" b64)))
+    (save-buffer)))
+#+END_SRC
+
+#+RESULTS:

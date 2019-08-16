@@ -1,0 +1,49 @@
+{
+    "title": "Mathematical Modeling of Chemical Engineering Processes",
+    "label": "f19-06623",
+    "year": 2019,
+    "semester": "Fall",
+    "submit-email": "submiss.qhe8tdgpgxpfbxc4@u.box.com",
+    "course-repo": "https://github.com/jkitchin/f19-06623/",
+    "instructor": "John Kitchin",
+    "instructor-email": "jkitchin@andrew.cmu.edu",
+    "admin-names": [
+        "John Kitchin",
+        "Mingjie Liu",
+        "Yilin Yang"
+    ],
+    "admin-andrewids": [
+        "jkitchin",
+        "mingjie1",
+        "yiliny2"
+    ],
+    "categories": [
+        [
+            "homework",
+            "quiz",
+            "exam-1",
+            "exam-2",
+            "final-exam"
+        ],
+        [
+            0.1,
+            0.25,
+            0.15,
+            0.2,
+            0.3
+        ]
+    ],
+    "rubrics": {
+        "default": [
+            [
+                "technical",
+                "presentation"
+            ],
+            [
+                0.9,
+                0.1
+            ]
+        ]
+    },
+    "admin-box-path": "~/Box Sync/f19-06623-admin"
+}

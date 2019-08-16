@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{Y3} \PYG{o}{=} \PYG{n}{y3}\PYG{o}{.}\PYG{n}{sol}\PYG{p}{(}\PYG{n}{xspan}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{Yp} \PYG{o}{=} \PYG{n}{yp}\PYG{o}{.}\PYG{n}{sol}\PYG{p}{(}\PYG{n}{xspan}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{n}{Y3}
+\end{Verbatim}

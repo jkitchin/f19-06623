@@ -1,0 +1,686 @@
+#+TITLE: Introduction to integration
+#+OX-IPYNB-KEYWORD-METADATA: keywords
+#+KEYWORDS: integration, trapz, cumtrapz, quad
+
+Integration is used for many purposes in scientific problem solving. It can:
+
+1. Represent the area under a curve or between curves
+2. Solve differential equations
+
+We may have data that represents a function that needs to be integrated, or a function we want to integrate, or a differential equation we want to solve. We may also have data that represents a some function, and that we wish to integrate.
+
+Historically, we would have to look up or remember the formula for an integral, e.g. in a book like this (16^{th} ed. CRC Standard Mathematical Tables):
+
+image:~/Downloads/IMG_1889.JPG
+
+There are a limited number of known analytical integrals, and for everything else, we have to resort to numerical/computational approaches to evaluate them.
+
+
+
+* Numerical integration of data
+
+Data can be used to represent functions. Suppose we have the function $y=x^2$, and 5 $x$ values evenly spaced from 0 to 4. We can represent this function numerically with data like this.
+
+#+BEGIN_SRC ipython
+import numpy as np
+
+x = np.linspace(1, 4, 5)
+y = x**2
+
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+plt.plot(x, y, 'bo--')  # plot with blue circles connected by a dashed line
+plt.xlabel('x')
+plt.ylabel('y')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[26]:
+
+
+
+
+# image/png
+[[file:obipy-resources/d9632b07b477acbf48eabd2bf122330e-49561Tnc.png]]
+:END:
+
+If we want the area under this curve, it is represented by:
+
+$A = \int_0^4 x^2 dx$
+
+We could analytically evaluate this as:
+
+$A = \frac{1}{3} (4^3 - 1^3)$.
+
+Here is the analytical answer for future reference:
+
+#+BEGIN_SRC ipython
+1 / 3 * (4**3 - 1**3)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[27]:
+# text/plain
+: 21.0
+:END:
+
+It will not always be the case that we can evaluate the integrals analytically, and sometimes we just have the data, and not the analytical function it represents (e.g. if you have measured the data).
+
+
+The classical way to compute the error under this curve is to use the trapezoid method. We know the area of a trapezoid is $A = 0.5 * width * (y1 + y2)$. In this example, we have four trapezoids to compute the areas of.
+
+To make this easier to compute, we need a few new ideas. First, it would be convenient to know how many elements are in the array =x=.
+
+#+BEGIN_SRC ipython
+len(x)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[28]:
+# text/plain
+: 5
+:END:
+
+Second, we need to know how to compute the area of a trapezoid defined by the points in =x= and =y=. The area of the first trapezoid is defined by:
+
+#+BEGIN_SRC ipython
+0.5 * (y[0] + y[1]) * (x[1] - x[0])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[29]:
+# text/plain
+: 1.5234375
+:END:
+
+What we would like to do is to loop over each trapezoid, compute the area, and accumulate it in a variable. Here is how we use a =for= loop to iterate from a value starting at 1 to the length of the array =x=. Note that although the length is 5, the last value of =i= is 4. The loop goes up to, but not including the last value of the range.
+
+#+BEGIN_SRC ipython
+for i in range(1, len(x)):
+    print(i)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[30]:
+# output
+: 1
+: 2
+: 3
+: 4
+:
+:END:
+
+
+#+BEGIN_SRC ipython
+area = 0.0  # variable we will accumulate the area in
+
+for i in range(1, len(x)):
+    y1 = y[i - 1]
+    y2 = y[i]
+    width = x[i] - x[i - 1]
+    area += 0.5 * width * (y1 + y2)  # increment the area variable
+
+print(f'The estimated area is {area}.')
+print(f'The exact area is {1 / 3 * (x[-1]**3 - x[0]**3)}')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[32]:
+# output
+: The estimated area is 21.28125.
+: The exact area is 21.0
+:
+:END:
+
+Why don't these agree? The trapezoid method is an approximation of the integral. In this case the straight lines connecting the points /overestimate/ the value of the function, and so the area under this curve is overestimated.
+
+*Exercise*: Increase the number of points slowly and see how the estimate converges to the exact value.
+
+** numpy.trapz
+
+It is somewhat tedious to write the loop above, making sure you get the indexing right, etc. The trapezoid method is defined in numpy. See the help for how to use it:
+
+#+BEGIN_SRC ipython
+?np.trapz
+#+END_SRC
+
+Now, we can perform the integration with just one line:
+
+#+BEGIN_SRC ipython
+import numpy as np
+x = np.linspace(1, 4, 5)
+y = x**2
+np.trapz(y, x)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[1]:
+# text/plain
+: 21.28125
+:END:
+
+The trapezoid method is only exact for lines. For everything else, it is an approximation. For functions (or regions) that are concave up, the trapezoid method will over-estimate the integral, and for regions that are concave down, the method will underestimate the true integral.
+
+The [[https://en.wikipedia.org/wiki/Trapezoidal_rule#Error_analysis][error]] in this method is formally:
+
+$error = - \frac{(b - a)^3}{12 N^2} f''(\xi)$
+
+In this formula, $\xi$ is some number between $a$ and $b$, in other words the error is related to the second derivative of the function evaluated somewhere in the interval.
+
+Practically, we only use this method for integrating data where we do not know the function it represents, so we cannot reliably estimate the error in the integral.
+
+** Simpson method https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.integrate.simps.html#scipy.integrate.simps
+
+There are more advanced approximations to integration than the trapezoid method. With the trapezoid method, you essentially assume linear interpolation between the points, and in the limit of infinite points that are close together, this is reasonable. We rarely get to that limit however.
+
+Instead of linear interpolation, we can use quadratic interpolation, where one uses the point and its neighbors to compute the equation of a parabola that goes through them, and then analytically computes the area under the parabola over the relevant interval. This is the basis of [[https://en.wikipedia.org/wiki/Simpson%27s_rule][Simpson's method]]. There is an excellent animation of Simpson's Rule at that page.
+
+
+Note in this case, since we integrate a parabola, the result is exact. It will not be exact in general, but this method is generally expected to be more accurate than the trapezoid method for well-behaved data because it represents the local curvature better than lines do.
+
+#+BEGIN_SRC ipython
+from scipy.integrate import simps
+
+simps(y, x)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[2]:
+# text/plain
+: 21.0
+:END:
+
+** Applications
+
+*** Estimating the volume of a solid
+
+We can use integrals to compute the volume of solids. If we know how the cross-sectional area of a solid varies in some direction, we simply evaluate the following integral:
+
+$\int_{x0}^{x1} A(x) dx$
+
+For a sphere, we can derive:
+
+$A(x) = \pi (1 - x^2)$
+
+#+BEGIN_SRC ipython
+R = 1
+x = np.linspace(-R, R)
+y = np.pi * (1 - x**2)
+
+approx_V = np.trapz(y, x)
+exact_V = 4 / 3 * np.pi * R**3
+
+print(f'''Approximate volume = {approx_V:1.4f}
+Exact volume = {exact_V:1.4f}''')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[46]:
+# output
+: Approximate volume = 4.1870
+: Exact volume = 4.1888
+:
+:END:
+
+With 50 points, the estimate is pretty good. Try increasing the number of points to improve the estimate.
+
+*** Estimating the volume of a plug flow reactor
+
+Adapted from Fogler example 2.7. The volume of a plug flow reactor is defined by this integral:
+
+$\int_{X0}^{X1} \frac{F_{A0}}{-r_A} dX$
+
+where $F_{A0}$ is the inlet molar flow of species A, $X$ is the conversion, and $-r_A$ is the rate of generation of species A per unit volume. $r_A$  is a function of conversion. We often do not know what the function is, but we can measure the rate of generation. Below is some tabulated data of the rate of generation of species A as a function of conversion.
+
+|    X | -r_A (kmol / m^3 / hr) |
+|------+------------------------|
+|    0 |                     39 |
+|  0.2 |                     53 |
+|  0.4 |                     59 |
+|  0.6 |                     38 |
+| 0.65 |                     25 |
+
+Use this data to estimate the volume of the reactor required to achieve a conversion of 0.65.
+
+#+BEGIN_SRC ipython
+X = np.array([0, 0.2, 0.4, 0.6, 0.65])
+
+ra = -np.array([39, 53, 59, 38, 25])
+
+Fa0 = 50 # kmol / hr.
+
+V = np.trapz(Fa0 / -ra, X)
+
+print(f'The required volume is {V:1.3f} m^3.')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[48]:
+# output
+: The required volume is 0.701 m^3.
+:
+:END:
+
+How does the volume depend on conversion? Let's plot the integrand first so we can get a sense for how the area might change with conversion.
+
+#+BEGIN_SRC ipython
+plt.plot(X, Fa0 / -ra)
+plt.xlabel('Conversion')
+plt.ylabel('$F_{A0} / -r_A$')
+plt.xlim([0, 0.65])
+plt.ylim([0, 2])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[49]:
+# text/plain
+: (0, 2)
+
+
+
+# image/png
+[[file:obipy-resources/d9632b07b477acbf48eabd2bf122330e-1814nA.png]]
+:END:
+
+We could iterate over the conversions and print the volume for each value. This is a little wasteful since we recompute the areas in each iteration, but here it is so fast it does not matter.
+
+Before jumping into the integration an loop, Let's review array slicing. It allows us to select portions of arrays for analysis.
+
+#+BEGIN_SRC ipython
+# X[start:below_end]
+X = np.array([0, 0.2, 0.4, 0.6, 0.65])
+X[0:3] # This selects points with indices 0-2
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[50]:
+# text/plain
+: array([ 0. ,  0.2,  0.4])
+:END:
+
+We use -1 for the last element (-2 for second to last element, etc). Note that this /does not/ include the last element.
+
+#+BEGIN_SRC ipython
+X[1:-1]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[53]:
+# text/plain
+: array([ 0.2,  0.4,  0.6])
+:END:
+
+To get to the last element, we do not specify an end value like this:
+
+#+BEGIN_SRC ipython
+X[1:]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[54]:
+# text/plain
+: array([ 0.2 ,  0.4 ,  0.6 ,  0.65])
+:END:
+
+So, back to the integration. We need to use slices of the array for each integration step.
+
+#+BEGIN_SRC ipython
+y = Fa0 / -ra
+
+volumes = []  # empty list to store values in
+
+for i in range(0, len(X)):
+    vol = np.trapz(y[0:i+1], X[0:i+1])
+    volumes += [vol] # here we accumulate the vol into our list
+    print(f'At X={X[i]:3.2f} V={vol:1.3f} m^3')
+
+volumes
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[51]:
+# output
+: At X=0.00 V=0.000 m^3
+: At X=0.20 V=0.223 m^3
+: At X=0.40 V=0.402 m^3
+: At X=0.60 V=0.618 m^3
+: At X=0.65 V=0.701 m^3
+:
+# text/plain
+: [0.0,
+:  0.22254475084663766,
+:  0.40163013620001153,
+:  0.61795484628029695,
+:  0.70084958312240231]
+:END:
+
+An alternative approach is to use a cumulative trapezoid function. This is defined in scipy.integrate. The main benefit of this approach is that it is faster, as it does not recompute the areas, and the code is shorter, so there are less places to make mistakes!
+
+#+BEGIN_SRC ipython
+import scipy as sp
+cumV = sp.integrate.cumtrapz(Fa0 / -ra, X)
+
+plt.plot(X[1:], cumV)
+plt.xlabel('Conversion')
+plt.ylabel('Volume (m$^3$)')
+
+cumV
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[52]:
+# text/plain
+: array([ 0.22254475,  0.40163014,  0.61795485,  0.70084958])
+
+
+
+# image/png
+[[file:obipy-resources/d9632b07b477acbf48eabd2bf122330e-181FyG.png]]
+:END:
+
+What if you want to know the volume required for an intermediate conversion? For that you need interpolation. We will cover that later in the course when we talk more about dealing with data.
+
+
+* Numerical quadrature
+
+When you have a function and you know its analytical form we can use quadrature to estimate integrals of it. In quadrature, we approximate the integral as a weighted sum of function values. By increasing the number values used, we can systematically improve the integral estimates.
+
+To motivate the idea, let's consider the function integral of $y(x) = 7 x^3 - 8 x^2 - 3x +3$ from -1 to 1.
+
+This is a third order polynomial, so we can in this case replace the integral with a sum of two points:
+
+$\int f(x) dx = w_1 f(x_1) + w_2 f(x_2)$
+
+provided we can find the weights, and the right values of $x$ to use. These are derived and tabulated (e.g. at https://en.wikipedia.org/wiki/Gaussian_quadrature), which tells us for this case, the weights are simply equal to one, and we should use $\pm \sqrt{1/3}$ for x.
+
+#+BEGIN_SRC ipython
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+x = np.linspace(-1, 1)
+
+def f(x):
+    return 7 * x**3 - 8 * x**2 - 3 * x + 3
+
+plt.plot(x, f(x))
+
+f(np.sqrt(1/3)) + f(-np.sqrt(1/3))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[12]:
+# text/plain
+: 0.66666666666666741
+
+
+
+# image/png
+[[file:obipy-resources/d9632b07b477acbf48eabd2bf122330e-181BeY.png]]
+:END:
+
+This example is special in several ways:
+1. The formula was derived for n^{th} order polynomials, here we had a 3rd order polynomial, so n-1 points are needed to exactly compute the integral. The formula is not exact for non-polynomial functions.
+   For non-poynomial functions, the formula is an approximation to the integral and you have to use more than two points to estimate the integral. When you use more points, the weights change, but they can be looked up in the table, or computed.
+
+I show this example mostly to motivate the idea that given a function, you can perform an integral by evaluating the function at special points, and weighting those function values appropriately. In practice, we don't do this manually. It has been coded already into robust libraries that we can reuse.
+
+=scipy.integrate= provides the [[https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.integrate.quad.html#scipy.integrate.quad][quad]] function. This is a Python wrapper around a sophisticated [[https://en.wikipedia.org/wiki/QUADPACK][Fortran library]] for integrating functions. These routines use an adaptive method to compute the integral and provide an upper bound on the error of the computed integral. The beauty of this interface is we can use a reliable, proven library written in Fortran inside of Python. We do not have to write and compile a Fortran program ourselves.
+
+#+BEGIN_SRC ipython
+from scipy.integrate import quad
+
+?quad
+#+END_SRC
+
+We return to our simple integral, which should equal 21.
+
+#+BEGIN_SRC ipython
+4**3 / 3 - 1 / 3  # analytical integral of x^2 from 1 to 4.
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[7]:
+# text/plain
+: 21.0
+:END:
+
+To use the quad function, we define a function, and use it as the first argument in the quad function. The quad function returns the integral value, and estimated error.
+
+#+BEGIN_SRC ipython
+def f(x):
+    return x**2
+
+quad(f, 1, 4)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[34]:
+# text/plain
+: (21.000000000000004, 2.331468351712829e-13)
+:END:
+
+We can recompute the volume of a sphere much more precisely, and easily now. Recall $A(x) = \pi (1 - x^2)$ and that $V = \int_{-1}^{1} A(x) dx$. Here is the implementation.
+
+#+BEGIN_SRC ipython
+def cross_section(x):
+    return np.pi * (1 - x**2)
+
+quad(cross_section, -1, 1)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[69]:
+# text/plain
+: (4.1887902047863905, 4.6504913306781755e-14)
+:END:
+
+We can integrate to infinity.
+
+$\int_{-\infty}^{\infty} \frac{1}{x^2 + 1} = \pi$.
+
+Let us verify this. You can use \pm \infty as limits.
+
+#+BEGIN_SRC ipython
+def f(x):
+    return 1 / (x**2 + 1)
+
+quad(f, -np.inf, np.inf)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[15]:
+# text/plain
+: (3.141592653589793, 5.155583041103855e-10)
+:END:
+
+Not all integrals are finite. For example
+
+$\int_1^\infty \frac{dx}{x} = \infty$
+
+Here we get an IntegrationWarning that a maximum number of subdivisions has been achieved.
+
+#+BEGIN_SRC ipython
+def f(x):
+    return 1 / x
+
+quad(f, 1, np.infty)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[17]:
+# output
+: /Users/jkitchin/anaconda/lib/python3.6/site-packages/scipy/integrate/quadpack.py:364: IntegrationWarning: The maximum number of subdivisions (50) has been achieved.
+:   If increasing the limit yields no improvement it is advised to analyze
+:   the integrand in order to determine the difficulties.  If the position of a
+:   local difficulty can be determined (singularity, discontinuity) one will
+:   probably gain from splitting up the interval and calling the integrator
+:   on the subranges.  Perhaps a special-purpose integrator should be used.
+:   warnings.warn(msg, IntegrationWarning)
+:
+# text/plain
+: (40.996012819169536, 8.156214940493651)
+:END:
+
+Math is fun though, this subtly different function is integrable:
+
+#+BEGIN_SRC ipython
+def f(x):
+    return 1 / x**2
+
+quad(f, 1, np.infty)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[18]:
+# text/plain
+: (1.0, 1.1102230246251565e-14)
+:END:
+
+And this function is integrable, despite the singularity at x=0.
+
+#+BEGIN_SRC ipython
+def f(x):
+    return 1 / np.sqrt(x)
+
+quad(f, 0, 1)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[20]:
+# text/plain
+: (1.9999999999999984, 5.773159728050814e-15)
+:END:
+
+** Find the volume of a PFR
+
+For a single reaction that consumes a species A at a rate of $-r_A = k C_A$, a mole balance leads to an equation for the volume as a function of conversion $X$ as:
+
+$V = \int_0^X \frac{F_{A0}}{-r_A(X)} dX$
+
+$F_{A0}$ is the inlet molar flow of species A, which is equal to the inlet concentration times the inlet volumetric flow. The concentration of A in the reactor is a function of the conversion, and is given by  $C_A = C_{A0} (1 - X)$. If $k = 0.23$ 1/min, $C_{A0} = 1$ mol/L, and the volumetric flow is 1 L/min, what is the reactor volume required to achieve a conversion of 50%?
+
+#+BEGIN_SRC ipython
+from scipy.integrate import quad
+
+k = 0.23
+Ca0 = 1.0
+v0 = 1.0
+
+Fa0 = v0 * Ca0
+
+def rA(X):
+    Ca = Ca0 * (1 - X)
+    return -k * Ca
+
+def integrand(X):
+    return Fa0 / -rA(X)
+
+vol, err = quad(integrand, 0, 0.5)
+print(f'The required volume is {vol:1.3f} L')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[5]:
+# output
+: The required volume is 3.014 L
+:
+:END:
+** Diffusion
+
+When the surface concentration of a solute is constant, and the solute diffused into a semi-infinite solid, the concentration of the solute in the solid varies with space and time according to:
+$C_A(x, t) = C_{As} - (C_{As} - C_{A0}) erf\left(\frac{x}{\sqrt{4 D t}}\right)$.
+
+$C_{As}$ is the concentration of the diffusing species at $x=0$, and $C_{A0}$ is the initial concentration of the species in the semi-infinite body.
+
+and $erf(x) = \frac{2}{\sqrt{\pi}} \int_0^x e^-{\xi^2} d\xi$
+
+This integral arises from the solution to the differential equation describing diffusion. The integral does not have an analytical solution, but it can be solved numerically.
+
+Suppose we have a steel sample #1 that initially contains 0.02% Carbon in it, and it is put in contact with another steel containing 1.2% carbon. If the diffusion coefficient of carbon is 1.54e-6 cm^2/s, what will the concentration of carbon in sample #1 be after 24 hours?
+
+#+BEGIN_SRC ipython
+Cas = 1.2
+Ca0 = 0.02
+D = 1.54e-6 # cm^2/s
+X = 0.15 # cm
+t = 24 * 60 * 60 # time in seconds
+
+
+xi = X / np.sqrt(4 * D * t)
+
+def erf_integrand(xi):
+    return 2 / np.sqrt(np.pi) * np.exp(-xi**2)
+
+erfx, err = quad(erf_integrand, 0, xi)
+
+Cx = Cas - (Cas - Ca0) * erfx
+print(f'The concentration of carbon at X = {X} cm after {t / 3600} hours is {Cx:1.2f}%.')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[34]:
+# output
+: The concentration at X = 0.15 cm after 24.0 hours is 0.93%.
+:
+:END:
+
+The [[https://en.wikipedia.org/wiki/Error_function][error function]], $erf(x)$ is such an important function it is implemented as a special function in scipy.special.
+
+#+BEGIN_SRC ipython
+from scipy.special import erf
+
+Cx_wspecial = Cas - (Cas - Ca0) * erf(xi)
+print(f'The concentration of carbon at X = {X} cm after {t / 3600} hours is {Cx_wspecial:1.2f}%.')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[37]:
+# output
+: The concentration of carbon at X = 0.15 cm after 24.0 hours is 0.93%.
+:
+:END:
+
+
+* Summary
+
+The main points of this lecture were on
+
+- Numerical integration of data
+  - I recommend you rely on library implementations of the trapezoid method or Simpson's method.
+  - ~numpy.trapz~, ~scipy.integrate.cumtrapz~, and ~scipy.integrate.simps~.
+
+- Integration of functions by quadrature
+  - quadrature uses a weighted sum of function evaluations to estimate the integrals.
+  - I recommend you rely on a library implementation of a quadrature
+    - e.g. ~scipy.integrate.quad~.
+    - These libraries provide sophisticated convergence algorithms and error estimates
+
+Next time we will consider using integration to obtain solutions to differential equations.

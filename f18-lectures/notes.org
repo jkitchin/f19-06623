@@ -1,0 +1,228 @@
+* next                                                             :noexport:
+
+Here we will download some data that relates brain weight to body weight for a lot of different animals.
+
+
+#+BEGIN_SRC ipython
+import urllib.request
+urllib.request.urlretrieve('https://people.sc.fsu.edu/~jburkardt/datasets/regression/x01.txt', 'data.txt')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[8]:
+# text/plain
+: ('data.txt', <http.client.HTTPMessage at 0x10e067668>)
+:END:
+
+We can see the contents of the file like this:
+
+#+BEGIN_SRC ipython
+with open('data.txt') as f:
+    lines = f.readlines()
+
+for i, line in enumerate(lines[0:35]):
+    print(i, line.strip())
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[39]:
+# output
+: 0 #  x01.txt
+: 1 #
+: 2 #  Reference:
+: 3 #
+: 4 #    Helmut Spaeth,
+: 5 #    Mathematical Algorithms for Linear Regression,
+: 6 #    Academic Press, 1991, page 304,
+: 7 #    ISBN 0-12-656460-4.
+: 8 #
+: 9 #    S Weisberg,
+: 10 #    Applied Linear Regression,
+: 11 #    Wiley, 1980, pages 128-129.
+: 12 #
+: 13 #  Discussion:
+: 14 #
+: 15 #    The data records the average weight of the brain and body for
+: 16 #    a number of mammal species.
+: 17 #
+: 18 #    There are 62 rows of data.  The 3 data columns include:
+: 19 #
+: 20 #      I,  the index,
+: 21 #      A1, the brain weight;
+: 22 #      B,  the body weight.
+: 23 #
+: 24 #    We seek a model of the form:
+: 25 #
+: 26 #      B = A1 * X1.
+: 27 #
+: 28 3 columns
+: 29 62 rows
+: 30 Index
+: 31 Brain Weight
+: 32 Body Weight
+: 33 1     3.385    44.500
+: 34 2     0.480    15.500
+:
+:END:
+
+Now we can load the data. We need to skip the first 33 lines to get to the data. Numpy provides some capability to read data files, and here is an example of using that.
+
+#+BEGIN_SRC ipython
+import numpy as np
+
+dtype = np.dtype([('index', 'i4'), ('brain weight', 'f8'), ('body weight', 'f8')])
+ind, brain_weight, body_weight = np.loadtxt('data.txt', skiprows=33, dtype=dtype, unpack=True)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[35]:
+:END:
+
+Next, we visualize the data to see if there is an obvious trend.
+
+#+BEGIN_SRC ipython
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+plt.plot(brain_weight, body_weight, 'bo')
+plt.xlabel('Brain weight')
+plt.ylabel('Body weight')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[36]:
+
+
+
+
+# image/png
+[[file:obipy-resources/d00b1703e45a1bb2f86b06f32bba01b8-55929ZaL.png]]
+:END:
+
+Next we start with a linear model $bodyweight = m * brainweight + b$.
+
+#+BEGIN_SRC ipython
+x, y = brain_weight, body_weight
+
+X = np.stack([x, x**0], axis=1)
+
+a = np.linalg.solve(X.T @ X, X.T @ y)
+print(a)
+plt.plot(x, y, 'bo', x, X @ a)
+plt.xlabel('Brain weight')
+plt.ylabel('Body weight')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[41]:
+# output
+: [  0.96649637  91.00439621]
+:
+
+
+
+
+# image/png
+[[file:obipy-resources/d00b1703e45a1bb2f86b06f32bba01b8-55929zuX.png]]
+:END:
+
+There is a small dilemma here, at a brain weight of zero, there is a body weight of 91. We can eliminate this issue by eliminating the column of ones associated with the intercept.
+
+#+BEGIN_SRC ipython
+X = np.stack([x], axis=1)
+
+a = np.linalg.solve(X.T @ X, X.T @ y)
+print(a)
+plt.plot(x, y, 'bo', x, X @ a)
+plt.xlabel('Brain weight')
+plt.ylabel('Body weight')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[47]:
+# output
+: [ 0.98816292]
+:
+
+
+
+
+# image/png
+[[file:obipy-resources/d00b1703e45a1bb2f86b06f32bba01b8-55929NDk.png]]
+:END:
+
+This results in a slight change in the slope, but is more compatible with the idea that a body cannot exist without a brain!
+
+We previously claimed that solving this equation was equivalent to minimizing the summed squared errors. Here we demonstrate that is consistent with our observation.
+
+#+BEGIN_SRC ipython
+P = np.linspace(0.9 * a, 1.1 * a)
+
+errs = [np.sum(np.square(X @ [p] - y)) for p in P]
+
+plt.plot(P, errs)
+plt.axvline(a, color='k', linestyle='--')
+plt.xlabel('slope')
+plt.ylabel('SSE')
+plt.legend(['SSE', 'best fit'])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[56]:
+
+
+
+
+# image/png
+[[file:obipy-resources/d00b1703e45a1bb2f86b06f32bba01b8-55929mrF.png]]
+:END:
+
+As we have seen many times before, Numpy provides a function for doing least squares linear regression.
+
+#+BEGIN_SRC ipython
+pars, residuals, rank, singular_values = np.linalg.lstsq(X, y)
+pars, residuals, rank, singular_values
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[58]:
+# text/plain
+: (array([ 0.98816292]), array([ 7211408.86256027]), 1, array([ 7194.97568982]))
+:END:
+
+
+*** Confidence intervals on the parameters
+
+ To estimate the uncertainty on the parameters, we need to compute the following
+
+ #+BEGIN_SRC ipython
+dof = len(y) - len(pars)
+sigma2 = np.sum(residuals**2) / dof
+
+covariance = np.linalg.inv(X.T @ X)
+se = np.diag(sigma2 * covariance)
+
+from scipy.stats.distributions import t
+alpha = 0.05
+sT = t.ppf(1.0 - alpha/2.0, dof - 1)  # student T multiplier
+
+CI = sT * se
+
+print(CI)
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ # Out[63]:
+ # output
+ : [ 32941.73002962]
+ :
+ :END:

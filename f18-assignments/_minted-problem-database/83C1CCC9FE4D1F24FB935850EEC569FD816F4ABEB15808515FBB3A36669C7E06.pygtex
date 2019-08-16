@@ -1,0 +1,34 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{autograd.numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
+\PYG{k+kn}{from} \PYG{n+nn}{autograd} \PYG{k+kn}{import} \PYG{n}{jacobian}
+
+\PYG{k}{def} \PYG{n+nf}{F}\PYG{p}{(}\PYG{n}{X}\PYG{p}{,} \PYG{n}{L}\PYG{p}{):}
+    \PYG{n}{x}\PYG{p}{,} \PYG{n}{y} \PYG{o}{=} \PYG{n}{X}
+    \PYG{n}{f} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mf}{2.0} \PYG{o}{+} \PYG{n}{x} \PYG{o}{+} \PYG{n}{y}\PYG{p}{)} \PYG{o}{+} \PYG{n}{L} \PYG{o}{*} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{x}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{+} \PYG{l+m+mi}{8} \PYG{o}{*} \PYG{n}{x} \PYG{o}{*} \PYG{n}{y} \PYG{o}{+} \PYG{n}{y}\PYG{o}{**}\PYG{l+m+mi}{3}\PYG{p}{)}
+    \PYG{n}{g} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mf}{1.0} \PYG{o}{+} \PYG{l+m+mf}{2.0} \PYG{o}{*} \PYG{n}{x} \PYG{o}{\PYGZhy{}} \PYG{l+m+mf}{3.0} \PYG{o}{*} \PYG{n}{y}\PYG{p}{)} \PYG{o}{+} \PYG{n}{L} \PYG{o}{*} \PYG{p}{(}\PYG{n}{x}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{+} \PYG{n}{x} \PYG{o}{*} \PYG{n}{y} \PYG{o}{\PYGZhy{}} \PYG{n}{y} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{exp}\PYG{p}{(}\PYG{n}{x}\PYG{p}{))}
+    \PYG{k}{return} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{n}{f}\PYG{p}{,} \PYG{n}{g}\PYG{p}{])}
+
+\PYG{n}{J} \PYG{o}{=} \PYG{n}{jacobian}\PYG{p}{(}\PYG{n}{F}\PYG{p}{)}
+\PYG{n}{J}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{1.4}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.6}\PYG{p}{]),} \PYG{l+m+mf}{0.0}\PYG{p}{)}
+
+\PYG{n}{dFdL} \PYG{o}{=} \PYG{n}{jacobian}\PYG{p}{(}\PYG{n}{F}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
+
+\PYG{n}{x0} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linalg}\PYG{o}{.}\PYG{n}{solve}\PYG{p}{([[}\PYG{l+m+mf}{1.}\PYG{p}{,} \PYG{l+m+mf}{1.}\PYG{p}{],} \PYG{p}{[}\PYG{l+m+mf}{2.}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{3.}\PYG{p}{]],[} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{])}
+\PYG{k}{print}\PYG{p}{(}\PYG{n}{x0}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{ode}\PYG{p}{(}\PYG{n}{X}\PYG{p}{,} \PYG{n}{L}\PYG{p}{):}
+    \PYG{n}{x}\PYG{p}{,} \PYG{n}{y} \PYG{o}{=} \PYG{n}{X}
+    \PYG{n}{j} \PYG{o}{=} \PYG{n}{J}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{]),} \PYG{n}{L}\PYG{p}{)}
+    \PYG{n}{dXdL} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linalg}\PYG{o}{.}\PYG{n}{inv}\PYG{p}{(}\PYG{n}{j}\PYG{p}{)} \PYG{err}{@} \PYG{o}{\PYGZhy{}}\PYG{n}{dFdL}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{]),} \PYG{n}{L}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{dXdL}
+
+\PYG{k+kn}{from} \PYG{n+nn}{scipy.integrate} \PYG{k+kn}{import} \PYG{n}{odeint}
+
+\PYG{n}{lambda\PYGZus{}span} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{1000}\PYG{p}{)}
+
+\PYG{n}{X} \PYG{o}{=} \PYG{n}{odeint}\PYG{p}{(}\PYG{n}{ode}\PYG{p}{,} \PYG{n}{x0}\PYG{p}{,} \PYG{n}{lambda\PYGZus{}span}\PYG{p}{)}
+
+\PYG{n}{xsol}\PYG{p}{,} \PYG{n}{ysol} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]}
+\PYG{k}{print}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}The solution is at x=\PYGZob{}0:1.3f\PYGZcb{}, y=\PYGZob{}1:1.3f\PYGZcb{}\PYGZsq{}}\PYG{o}{.}\PYG{n}{format}\PYG{p}{(}\PYG{n}{xsol}\PYG{p}{,} \PYG{n}{ysol}\PYG{p}{))}
+\PYG{k}{print}\PYG{p}{(}\PYG{n}{F}\PYG{p}{([}\PYG{n}{xsol}\PYG{p}{,} \PYG{n}{ysol}\PYG{p}{],} \PYG{l+m+mi}{1}\PYG{p}{))}
+\end{Verbatim}
