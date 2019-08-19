@@ -3,6 +3,7 @@
 #+OX-IPYNB-KEYWORD-METADATA: keywords
 #+KEYWORDS: introduction
 
+# You need this to be first so it exports correctly
 #+BEGIN_SRC ipython
 
 #+END_SRC
@@ -10,13 +11,13 @@
 
 * Overview of the syllabus
 
-[[https://github.com/jkitchin/f18-06623//blob/master/syllabus.org][syllabus]]
+[[https://github.com/jkitchin/f19-06623//blob/master/syllabus.org][syllabus]]
 
-[[https://github.com/jkitchin/f18-06623//blob/master/course-schedule.org][course schedule]]
+[[https://github.com/jkitchin/f19-06623//blob/master/course-schedule.org][course schedule]]
 
-Note: Do not make any travel plans until the final exam schedule is officially released. Exam 3 will probably take place during the final exam.
+Note: Do not make any travel plans until the final exam schedule is officially released. We will have a final exam.
 
-* TODO techela
+* techela installation and usage
 
 Follow these directions: [[https://github.com/jkitchin/f19-06623/blob/master/lectures/techela-manual.org][techela manual]]
 
@@ -49,12 +50,12 @@ print('Hello World!')
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# Out[2]:
+:results:
+# Out [1]:
 # output
-: Hello World!
-:
-:END:
+Hello World!
+
+:end:
 
 What is the value of $a$ that satisfies the equation $a + 4 = 5$?
 
@@ -72,11 +73,11 @@ a  # this makes the value of x get displayed
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# Out[3]:
+:results:
+# Out [2]:
 # text/plain
 : 1
-:END:
+:end:
 
 ** numpy
 
@@ -91,9 +92,9 @@ import numpy as np
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# Out[4]:
-:END:
+:results:
+# Out [3]:
+:end:
 
 To see help on the numpy library, run this cell:
 
@@ -124,20 +125,20 @@ x
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# Out[6]:
+:results:
+# Out [4]:
 # text/plain
-: array([ 0.        ,  0.12822827,  0.25645654,  0.38468481,  0.51291309,
-:         0.64114136,  0.76936963,  0.8975979 ,  1.02582617,  1.15405444,
-:         1.28228272,  1.41051099,  1.53873926,  1.66696753,  1.7951958 ,
-:         1.92342407,  2.05165235,  2.17988062,  2.30810889,  2.43633716,
-:         2.56456543,  2.6927937 ,  2.82102197,  2.94925025,  3.07747852,
-:         3.20570679,  3.33393506,  3.46216333,  3.5903916 ,  3.71861988,
-:         3.84684815,  3.97507642,  4.10330469,  4.23153296,  4.35976123,
-:         4.48798951,  4.61621778,  4.74444605,  4.87267432,  5.00090259,
-:         5.12913086,  5.25735913,  5.38558741,  5.51381568,  5.64204395,
-:         5.77027222,  5.89850049,  6.02672876,  6.15495704,  6.28318531])
-:END:
+: array([0.        , 0.12822827, 0.25645654, 0.38468481, 0.51291309,
+:        0.64114136, 0.76936963, 0.8975979 , 1.02582617, 1.15405444,
+:        1.28228272, 1.41051099, 1.53873926, 1.66696753, 1.7951958 ,
+:        1.92342407, 2.05165235, 2.17988062, 2.30810889, 2.43633716,
+:        2.56456543, 2.6927937 , 2.82102197, 2.94925025, 3.07747852,
+:        3.20570679, 3.33393506, 3.46216333, 3.5903916 , 3.71861988,
+:        3.84684815, 3.97507642, 4.10330469, 4.23153296, 4.35976123,
+:        4.48798951, 4.61621778, 4.74444605, 4.87267432, 5.00090259,
+:        5.12913086, 5.25735913, 5.38558741, 5.51381568, 5.64204395,
+:        5.77027222, 5.89850049, 6.02672876, 6.15495704, 6.28318531])
+:end:
 
 Most mathematical operations are element-wise on arrays.
 
@@ -146,23 +147,20 @@ Most mathematical operations are element-wise on arrays.
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# Out[7]:
+:results:
+# Out [5]:
 # text/plain
-: array([  0.        ,   0.25645654,   0.51291309,   0.76936963,
-:          1.02582617,   1.28228272,   1.53873926,   1.7951958 ,
-:          2.05165235,   2.30810889,   2.56456543,   2.82102197,
-:          3.07747852,   3.33393506,   3.5903916 ,   3.84684815,
-:          4.10330469,   4.35976123,   4.61621778,   4.87267432,
-:          5.12913086,   5.38558741,   5.64204395,   5.89850049,
-:          6.15495704,   6.41141358,   6.66787012,   6.92432667,
-:          7.18078321,   7.43723975,   7.69369629,   7.95015284,
-:          8.20660938,   8.46306592,   8.71952247,   8.97597901,
-:          9.23243555,   9.4888921 ,   9.74534864,  10.00180518,
-:         10.25826173,  10.51471827,  10.77117481,  11.02763136,
-:         11.2840879 ,  11.54054444,  11.79700098,  12.05345753,
-:         12.30991407,  12.56637061])
-:END:
+: array([ 0.        ,  0.25645654,  0.51291309,  0.76936963,  1.02582617,
+:         1.28228272,  1.53873926,  1.7951958 ,  2.05165235,  2.30810889,
+:         2.56456543,  2.82102197,  3.07747852,  3.33393506,  3.5903916 ,
+:         3.84684815,  4.10330469,  4.35976123,  4.61621778,  4.87267432,
+:         5.12913086,  5.38558741,  5.64204395,  5.89850049,  6.15495704,
+:         6.41141358,  6.66787012,  6.92432667,  7.18078321,  7.43723975,
+:         7.69369629,  7.95015284,  8.20660938,  8.46306592,  8.71952247,
+:         8.97597901,  9.23243555,  9.4888921 ,  9.74534864, 10.00180518,
+:        10.25826173, 10.51471827, 10.77117481, 11.02763136, 11.2840879 ,
+:        11.54054444, 11.79700098, 12.05345753, 12.30991407, 12.56637061])
+:end:
 
 We can define new variables
 #+BEGIN_SRC ipython
@@ -171,9 +169,9 @@ y2 = np.cos(x)
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# Out[8]:
-:END:
+:results:
+# Out [6]:
+:end:
 
 ** plotting
 
@@ -189,9 +187,9 @@ import matplotlib.pyplot as plt
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# Out[9]:
-:END:
+:results:
+# Out [7]:
+:end:
 
 You call functions in the plt library to create plots. These are automatically saved in the notebook.
 
@@ -204,15 +202,15 @@ plt.legend(['y1', 'y2'])
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# Out[11]:
+:results:
+# Out [8]:
 
 
 
 
 # image/png
-[[file:obipy-resources/6316de97116077f6ddc28b130cb204f8-49561f3P.png]]
-:END:
+[[file:obipy-resources/a489dd571952d52859b492345f6a2cb12ae9dfc7/60cfc8c7d536f1a8f00ff0da800545f9795e3ec7.png]]
+:end:
 
 ** scipy
 
@@ -266,4 +264,4 @@ Next time we will dig into defining functions more deeply, and how to print form
 
 * Followup actions
 
-By Wednesday, you should all have Anaconda Python 3.7 installed, with techela running when you get to class.
+By Wednesday, you should all have Anaconda Python 3.7 installed, with techela running when you get to class. You should also have turned in the first assignment.
