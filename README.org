@@ -19,7 +19,7 @@ d = {'title': 'Mathematical Modeling of Chemical Engineering Processes',
                     [0.1, 0.25, 0.15, 0.2, 0.3]],
      'rubrics': {'default': [['technical', 'presentation'],
                              [0.9, 0.1]]},
-     'admin-box-path': '~/Box Sync/f19-06623-admin'}
+     'admin-box-path': '~/Box Sync/classes/F19-06623'}
 
 with open('course-data.json', 'w') as f:
     f.write(json.dumps(d, indent=4))
