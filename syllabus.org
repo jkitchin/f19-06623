@@ -178,6 +178,38 @@ All work is expected to be your original work. You may work with class members t
 When in doubt, review this website: http://www.cmu.edu/academic-integrity/, and ask if anything is unclear /before/ you get in trouble. In particular see these definitions:
   - https://www.cmu.edu/student-affairs/ocsi/academic-integrity/definitions.html
 
+Here are some examples of acceptable collaboration (adapted from https://www.cmu.edu/teaching/designteach/syllabus/checklist/integritypolicy.html):
+
+- Clarifying ambiguities or vague points in class handouts, textbooks, or lectures.
+- Discussing or explaining the general class material.
+- Providing assistance with Python, in using Jupyter notebooks, or with editing, debugging, and Python tools.
+- Discussing the code that we give out on the assignment.
+- Discussing the assignments to better understand them.
+- Getting help from anyone concerning programming issues which are clearly more general than the specific assignment (e.g., what does a particular error message mean?).
+
+Here are some examples of unacceptable collaborations/activities.  As a general rule, if you do not understand what you are handing in, you are probably cheating. If you have given somebody the answer, you are probably cheating. In order to help you draw the line, here are some examples of clear cases of cheating:
+
+- Copying (program or assignment) files from another person or source, including retyping their files, changing variable names, copying code without explicit citation from previously published works, etc.
+- Allowing someone else to copy your code or written assignment, either in draft or final form.
+- Getting help from someone whom you do not acknowledge on your solution.
+- Copying from another student during an exam, quiz, or midterm. This includes receiving exam-related information from a student who has already taken the exam.
+- Writing, using, or submitting a program that attempts to alter or erase grading information or otherwise compromise security.
+- Inappropriately obtaining course information from instructors and TAs.
+- Looking at someone else’s files containing draft solutions, even if the file permissions are incorrectly set to allow it.
+- Receiving help from students who have taken the course in previous years.
+- Lying to course staff.
+- Copying on quizzes or exams.
+- Reading the current solution (handed out) if you will be handing in the current assignment late.
+- Signing someone into the attendance sheet
+- Taking quizzes/exams somewhere other than the designated location without prior authorization.
+- Not informing course staff of academic integrity violations is a form of an integrity violation.
+
+Please note that in accord with the university’s policy you must acknowledge any collaboration or assistance that you receive on work that is to be graded: so when you turn in a homework assignments, please include a section that says either:
+
+  1.  “I worked alone on this assignment.”, or
+  2.  “I worked with __________ on this assignment.” and/or
+  3.  “I received assistance from _________ on this assignment.”
+
 ** Religious holidays
 
 We will accommodate religious holidays when possible. If your work will be affected by a religious holiday, you must inform Professor Kitchin as early as possible to work out an accommodation in advance.
