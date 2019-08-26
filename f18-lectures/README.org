@@ -1,6 +1,0 @@
-#+TITLE: README
-#+OX-IPYNB-KEYWORD-METADATA: keywords
-#+KEYWORDS: intro, readme, two words
-
-
-Prepare lectures in org-mode. Export them to Jupyter notebooks. Push them.
