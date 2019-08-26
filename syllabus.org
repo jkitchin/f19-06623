@@ -8,6 +8,9 @@
 
 Instructor: Prof. John Kitchin (jkitchin@andrew.cmu.edu) Doherty Hall A207F
     - Office hours by appointment
+    - Class chat: https://gitter.im/  https://gitter.im/f19-06623/community
+      - You should create a gitter account with your name there, and then you can sign in to participate.
+      - Use this to ask questions, clarifications, etc.
 
 Teaching assistants:
 
