@@ -12,13 +12,28 @@ After you install Python 3.7, run the following command in a terminal:
 pip install techela
 #+END_SRC
 
+If you have already installed techela and need to update it use this instead:
+
+#+BEGIN_SRC sh
+pip install --upgrade techela
+#+END_SRC
+
+Depending on how you installed Anaconda, these commands may only work in the Anaconda prompt.
+
 * Opening the course
 
-At the command line, run the following command:
+On some platforms you should be able to run the following command:
 
 #+BEGIN_SRC sh
 techela f19-06623
 #+END_SRC
+
+If that does not work for you, try this instead:
+
+#+BEGIN_SRC sh
+python -m techela.open f19-06623
+#+END_SRC
+
 
 This will open a browser at http://127.0.0.1:5543. You will see a page like this:
 

@@ -2,7 +2,6 @@
 #+AUTHOR: John Kitchin
 #+DATE: Fall 2019
 #+options: toc:nil
-\maketitle
 
 * Course details
 
@@ -34,10 +33,17 @@ Then, at a command line you need to run this to install the package needed for t
 pip install techela
 #+END_SRC
 
+If you have already installed techela and need to update it use this instead:
+
+#+BEGIN_SRC sh
+pip install --upgrade techela
+#+END_SRC
+
+
 To access these course materials, you will type at the command line:
 
 #+BEGIN_SRC sh
-techela f19-06623
+python -m techela.open f19-06623
 #+END_SRC
 
 This will open a browser with the course site open. The first time you will be prompted for your andrewid and full name. Follow the directions on the screen. You can find a manual for the course at [[./lectures/techela-manual.org]]. We will go over this in class.
