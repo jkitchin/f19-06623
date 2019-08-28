@@ -1,0 +1,174 @@
+#+title: Practice integration problems
+
+These problems will help you practice solving integration problems. They are optional, and they will not be graded. Some of them are from past quizzes and exams. You should eventually be able to solve these kinds of problems in about 20 minutes.
+
+* Integrating a batch reactor design equation
+
+For a constant volume batch reactor where $A \rightarrow B$ at a rate of $-r_A = k C_A^2$, we derive the following design equation for the length of time required to achieve a particular level of conversion :
+
+$t(X) = \frac{1}{k C_{A0}} \int_{X=0}^X \frac{dX}{(1-X)^2}$
+
+if $k = 10^{-3}$ L/mol/s and $C_{A0}$ = 1 mol/L, estimate the time to achieve 90% conversion.
+
+/The answer is 9000 seconds./
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+* Integration of the heat capacity
+
+From thermodynamics, the heat capacity is defined as $C_p = \left(\frac{dH}{dT}\right)_P$. That means we can calculate the heat required to change the temperature of some material from the following integral:
+
+$H_2 - H_1 = Q = \int_{T_1}^{T_2} C_p(T) dT$
+
+In the range of 298-1200K, the heat capacity of CO_{2} is given by a [[https://webbook.nist.gov/cgi/cbook.cgi?ID=C124389&Units=SI&Mask=1#Thermo-Gas][Shomate polynomial]]:
+
+$C_p(t) = A + B t + C t^2 + D t^3 + E/t^2$ with units of J/mol/K.
+
+where $t = T / 1000$, and $T$ is the temperature in K. The constants in the equation are
+
+|   |     value |
+|---+-----------|
+| A |  24.99735 |
+| B |  55.18696 |
+| C | -33.69137 |
+| D |  7.948387 |
+| E | -0.136638 |
+| F | -403.6075 |
+| G |  228.2431 |
+| H | -393.5224 |
+
+** Integrate the heat capacity
+
+Use this information to compute the energy (Q in kJ/mol) required to raise the temperature of CO_{2} from 300K to 600K. You should use ~scipy.integrate.quad~ to perform the integration.
+
+/The change in enthalpy is 12.841 kJ/mol./
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+
+
+* Generalized factorial function                                       :quad:
+
+The \Gamma function is defined by:
+
+$\Gamma(x) = \int_0^\infty e^{-t}t^{x-1} dt$
+
+It is a generalized factorial function. When the arguments to the function are integers, the following relation is true:
+
+$\Gamma(n + 1) = n!$
+
+Show that this is true for the first 10 integers starting from 0. You can use the ~math.factorial~ function.
+
+#+BEGIN_SRC ipython
+from math import factorial
+
+factorial(4)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[87]:
+# text/plain
+: 24
+:END:
+
+
+* Legendre polynomials
+
+The Legendre polynomials are defined by:
+
+$P_n(x) = \sum_{m=0}^M (-1)^m \frac{(2n - 2m)!}{2^n m! (n-m)!(n - 2m)!} x^{n-2m}$
+
+where $M= n/2$ if n is even or $(n-1) / 2$ if $n$ is odd. $m!$ means "the factorial of m", for example, 4! = 1 * 2 * 3 * 4 = 24. You can compute it like this:
+
+#+BEGIN_SRC ipython
+from math import factorial
+factorial(4)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[1]:
+# text/plain
+: 24
+:END:
+
+Here is a helpful function to compute $M$:
+
+#+BEGIN_SRC ipython
+import numpy as np
+def M(n):
+    if np.mod(n, 2) == 0:  # this means n is even.
+        return int(n / 2)
+    else:
+        return int((n - 1) / 2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[22]:
+:END:
+
+
+Write a function that computes ~P(x, n)~, and plot the function for ~n=3~ and ~n=4~ on the range of x=-1 to x=1.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+These polynomials are /orthogonal/ on the domain of x=-1 to 1, which means:
+
+$\int_{-1}^{1} P_3(x) P_4(x) dx = 0$
+
+Show that is true using your function.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+* Statistics
+
+The normal distribution is defined by:
+
+$f(x) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-0.5 (x - \mu)^2/\sigma^2}$
+
+In this equation, \mu is the average, and \sigma is the standard deviation of the distribution. For this problem, let \mu=0, and \sigma=1.
+
+One property of this distribution is that $\int_{-\infty}^{\infty}  f(x) dx = 1$. Show that this is true by evaluating the integral.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+There is a guideline that \pm 2\sigma represents 95% of the distribution, i.e. it defines a 95% confidence interval. Find an approximate solution by trial and error for $x$ to this equation, which represents a symmetric fraction of the distribution that covers 95% of the area. Compare your answer to the guideline.
+
+$0.95 = \int_{-x}^{x} f(x) dx$
+
+/Hint, x is close to 2./
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+The mean of a continuous distribution is defined by $\mu = \int_{-\infty}^{\infty} x f(x) dx$. Show that the average of the normal distribution as defined above is zero by evaluating this integral.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+The variance, $\sigma^2$ is defined by $\sigma^2 = \int_{-\infty}^{\infty} (x - \mu)^2 f(x) dx$. Show that the variance of the normal distribution as defined above is one by evaluating this integral. Note that \mu=0 by the definitions above.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+* Related topics
+
+Review the functions at https://docs.scipy.org/doc/scipy/reference/integrate.html to learn more about what kinds of integration routines exist.

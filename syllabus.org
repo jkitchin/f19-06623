@@ -2,7 +2,9 @@
 #+AUTHOR: John Kitchin
 #+DATE: Fall 2019
 #+options: toc:nil
-
+#+BEGIN_EXPORT latex
+\maketitle
+#+END_EXPORT
 * Course details
 
 Instructor: Prof. John Kitchin (jkitchin@andrew.cmu.edu) Doherty Hall A207F
