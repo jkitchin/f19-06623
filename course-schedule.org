@@ -12,9 +12,9 @@ This page lists the days of class, and the topics we will probably cover on thos
 ** <2019-09-16 Mon 08:30> Nth order odes [[./lectures/05-nth-odes.org]]
 ** <2019-09-18 Wed 08:30> Nonlinear algebra [[./lectures/07-nla-1.org]]
 ** <2019-09-23 Mon 08:30> Review for exam-1
-** <2019-09-25 Wed 08:30> Exam 1
-** <2019-09-30 Mon 08:30> Nonlinear algebra-2 [[./lectures/08-nla-2.org]]
-** <2019-10-02 Wed 08:30> *NO CLASS*
+** <2019-09-25 Wed 08:30> *NO CLASS*
+** <2019-09-30 Mon 08:30> Exam 1
+** <2019-10-02 Wed 08:30> Nonlinear algebra-2 [[./lectures/08-nla-2.org]]
 ** <2019-10-07 Mon 08:30> nonlinear BVP [[./lectures/09-bvp.org]]
 ** <2019-10-09 Wed 08:30> Minimization/maximizing functions [[./lectures/10-min-max.org]]
 ** <2019-10-14 Mon 08:30> Nonlinear regression [[./lectures/11-regression.org]]

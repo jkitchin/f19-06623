@@ -3,6 +3,9 @@
 
 - [2019-08-26 Mon] A curated list of awesome scientific Python resources. https://github.com/rossant/awesome-scientific-python
 
+- Planned date for exam-1 [2019-09-30 Mon]
+
+
 * build                                                            :noexport:
 #+OPTIONS: tex:dvipng
 
