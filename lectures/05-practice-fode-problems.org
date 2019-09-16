@@ -1,0 +1,177 @@
+* Practice problems for systems of ODEs
+
+Here are some problems from past homeworks, quizzes and exams that you can practice on.
+
+* Cooling a container problem                                  :sysode:exam1:
+
+# Adapted from Lynn Walker's assignment
+
+*This is an exam problem. It is open note, and you may consult the internet. By turning in this problem, you agree that the work is your own, and you did not work with anyone to complete it. Anything else is considered cheating. If you see students working together on this problem, it is cheating and you should report it.*
+
+A small container of liquid are initially at 150 °F.  To cool both the container and the liquid to room temperature (70 °F, the container is immersed in a bath at 32°F.  Balancing the rate of change of energy storage between the liquid and the container with the rate of convective heat transfer (liquid – container and container – bath) leads to a coupled system of equations, where L is the temperature of the liquid and C is the temperature of the container.  Using the parameters given, plot the temperature of the liquid and the container as a function of time.
+
+$\frac{dL}{dt} = \frac{A_i h}{\rho_1 c_{p1} V_1}(C - L)$
+
+$\frac{dC}{dt} = \frac{A_o h}{\rho_2 c_{p2} V_2}(32-C) + \frac{A_i h}{\rho_2 c_{p2} V_2}(L-C)$
+
+|                          | Liquid (1) | Container (2) |
+|--------------------------+------------+---------------|
+| Mass density [lbm/ft3]   |         62 |           139 |
+| Specific heat [Btu/lbmF] |       1.00 |           0.2 |
+| Volume [ft3]             |       0.03 |         0.003 |
+
+$A_i=0.4$ ft^{2} and $A_o=0.5$ ft^{2}
+Assume $h = 8.8$ Btu/hr ft^{3} °F
+
+** At what time should the container be removed for the liquid inside it to be at room temperature (70 °F)? What is the temperature of the container at that time?
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+** Explain qualitatively why the two temperatures profiles look different.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+** What will happen to the temperatures after the container is removed from the bath?
+
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+** solution
+
+The solution looks like this.
+
+image:obipy-resources/f12b44479a5a39e4566a29347c1f1a0a1ed44be4/0a6d7c9bdda8e84d75baa4545a8614d37cd48c9f.png
+
+
+
+* stirred tank heater                                                :sysode:
+
+# http://chemicalpdc.blogspot.com/2016/03/example-of-modeling-stirred-tank-heater.html
+
+This tank has a heater in it and it is well-stirred. There is an inlet that allows flow into the tank, and flow out is gravity-driven.
+
+#+attr_org: :width 300
+image:stirred-tank-heater.png
+
+
+A mass balance on the tank yields:
+
+$A \frac{dh}{dt} = F_i - c \sqrt{h}$
+
+The energy balance yields:
+
+$A h \frac{dT}{dt} = F_i (T_i - T) + \frac{Q}{\rho c_p}$
+
+The following constants are provided (you can assume the units are consistent).
+
+| constant | value |                |
+|----------+-------+----------------|
+| h        |       | liquid height  |
+| A        |    10 | tank area      |
+| c        |     1 | valve constant |
+| cp       |     1 | heat capacity  |
+| \rho     |     1 | density        |
+| F_{i}    |     1 | flow in        |
+| Q        |     1 | heat in        |
+
+After a long time of operation, the tank has reached a steady state height of 1, and a temperature of 30 with $Ti=29$. However, at $t=0$ there is a disturbance, and suddenly $Ti=30$. Use the information above to plot the height and temperature of the tank as a function of time in separate plots, and estimate how long it will take to reach a new steady state value. Explain why the height and temperature change the way they do.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+** solution
+
+Here is a partial solution.
+
+
+image:obipy-resources/f12b44479a5a39e4566a29347c1f1a0a1ed44be4/2c9095ca3b31cf3fbb6a964ab035e00ffcd9486e.png
+
+** solution                                               :solution:noexport:
+
+Here we just setup the ODEs provided and integrate them.
+
+#+BEGIN_SRC ipython
+from scipy.integrate import solve_ivp
+import numpy as np
+
+A = 10
+c = 1
+cp = 1
+rho = 1
+Fi = 1
+Ti = 30
+Q = 1
+
+def Yprime(t, Y):
+    h, T = Y
+    dhdt = 1 / A * (Fi - c * np.sqrt(h))
+    dTdt = 1 / (A * h) * (Fi * (Ti - T) + Q / (rho * cp))
+    return [dhdt, dTdt]
+
+Y0 = (1, 30)
+tspan = (0, 100)
+teval, h = np.linspace(*tspan, retstep=True)
+
+sol = solve_ivp(Yprime, tspan, Y0, t_eval=teval, max_step=h)
+
+%matplotlib inline
+import matplotlib.pyplot as plt
+plt.plot(sol.t, sol.y[1].T)
+plt.xlabel('t')
+plt.ylabel('T')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [6]:
+# text/plain
+: Text(0, 0.5, 'T')
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/f12b44479a5a39e4566a29347c1f1a0a1ed44be4/2c9095ca3b31cf3fbb6a964ab035e00ffcd9486e.png]]
+:end:
+
+From the graph you can see the temperature will rise to about 31 degrees and reach a steady value after 60-70 time units.
+
+
+* Practice with an event for root finding
+
+The function $y = x^3 + 6 x^2 - 4 x - 24 = 0$ has three roots. Plot this function to get an idea of where they are:
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+One way to find these roots is by using an event function in an ode integrator that is integrating the derivative of that function. You define your event as when $y=0$.
+
+Write a function that defines $y'(x)$
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+Write a function that defines an event for when $y=0$.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+Use solve_ivp to find the three roots.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+The solution should be x = (-6, -2, 2). Verify that that these are the roots.
