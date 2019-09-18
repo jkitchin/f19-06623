@@ -1,0 +1,161 @@
+#+TITLE: Review to date
+#+AUTHOR: John Kitchin
+#+OX-IPYNB-KEYWORD-METADATA: keywords
+#+KEYWORDS: review
+
+
+
+* About that ode solution
+
+If you /only/ specify tspan, then you do not get much control over where the solution points are.
+
+#+BEGIN_SRC ipython
+%matplotlib inline
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.integrate import solve_ivp
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [74]:
+:end:
+
+The solution to this ode is $f(x)=x^3 + 6 x^2 −4 x − 24$. There should be three zeros. Now, let's solve the ode and see what we get.
+
+#+BEGIN_SRC ipython
+def fprime(x, y):
+    return 3 * x**2 + 12 * x - 4
+
+sol = solve_ivp(fprime, (-8, 4), [-120])
+
+plt.plot(sol.t, sol.y.T)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [75]:
+# text/plain
+: [<matplotlib.lines.Line2D at 0x11e97c8d0>]
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/03068badd59849f6403a55d85779263c0ed18f98/c0bac4783e64101cd07454a53c6fc156c28d1722.png]]
+:end:
+
+But, we /only see one/ in this graph. This graph should look "wrong" or incomplete to you. The discontinuities should indicate something is not complete. This problem should be smooth.
+
+With t_eval, we can see there are three zeros. These are solution values that are stored, but the events are not evaluated at these points.
+
+#+BEGIN_SRC ipython
+sol = solve_ivp(fprime, (-8, 4), np.array([-120]), t_eval=np.linspace(-8, 4, 10))
+plt.plot(sol.t, sol.y.T)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [76]:
+# text/plain
+: [<matplotlib.lines.Line2D at 0x11e6c7c50>]
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/03068badd59849f6403a55d85779263c0ed18f98/573024d7554aa2ba6d0c395d78933c675b8f1d3d.png]]
+:end:
+
+/However/ even with t_eval, we even an event does not find three roots. That is because the event /only sees sign changes from the internal solver/. t_eval does not influence the events. The problem here is that the solver is able to take a step large enough to skip two of the zeros without losing accuracy.
+
+#+BEGIN_SRC ipython
+def event(x, y):
+    return y
+
+
+sol = solve_ivp(fprime, (-8, 4), np.array([-120]),
+                t_eval=np.linspace(-8, 4, 10), events=[event])
+sol.t_events
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [77]:
+# text/plain
+: [array([-6.])]
+:end:
+
+
+
+
+You can fix this by setting the maximum step size. This prevents the solver from taking too large a step. Now, we will find all three solutions.
+
+#+BEGIN_SRC ipython
+sol = solve_ivp(fprime, (-8, 4), np.array([-120]), events=[event], max_step=1.0)
+plt.plot(sol.t, sol.y.T)
+sol.t_events
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [78]:
+# text/plain
+: [array([-6., -2.,  2.])]
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/03068badd59849f6403a55d85779263c0ed18f98/4a60df10effabbdfd70c964a9c7da0e9a678239c.png]]
+:end:
+
+How can we verify our solution? A quick, graphical way is to put lines there. These look like they intersect at 0, and qualitatively suggest they are right.
+
+#+BEGIN_SRC ipython
+plt.plot(sol.t, sol.y.T)
+plt.axhline(0, c='k')
+for x in sol.t_events[0]:
+    plt.axvline(x, c='k')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [79]:
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/03068badd59849f6403a55d85779263c0ed18f98/77ac45cc2361dcefb2cebfba3be3c1b8c042ee5f.png]]
+:end:
+
+Alternatively, you can plot the dots from the event times, and the value of the solution at that point. But, remember you need to specify =dense_output=True= to make it easy to get the solutions at those points. Later we will see how we can easily interpolate the answers ourselves.
+
+#+BEGIN_SRC ipython
+sol = solve_ivp(fprime, (-8, 4), np.array([-120]), events=[event], max_step=1.0, dense_output=True)
+plt.plot(sol.t, sol.y.T)
+plt.plot(sol.t_events[0], sol.sol(sol.t_events[0]).T, 'ro')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [80]:
+# text/plain
+: [<matplotlib.lines.Line2D at 0x11dcaee10>]
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/03068badd59849f6403a55d85779263c0ed18f98/f17e16c4d2780c8386679f82041916af61db762e.png]]
+:end:
+
+
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+Takeaway messages:
+1. It is important to know or at least have a sense of what you expect in the answer.
+2. You also have to be able to test your solution in various ways to make sure the results you get are expected.
