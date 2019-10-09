@@ -1,0 +1,128 @@
+* System of nonlinear equations
+
+There are two balls on trajectories in the /xy/ plane. One ball's trajectory follows the equation:
+
+$y = x^2 - 2x + 1$
+
+The other ball follows a trajectory of:
+
+$9 (x-2)^2 + 4 (y-2)^2 - 36 = 0$
+
+Determine if it is possible for the balls to ever collide (i.e. that they have the same (x, y) coordinates at the same time). You should demonstrate graphically how many possible collisions there are, and find all of them, and plot them on your graph.
+
+It is not obvious how to plot an ellipse, so, note that the general equation for an ellipse is:
+
+$\frac{(x-h)^2}{a^2} + \frac{(y-k)^2}{b^2} = 1$
+
+Then, you can plot the parametric equations:
+
+$x = h + a cos(t)$ and $y = k + b sin(t)$
+
+so, for a circle of radius 1, centered at the point (0.5, 2) we have:
+
+#+BEGIN_SRC ipython
+import numpy as np
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+t = np.linspace(0, 2 * np.pi)
+
+h, a = 0.5, 1
+k, b = 2.0, 1
+x = h + a * np.cos(t)
+y = k + b * np.sin(t)
+plt.plot(x, y)
+plt.axis('equal')
+#+END_SRC
+
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+* Maximum moles of CO2
+
+# Adapted from Cutlip 2.9
+It is proposed to store CO2 at 300K in a tank with a volume of 2.5 m^{3}. The maximum pressure the tank can withstand is 100 atm. Determine the maximum number of moles that can be stored in the tank.
+
+The equation of state for CO2 is described by the Soave-Redlich-Kwong equation:
+
+$P = \frac{R T}{V - b} - \frac{\alpha a}{V (V + b)}$
+
+The constants are:
+
+$a = 0.42747 \left(\frac{R^2T_C^2}{P_C}\right)$
+
+$b = 0.08664 \left(\frac{R T_C}{P_C}\right)$
+
+$\alpha = (1 + m (1 - \sqrt{T / T_C})^2$
+
+$m = 0.48508 + 1.55171 \omega - 0.1561 \omega^2$.
+
+For CO2, $T_C=304.2$ K, $P_C = 72.9$ atm, and $\omega=0.225$.
+
+Compare your answer to what you would estimate from the ideal gas law. Discuss what the difference means. You must say more than CO2 is not ideal. For example, what are the consequences of using the ideal gas law, vs. the equation of state?
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+: The max_moles is 38993.4 moles.
+: That is 1715.7094489814024 kg of CO2
+
+* Problem 4.2                                                           :nla:
+
+# Adapted from problem 4.2 in Cutlip
+
+This figure shows a schematic of a pipeline that delivers constant temperature water from point 1 to point 2.
+
+
+image:problem-4-2.png
+
+The general mechanical energy balance on this system results in:
+
+$-\frac{1}{2} \nu^2 + g \Delta z + \frac{g_C \Delta P}{\rho} + 2\frac{f_F L \nu^2}{D} = 0$
+
+| variable | value                                        |
+|----------+----------------------------------------------|
+| \nu      | flow velocity (ft/s)                         |
+| g        | acceleration of gravity, 32.174 ft/s^{2}     |
+| \Delta z | z2 - z1                                      |
+| g_{c}    | conversion factor, 32.174 ft lb_m / lb_f s^2 |
+| \Delta P | p2 - p1 lb_{f} / ft^{2}                      |
+| f_{F}    | Fanning friction factor (see eq)             |
+| L        | length of pipe (ft)                          |
+| D        | inner diameter of pipe (ft), 7.981 inches    |
+
+
+Our goal is to compute the flow rate of 60 °F water through a 1000 ft long pipe. The water is pumped uphill 300 ft (i.e. z2 - z1 = 300 ft). The pressure at p1 is 150 psig, and the pressure at 2 is atmospheric pressure, so $\Delta P = -150$ psig.
+
+The density (\rho) of water is temperature dependent. With T in °F, the density (in lb_{m}/ft^{3}) is given by:
+
+$\rho(T) = 62.122 + 0.0122 T - (1.54e-4) T^2 + (2.65e-7) T^3 - (2.24e-10) T^4$
+
+The Fanning friction factor depends on the Reynold's number: $Re = \frac{\nu \rho D}{\mu}$. In this equation, $\mu$ is the viscosity (in lb_{m}/ft/s), and it is also dependent of temperature:
+
+$\ln \mu = -11.0318 + \frac{1057.51}{T + 214.624}$
+
+When $Re < 2100$ the Fanning friction factor is defined as $f_F = 16 / Re$, but when $Re > 2100$ it has this more complex expression:
+
+$f_F = \frac{1}{16 (\log (\frac{\epsilon / D}{3.7} - \frac{5.02}{Re} \log (\frac{\epsilon / D}{3.7} + \frac{14.5}{Re})))^2}$
+
+In this expression, $\epsilon = 0.00015$ ft, and represents the surface roughness of the pipe.
+
+Given this information,
+
+1. Estimate the velocity of water in the pipe (hint: it is 11.61 ft/s)
+2. Compute the mass flow of water (in lb_{m}/min) in the pipe.
+
+Some notes:
+1. In numpy, the ln(x) is computed with np.log(x).
+2. In numpy, the log(x) is computed with np.log10(x).
+3. 1 psig = 144 lb_{f}/ ft^{2}
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+: The velocity is 11.61 ft / s, and the mass flow is 15094 lb_m / min.
