@@ -1,0 +1,583 @@
+#+TITLE: Nonlinear regression
+#+AUTHOR: John Kitchin
+#+OX-IPYNB-KEYWORD-METADATA: keywords
+#+KEYWORDS: scipy.optimize.minimize, scipy.optimize.curve_fit, pycse.nlinfit
+
+* Regression of data is a form of function minimization
+
+When we say regression, we really mean find some parameters of a model that best reproduces some known data. By "best reproduces" we mean the sum of all the errors between the values predicted by the model, and the real data is minimized.
+
+Suppose we have the following data that shows how the energy of a material depends on the volume of the material.
+
+#+BEGIN_SRC ipython
+import numpy as np
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+volumes = np.array([13.71, 14.82, 16.0, 17.23, 18.52])
+energies = np.array([-56.29, -56.41, -56.46, -56.463,-56.41])
+
+plt.plot(volumes, energies, 'bo')
+plt.xlabel('V')
+plt.ylabel('E')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [1]:
+# text/plain
+: Text(0, 0.5, 'E')
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/45a20f6230b3683e32fc42ceba2b73987152a0dc/e560e4528cd6446373f61c05cea7c207cbfb1963.png]]
+:end:
+
+In Materials Science we often want to fit an equation of state to this data. We will use this equation:
+
+$E = E_0 + \frac{B_0 V}{B_0'}\left(\frac{(V_0 / V)^{B_0'}}{B_0' - 1} + 1 \right) - \frac{V_0 B_0}{B_0' - 1}$
+
+from https://journals.aps.org/prb/pdf/10.1103/PhysRevB.28.5480. In this model there are four parameters:
+
+| name | desc                                 |
+|------+--------------------------------------|
+| E_0  | energy at the minimim                |
+| B_0  | bulk modulus                         |
+| B_0' | first derivative of the bulk modulus |
+| V_0  | volume at the energy minimum         |
+
+We would like to find the value of these parameters that best fits the data above. That means, find the set of parameters that minimize the sum of the squared errors between the model and data.
+
+First we need a function that will use the parameters and return the energy for a given volume.
+
+#+BEGIN_SRC ipython
+def Murnaghan(parameters, vol):
+    'From PRB 28,5480 (1983)'
+    E0, B0, BP, V0 = parameters
+    E = E0 + B0 * vol / BP * \  # the backslash here means the line is contined on the next line.
+        (((V0 / vol)**BP) / (BP - 1) + 1) - V0 * B0 / (BP - 1.)
+
+    return E
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [2]:
+:end:
+
+Next, we need a function that computes the summed squared errors for a set of parameters. The use of squared errors is preferable in many cases to the absolute values because it has a continuous derivative. We will learn more about this later.
+
+#+BEGIN_SRC ipython
+def objective(pars):
+    err = energies - Murnaghan(pars, volumes)
+    return np.sum(err**2)  # we return the summed squared error directly
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [3]:
+:end:
+
+Finally,  we need an initial guess to start the minimization. As with all minimization problems, this can be the most difficult step. It is always a good idea to use properties of the model and data where possible to make these guesses. We have no way to plot anything in four dimensions, so we use analysis instead.
+
+We can derive some of these from the data we have. First, we can get the minimum in energy and the corresponding volume that we know from the data. These are not the final answer, but they are a good guess for it.
+
+The B_{0} parameter is related to the curvature at the minimum, which is the second derivative. We get that from repeated calls to ~numpy.gradient~. Finally, $B_0'$ is related to the derivative of $B$ at the minimum, so we estimate that too.
+
+#+BEGIN_SRC ipython
+imin = np.argmin(energies)
+dedv = np.gradient(energies, volumes)
+B = np.gradient(dedv, volumes)
+Bp = np.gradient(B, volumes)
+
+
+x0 = [energies[imin],
+      B[imin],
+      Bp[imin],
+      volumes[imin]]
+
+x0
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [5]:
+# text/plain
+: [-56.463, 0.02575384116153356, -0.00900405886406903, 17.23]
+:end:
+
+Finally, we are ready to fit our function. As usual, we also plot the data and the fit for visual inspection.
+
+#+BEGIN_SRC ipython
+from scipy.optimize import minimize
+sol = minimize(objective, x0)
+print(sol)
+
+plt.plot(volumes, energies, 'bo', label='Data')
+vfit = np.linspace(min(volumes), max(volumes))
+plt.plot(vfit, Murnaghan(sol.x, vfit), label='fit')
+plt.legend()
+plt.xlabel('V')
+plt.ylabel('E')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [6]:
+# output
+      fun: 1.4913162028556272e-05
+ hess_inv: array([[ 3.06397904e-01, -3.05462395e+00,  7.84533113e+01,
+        -2.21932940e+00],
+       [-3.05462395e+00,  5.27776812e+01, -1.61418616e+03,
+         4.58167964e+01],
+       [ 7.84533113e+01, -1.61418616e+03,  6.80798582e+04,
+        -2.61419196e+03],
+       [-2.21932940e+00,  4.58167964e+01, -2.61419196e+03,
+         1.39138288e+02]])
+      jac: array([ 8.18066258e-06,  2.93788617e-07, -9.13262284e-08, -2.84951955e-06])
+  message: 'Optimization terminated successfully.'
+     nfev: 210
+      nit: 30
+     njev: 35
+   status: 0
+  success: True
+        x: array([-56.46839542,   0.57234088,   2.74280965,  16.55883761])
+
+# text/plain
+: Text(0, 0.5, 'E')
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/45a20f6230b3683e32fc42ceba2b73987152a0dc/53d6470f6fc7ebcc68d6bef4e40d9cefa10bd0d1.png]]
+:end:
+
+That looks pretty good. We should ask ourselves, how do we know we got a minimum? We should see that the objective function is really at a minimum /for each of the parameters/. Here, we show that it is a minimum for the first parameter.
+
+#+BEGIN_SRC ipython
+E0_range = np.linspace(0.9 * sol.x[0], 1.1 * sol.x[0])
+
+errs = [objective([e0, *sol.x[1:]]) for e0 in E0_range]
+
+plt.plot(E0_range, errs)
+plt.axvline(sol.x[0], c='k', ls='--')
+plt.xlabel('E0')
+plt.ylabel('summed squared error')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [7]:
+# text/plain
+: Text(0, 0.5, 'summed squared error')
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/45a20f6230b3683e32fc42ceba2b73987152a0dc/e360fc41405c54e00cd40912ddb2aa59e684fdae.png]]
+:end:
+
+You can see visually that the error goes up on each side of the parameter estimate.
+
+*exercise* Repeat this analysis for the other three parameters.
+
+Later when we learn about linear algebra, we will learn that if you can show the eigenvalues of the Hessian of the objective function is positive definite, that also means you are at a minimum. It means the error goes up in any direction away from the minimum.
+
+Usually we do some regression to find one of these:
+1. Parameters for the model - because the parameters mean something
+2. Properties of the model - because the properties mean something
+
+In this particular case, we can do both. Some of the parameters are directly meaningful, like the E0, and V0 are the energy at the minimum, and the corresponding volume. B0 is also meaningful, it is called the bulk modulus, and it is a material property.
+
+Now that we have a model though we can also define properties of it, e.g. /in this case/ we have from thermodynamics that $P = -dE/dV$. We can use our model to define this derivative. I use ~scipy.misc.derivative~ for this for convenience. The only issue with it is the energy function has arguments that are not in the right order for the derivative, so I make a proxy function here that just reverses the order of the arguments.
+
+#+BEGIN_SRC ipython
+from scipy.misc import derivative
+
+pars = sol.x
+def P(V):
+    def proxy(V, pars):
+        return Murnaghan(pars, V)
+    dEdV = derivative(proxy, V, args=(pars,), dx=1e-6)
+    return -dEdV
+
+# Some examples
+P(16), P(pars[-1]), P(18)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [11]:
+# text/plain
+: (0.020604023376336045, -0.0, -0.04269084996622041)
+:end:
+
+The result above shows that it takes positive pressure to compress the material, the pressure is zero at the minimum, and it takes negative pressure to cause it to expand.
+
+This example is just meant to illustrate what one can do with a model once you have it.
+
+* Parameter confidence intervals
+
+We have left out an important topic in the discussion above: How certain are we of the parameters we estimated? This is a complicated question that requires moderately sophisticated statistics to answer. We will build up to the solution in steps.
+
+First, we recall that in a statistical sense we are /estimating/ the values of the parameters. Specifically, we estimate the /mean/ of the parameters, from a fixed number of data points.
+
+Let's say we have made 10 measurements that have an average of 16.1, and a standard deviation of 0.01. What is the range of values that we are 95% confident the next measurement will fall in?
+
+We have to take into account the fact that we only have 10 measurements to make the estimation from, so the estimate is more uncertain than if we have 100 or 1000 measurements. The student t-tables tell us precisely how much more uncertain depending on the confidence level you want.
+
+The point here is not for you to memorize or derive these formulas, only to illustrate that the uncertainty is not simply the standard deviation. It also includes the effect of the sample size.
+
+#+BEGIN_SRC ipython
+from scipy.stats.distributions import t
+
+n = 10  # number of measurements
+dof = n - 1  # degrees of freedom
+avg_x = 16.1  # average measurement
+std_x = 0.01  # standard deviation of measurements
+
+# Find 95% prediction interval for next measurement
+alpha = 1.0 - 0.95
+
+pred_interval = t.ppf(1 - alpha / 2.0, dof) * std_x / np.sqrt(n)
+
+plus_side = avg_x + pred_interval
+minus_side = avg_x - pred_interval
+
+print(f'We are 95% confident the next measurement will be between {minus_side:1.3f} and {plus_side:1.3f}')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [12]:
+# output
+We are 95% confident the next measurement will be between 16.093 and 16.107
+
+:end:
+
+To consider the uncertainty in model parameters, we need some way to estimate the standard deviation of the parameters. ~scipy.optimize.minimize~ does not provide much help with that. We will instead turn to ~scipy.optimize.curve_fit~. This function will return information that is helpful in estimating the uncertainty. It is like ~scipy.optimize.minimize~ in the sense that it minimizes the summed squared errors between a model described in a function, and data defined in variables. Note in particular the docstring for the output variable pcov, which tells you how to compute the standard deviation errors on the parameters.
+
+#+BEGIN_SRC ipython
+import numpy as np
+from scipy.optimize import curve_fit
+
+curve_fit?
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [19]:
+:end:
+
+** An example with curve_fit
+
+Given the data below, fit the following curve:
+
+$y(x) = \frac{a x}{b + x}$ to it.
+
+That means, estimate the values of $a, b$ that best fit the data.
+
+#+BEGIN_SRC ipython
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+x = np.array([0.5, 0.387, 0.24, 0.136, 0.04, 0.011])
+y = np.array([1.255, 1.25, 1.189, 1.124, 0.783, 0.402])
+
+plt.plot(x, y, 'bo')
+plt.xlabel('x')
+plt.ylabel('y')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [15]:
+# text/plain
+: Text(0, 0.5, 'y')
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/45a20f6230b3683e32fc42ceba2b73987152a0dc/ed202567352149a2880a7332215bba97e0bcf05c.png]]
+:end:
+
+What should we use for an initial guess? At $x=0$, $y = 0$, which isn't that helpful. At large $x$, we have $y=a$. From the data, we can guess that $a \approx 1.2$. For small x, we have $y = a/b x$. So, if we estimate the slope, we can estimate b. We arrive at these guesses by thoughtful inspection of the data, and the model that we use to fit it.
+
+#+BEGIN_SRC ipython
+a0 = 1.2
+m = np.gradient(y, x, edge_order=2) # m = a / b  ->  b = a / m
+
+b0 = a0 / m[-1]
+a0, b0
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [16]:
+# text/plain
+: (1.2, 0.0781156032363354)
+:end:
+
+Now for the fitting.
+
+#+BEGIN_SRC ipython
+# this is the function we want to fit to our data
+def func(x, a, b):
+    return a * x / (b + x)
+
+initial_guess = [a0, b0]
+pars, pcov = curve_fit(func, x, y, p0=initial_guess)
+
+pars, pcov
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [17]:
+# text/plain
+: (array([1.32753143, 0.02646156]), array([[9.45332917e-05, 7.10675655e-06],
+:         [7.10675655e-06, 1.05658850e-06]]))
+:end:
+
+/Always/ check the fit visually.
+
+#+BEGIN_SRC ipython
+plt.plot(x, y, 'bo')
+xfit = np.linspace(0, 0.5)
+plt.plot(xfit, func(xfit, *pars))
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend(['data', 'fit'])
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [18]:
+
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/45a20f6230b3683e32fc42ceba2b73987152a0dc/ed1a2db7772a576ed9076372f212bca80de753e6.png]]
+:end:
+
+*exercise* Try different initial guesses and find one that does not look this good.
+
+** Uncertainty estimation
+
+Recall from the documentation of curve_fit that the standard deviation of each parameter is defined by:
+
+#+BEGIN_SRC ipython
+np.sqrt(np.diag(pcov))
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [20]:
+# text/plain
+: array([0.00972282, 0.0010279 ])
+:end:
+
+We can use these to estimate confidence intervals on the two parameters. Note that here we still use the student-t multipliers to account for the uncertainty caused by having a small data set.
+
+#+BEGIN_SRC ipython
+from scipy.stats.distributions import t
+
+alpha = 0.05  # 95% confidence interval = 100*(1-alpha)
+
+n = len(y)    # number of data points
+p = len(pars)  # number of parameters
+
+dof = max(0, n - p)  # number of degrees of freedom
+
+# student-t value for the dof and confidence level
+tval = t.ppf(1.0 - alpha / 2., dof)
+
+for i, p, var in zip(range(n), pars, np.diag(pcov)):
+    sigma = var**0.5
+    print(f'p{i}: {p:1.2f} [{p - sigma * tval:1.3f}  {p + sigma * tval:1.3f}]')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [22]:
+# output
+p0: 1.33 [1.301  1.355]
+p1: 0.03 [0.024  0.029]
+
+:end:
+
+The interpretation of this is that we do not know exactly what the parameters are, but we can be 95% confident that they fall in these ranges. These ranges do not include zero, so that is an indication that the parameters are significant.
+
+It is /not expected/ that you learn all the details above. They have been coded into the "Python computations in science and engineering" [[https://kitchingroup.cheme.cmu.edu/pycse/][pycse]] package. This is not part of Anaconda; you have to install it yourself. This code block should do that and install some dependencies (you only need to run it once).
+
+#+BEGIN_SRC ipython
+!pip install uncertainties
+!pip install quantities
+!pip install pycse
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [23]:
+# output
+Requirement already satisfied: uncertainties in /Users/jkitchin/anaconda/lib/python3.6/site-packages (3.0.1)
+[33mWARNING: You are using pip version 19.1.1, however version 19.2.3 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.[0m
+Requirement already satisfied: quantities in /Users/jkitchin/anaconda/lib/python3.6/site-packages (0.12.1)
+[33mWARNING: You are using pip version 19.1.1, however version 19.2.3 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.[0m
+Requirement already satisfied: pycse in /Users/jkitchin/vc/projects/gumroad-books/pycse (2.0.2)
+[33mWARNING: You are using pip version 19.1.1, however version 19.2.3 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.[0m
+
+:end:
+
+
+
+After that, you can import the nlinfit command and use it to get confidence intervals directly.
+
+#+BEGIN_SRC ipython
+from pycse import nlinfit
+
+nlinfit?
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [24]:
+:end:
+
+#+BEGIN_SRC ipython
+pars, pars_ci, se = nlinfit(func, x, y, [a0, b0])
+
+for i, par in enumerate(pars):
+    print(f'{par:1.3f}, {np.round(pars_ci[i], 3)}, {se[i]:1.4f}')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [25]:
+# output
+1.328, [1.301 1.355], 0.0097
+0.026, [0.024 0.029], 0.0010
+
+:end:
+
+It is important to realize that:
+1. The size of the confidence interval depends on the number of parameters, data points, and desired confidence level.
+2. The root of this is the minimization of an error function.
+
+** What about uncertainty on the predictions?
+
+Consider the fit again, and extrapolate it to larger $x$:
+
+#+BEGIN_SRC ipython
+plt.plot(x, y, 'bo')
+xfit = np.linspace(0, 5)
+plt.plot(xfit, func(xfit, *pars))
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend(['data', 'fit'])
+func(xfit, *pars)[-1]
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [26]:
+# text/plain
+: 1.3205427044923441
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/45a20f6230b3683e32fc42ceba2b73987152a0dc/90bdcfd1b80507746b510203c56b11c79bcf44fd.png]]
+:end:
+
+
+We estimate the model plateaus at about y=1.32, but what is an appropriate estimate of the error in this? There are uncertainties in the model parameters, so there must be uncertainty in the predictions. To estimate this, we first look at how to generate a distribution of random numbers with a normal distribution around some mean with some standard error.
+
+#+BEGIN_SRC ipython
+p0_mean = pars[0]
+p0_se = se[0]
+
+p0_dist = np.random.normal(p0_mean, p0_se, 5000)
+plt.hist(p0_dist, bins=20)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [27]:
+# text/plain
+: (array([  7.,   8.,  17.,  52., 107., 204., 339., 503., 590., 656., 690.,
+:         588., 496., 342., 195., 112.,  53.,  28.,  10.,   3.]),
+:  array([1.29293138, 1.29636399, 1.2997966 , 1.30322921, 1.30666182,
+:         1.31009443, 1.31352704, 1.31695965, 1.32039226, 1.32382487,
+:         1.32725748, 1.33069009, 1.3341227 , 1.33755531, 1.34098792,
+:         1.34442053, 1.34785314, 1.35128575, 1.35471836, 1.35815097,
+:         1.36158358]),
+:  <a list of 20 Patch objects>)
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/45a20f6230b3683e32fc42ceba2b73987152a0dc/38ac92fe383e1808a3b7e99a9a40c7adaa6013f5.png]]
+:end:
+
+So the idea is we can generate a distribution of the parameters
+
+#+BEGIN_SRC ipython
+p1_dist = np.random.normal(pars[1], se[1], 5000)
+
+y5 = [func(5, p0, p1) for p0, p1 in zip(p0_dist, p1_dist)]
+plt.hist(y5)
+
+np.mean(y5), np.std(y5)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [28]:
+# text/plain
+: (1.3203150348682826, 0.009793222443692148)
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/45a20f6230b3683e32fc42ceba2b73987152a0dc/25203d795b036013ecaf564f6d43b5dca74f7e0b.png]]
+:end:
+
+Well, in 20/20 hindsight, we might have guessed the uncertainty in the asymptote would be just like the uncertainty in the $a$ parameter. In this case, it is appropriate to use three significant figures given the uncertainty on the answer. A useful guideline is that the 95% confidence interval is about \pm 2 \sigma. At \pm 1 \sigma you only have about a 60% confidence interval.
+
+#+BEGIN_SRC ipython
+print(f'At x=5, y={np.mean(y5):1.3f} +- {2 * np.std(y5):1.3f} at about the 95% confidence level.')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [29]:
+# output
+At x=5, y=1.320 +- 0.020 at about the 95% confidence level.
+
+:end:
+
+So we are not that uncertain after all in this case.
+
+This method of error propagation is not perfect as it assumes the errors between the parameters are independent, and that they are normally distributed. However, the method is very simple to do, and simply relies on sampling the parameters from their respective distributions, and letting the results propagate naturally through the model. You do need to check for convergence with the sample size. This method is called a Monte Carlo propagation of errors.
+
+
+* Summary
+
+We covered a lot of ground today. The key points are:
+1. Regression is a minimization of an accumulated error function.
+2. If you need uncertainty on the parameters from a regression, use ~pycse.nlinfit~.
+3. If you need uncertainty on model predictions, you can either simulate it, or derive it. We will learn more about deriving it later.
