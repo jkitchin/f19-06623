@@ -19,9 +19,9 @@ This page lists the days of class, and the topics we will probably cover on thos
 ** <2019-10-09 Wed 08:30> Minimization/maximizing functions [[./lectures/10-min-max.org]]
 ** <2019-10-14 Mon 08:30> Nonlinear regression [[./lectures/11-regression.org]]
 ** <2019-10-16 Wed 08:30> Nonlinear regression - part 2 [[./lectures/12-nonlinear-regression-2.org]]
-** <2019-10-21 Mon 08:30> Review [[./lectures/13-review.org]]
-** <2019-10-23 Wed 08:30> Exam 2
-** <2019-10-28 Mon 08:30> [[./lectures/14-constrained-minimization.org]]
+** <2019-10-21 Mon 08:30> [[./lectures/14-constrained-minimization.org]]
+** <2019-10-23 Wed 08:30> Review [[./lectures/13-review.org]]
+** <2019-10-28 Mon 08:30> Exam 2
 ** <2019-10-30 Wed 08:30> Linear algebra - introduction [[./lectures/15-intro-linear-algebra.org]]
 ** <2019-11-04 Mon 08:30> Linear algebra applications [[./lectures/16-linear-algebra.org]]
 ** <2019-11-06 Wed 08:30> [[ ./lectures/17-linear-algebra-2.org]]
