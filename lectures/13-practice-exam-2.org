@@ -1,0 +1,556 @@
+#+EXCLUDE_TAGS: solution
+
+* exam2-1
+
+*This is an exam problem. It is open note, and you may consult the internet. By turning in this problem, you agree that the work is your own, and you did not work with anyone to complete it. Anything else is considered cheating. If you see students working together on this problem, it is cheating and you should report it.*
+
+In spectroscopy, peaks are often modeled by a Lorentzian function:
+
+$L(x) = \frac{A}{\pi}\frac{0.5 \Gamma}{(x - x_0)^2 + (0.5\Gamma)^2}$
+
+Where $A$ is related to the intensity, \Gamma is a parameter specifying the width, and $x_0$ is the position of the peak.
+
+In the following spectrum, there appear to be two peaks.
+
+#+BEGIN_SRC ipython
+import numpy as np
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+w = np.array([ 0.   ,  0.102,  0.204,  0.306,  0.408,  0.51 ,  0.612,  0.714,
+               0.816,  0.918,  1.02 ,  1.122,  1.224,  1.327,  1.429,  1.531,
+               1.633,  1.735,  1.837,  1.939,  2.041,  2.143,  2.245,  2.347,
+               2.449,  2.551,  2.653,  2.755,  2.857,  2.959,  3.061,  3.163,
+               3.265,  3.367,  3.469,  3.571,  3.673,  3.776,  3.878,  3.98 ,
+               4.082,  4.184,  4.286,  4.388,  4.49 ,  4.592,  4.694,  4.796,
+               4.898,  5.   ])
+
+intensity = np.array([ 0.629,  0.559,  0.703,  0.686,  0.917,  1.018,  1.158,  1.346,
+                       1.608,  1.845,  2.1  ,  2.644,  3.02 ,  3.57 ,  3.946,  4.314,
+                       4.486,  4.569,  4.793,  5.03 ,  5.659,  6.436,  7.397,  8.378,
+                       8.746,  8.662,  7.973,  7.018,  5.799,  4.77 ,  3.84 ,  3.184,
+                       2.749,  2.221,  1.929,  1.652,  1.412,  1.156,  1.068,  0.996,
+                       0.809,  0.808,  0.735,  0.65 ,  0.556,  0.605,  0.528,  0.433,
+                       0.502,  0.297])
+plt.plot(w, intensity)
+plt.xlabel('w')
+plt.ylabel('intensity')
+#+END_SRC
+
+
+Use this information to find the parameters for the two peaks. You can assume that the intensity can be modeled as $i = L(w; p1) + L(w; p2)$ where $p1, p2$ are the parameters for each Lorentzian peak.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+The two peaks are caused by there being two species present. The relative amounts of each species can be computed two different ways. The first way is the ratio of the $A$ parameters, which is essentially related to the heights of the peaks. Compute the ratio of the $A$ parameters to estimate the relative amounts of each species.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+The second way is to compute the ratio of the areas under each fitted peak. Compute this ratio, and compare it to the height ratio. Explain why the are similar in this case.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+: peak-1 array([ 3.93524231,  0.98456647,  1.49690393])
+: peak-2 array([ 13.10333468,   1.00136008,   2.49889485])
+: The peak ratio is about 0.3
+
+** solution                                                        :solution:
+
+We create a model function for the Lorentzian function that takes three parameters. Then, we create an objective function with 6 parameters (3 for each peak) that returns the summed squared error between the model and data.
+
+#+BEGIN_SRC ipython
+def model(pars, x):
+    A, gamma, x0 = pars
+    return A / np.pi * 0.5 * gamma / ((x - x0)**2 + (0.5 * gamma)**2)
+
+def objective(pars):
+    p1 = pars[0:3]
+    p2 = pars[3:]
+    I = model(p1, w) + model(p2, w)
+    errs = I - intensity
+    return np.sum(errs**2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[34]:
+:END:
+
+Then, we use minimize to find the parameters. You can make initial guesses from inspection of the data, e.g. the location, heights and widths of the peaks.
+
+#+BEGIN_SRC ipython
+from scipy.optimize import minimize
+
+sol = minimize(objective, [4, 2, 1.5, 10, 2.5, 2.5])
+p1 = sol.x[0:3]
+p2 = sol.x[3:]
+
+fI = model(p1, w) + model(p2, w)
+plt.plot(w, intensity, 'b.', w, fI)
+plt.plot(w, model(p1, w), 'r-')
+plt.plot(w, model(p2, w), 'g-')
+plt.xlabel('w')
+plt.ylabel('intensity')
+plt.legend(['data', 'fit', 'peak1', 'peak2'])
+p1, p2
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[39]:
+# text/plain
+: (array([ 3.93524231,  0.98456647,  1.49690393]),
+:  array([ 13.10333468,   1.00136008,   2.49889485]))
+
+
+
+# image/png
+[[file:obipy-resources/73232f0e737f26c048822a8e09245932-65837blx.png]]
+:END:
+
+Note that you should always plot the fit, to make sure it looks good. It is also a good idea to plot the two peaks to make sure they also make sense (e.g. they are located in the right place).
+
+#+BEGIN_SRC ipython
+height_ratio = p1[0] / p2[0]
+print(f'The height ratio (A1 / A2) is {height_ratio:1.2f}.')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[42]:
+# output
+: The height ratio (A1 / A2) is 0.30.
+:
+:END:
+
+To compute the area ratio, we need the area under each peak.
+
+#+BEGIN_SRC ipython
+from scipy.integrate import quad
+
+def i1(x):
+    return model(p1, x)
+a1, _ = quad(i1, 0, 5)
+
+def i2(x):
+    return model(p2, x)
+a2, _ = quad(i2, 0, 5)
+
+print(f'The area ratio (area1 / area2) is {a1 / a2:1.2f}.')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[44]:
+# output
+: The area ratio (area1 / area2) is 0.29.
+:
+:END:
+
+The reason these ratios are so similar is that the peaks are symmetric, and have similar widths. If they were not this way, the ratios would not be similar.
+
+* exam2-2
+
+*This is an exam problem. It is open note, and you may consult the internet. By turning in this problem, you agree that the work is your own, and you did not work with anyone to complete it. Anything else is considered cheating. If you see students working together on this problem, it is cheating and you should report it.*
+
+Gas absorption in a liquid film can be enhanced by chemical reactions. In this example, the gas A dissolves at the surface of the liquid film and diffuses into the film.  A reaction also occurs that consumes the dissolved A: $A + B \rightarrow C$. B is not volatile though, and it does not leave the film. Within the film defined by the length scale $L$ diffusion is the only transport mechanism of A and B.
+
+image:coupled-diffusion-reaction.jpg
+
+The concentrations of $A$ and $B$ in the region between x=0 and x=L are governed by these differential equations:
+
+$\frac{d^2C_A}{dx^2} = \frac{k}{D_{AD}} C_A C_B$
+
+$\frac{d^2C_B}{dx^2} = \frac{k}{D_{BD}} C_A C_B$
+
+with boundary conditions of $C_A(x=0) = C_{As}$, $dC_B/dx (x=0) = 0$, $C_A(x=L) = 0$ and $C_B(x=L) = C_{B0}$. The values of the constants in this problem are given as:
+
+#+BEGIN_SRC ipython
+L = 2e-4     # m
+Dad = 2e-10  # m^s/s
+Dbd = 4e-10  # m^2/s
+Cb0 = 10     # kg-mol/m^3
+Cas = 10     # kg-mol/m^3
+k = 1.6e-3   # m^3/(kg mol s)
+#+END_SRC
+
+Use this information to compute and plot the concentration profiles of A and B from x=0 to x=L. Show evidence that the boundary conditions are satisfied, and compute the derivative of A ($dC_A/dx$) at x=0.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+dC_A/dx at x=0 is -82913.92 kgmol/m^3/m
+
+
+** solution                                                        :solution:
+
+First we setup the system of first order equations and the boundary conditions.
+
+We need some changes of variables:
+
+Ca1 = Ca
+
+Ca2 = Ca1'
+
+Ca2' = Ca1'' = k / Dad * Ca1 * Cb1
+
+Cb1 = Cb
+
+Cb2 = Cb1'
+
+Cb2' = Cb1'' = k / Dbd * Ca1 * Cb1
+
+with boundary conditions:
+
+Ca1(0) = Cas
+
+Ca1(L) = 0
+
+dCb/dx = Cb2(0) = 0
+
+Cb2(L) = Cb0
+
+Here are those equations in code:
+
+#+BEGIN_SRC ipython
+import numpy as np
+from scipy.integrate import solve_bvp
+
+L = 2e-4  # m
+Dad = 2e-10  # m^s/s
+Dbd = 4e-10  # m^2/s
+Cb0 = 10 # kg-mol/m^3
+Cas = 10 # kg-mol/m^3
+k = 1.6e-3 # m^3/(kg mol s)
+
+def bvp(x, C):
+    Ca1, Ca2, Cb1, Cb2 = C
+    dCa1dx = Ca2
+    dCa2dx = k / Dad * Ca1 * Cb1
+    dCb1dx = Cb2
+    dCb2dx = k / Dbd * Ca1 * Cb1
+    return [dCa1dx, dCa2dx, dCb1dx, dCb2dx]
+
+def bc(Ca, Cb):
+    Ca1a, Ca2a, Cb1a, Cb2a = Ca
+    Ca1b, Ca2b, Cb1b, Cb2b = Cb
+    # At x=0
+    bc1 = Cas - Ca1a  # Ca(x=0) = Cas
+    bc2 = Cb2a  # dCbdx(x=0) = 0
+    # at x=L
+    bc3 = Ca1b  # Ca(x=L) = 0
+    bc4 = Cb0 - Cb1b  # Cb(x=L) = Cb0
+    return [bc1, bc2, bc3, bc4]
+#+END_SRC
+
+Next, we need initial guesses. We assume Ca decreases linearly from Cas to 0 over the L-range. We assume Cb increases linearly from 0 to Cb0 over the L-range. This does not satisfy the boundary condition at x=0 for dCb/dx, but it may work anyway.
+
+#+BEGIN_SRC ipython
+X = np.linspace(0, L)
+
+# Guesses are lines
+p1a = np.polyfit([0, L], [Cas, 0], 1)
+g1a = np.polyval(p1a, X)
+g2a = np.gradient(g1a, X)
+
+p1b = np.polyfit([0, L], [0, Cb0], 1)
+g1b = np.polyval(p1b, X)
+g2b = np.gradient(g1b, X)
+
+guess = np.array([g1a, g2a, g1b, g2b])
+
+# Plot to make sure they look right.
+plt.plot(X * 1000, g1a, X * 1000, g1b)
+plt.xlabel('x (mm)')
+plt.ylabel('C')
+plt.legend(['A', 'B'])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[47]:
+
+
+
+
+# image/png
+[[file:obipy-resources/73232f0e737f26c048822a8e09245932-658370NT.png]]
+:END:
+
+Finally, we solve and lot the solution.
+
+#+BEGIN_SRC ipython
+sol = solve_bvp(bvp, bc, X, guess)
+
+# You should always check the message for success.
+print(sol.message)
+
+%matplotlib inline
+import matplotlib.pyplot as plt
+
+Ca, _, Cb, _ = sol.y
+x = X * 1000
+plt.plot(x, Ca, x, Cb)
+plt.xlabel('x (mm)')
+plt.ylabel('C')
+plt.legend(['A', 'B'])
+print(f'dC_A/dx at x=0 is {sol.y[1][0]:1.2f} kgmol/m^3/m')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[18]:
+# output
+: The algorithm converged to the desired accuracy.
+: dC_A/dx at x=0 is -82913.92 kgmol/m^3/m
+:
+
+
+# image/png
+[[file:obipy-resources/73232f0e737f26c048822a8e09245932-65837ayS.png]]
+:END:
+
+There are a few ways to show evidence of the boundary conditions being satisfied. One way is to show the bc function is all zeros (within tolerance of course).
+
+#+BEGIN_SRC ipython
+bc(sol.y[:,0], sol.y[:, -1])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[20]:
+# text/plain
+: [0.0, 0.0, -1.6767882786080825e-18, 0.0]
+:END:
+
+Or you could show them individually like this:
+
+#+BEGIN_SRC ipython
+Ca, dCadx, Cb, dCbdx = sol.y
+print(f'''
+Ca(0) = Cas  : {abs(Ca[0] - Cas) < 1e-6}
+Ca(L) = 0    : {abs(Ca[-1] - 0) < 1e-6}
+dCbdx(0) = 0 : {abs(dCbdx[0] - 0) < 1e-6}
+Cb(L) = Cb0  : {abs(Cb[-1] - Cb0) < 1e-6}
+''')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[26]:
+# output
+:
+: Ca(0) = Cas  : True
+: Ca(L) = 0    : True
+: dCbdx(0) = 0 : True
+: Cb(L) = Cb0  : True
+:
+:
+:END:
+
+* exam2-3
+
+*This is an exam problem. It is open note, and you may consult the internet. By turning in this problem, you agree that the work is your own, and you did not work with anyone to complete it. Anything else is considered cheating. If you see students working together on this problem, it is cheating and you should report it.*
+
+The normal distribution is defined by:
+
+$f(x) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-0.5 (x - \mu)^2/\sigma^2}$
+
+In this equation, \mu is the average, and \sigma is the standard deviation of the distribution. For this problem, let \mu=0, and \sigma=1.
+
+One property of this distribution is that $\int_{-\infty}^{\infty}  f(x) dx = 1$. Show that this is true by evaluating the integral.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+There is a guideline that \pm 2\sigma represents 95% of the distribution, i.e. it defines a 95% confidence interval. Find a solution for $x$ to this equation, which represents a symmetric fraction of the distribution that covers 95% of the area. Compare your answer to the guideline.
+
+$0.95 = \int_{-x}^{x} f(x) dx$
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+The mean of a continuous distribution is defined by $\mu = \int_{-\infty}^{\infty} x f(x) dx$. Show that the average of the normal distribution as defined above is zero by evaluating this integral.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+The variance, $\sigma^2$ is defined by $\sigma^2 = \int_{-\infty}^{\infty} (x - \mu)^2 f(x) dx$. Show that the variance of the normal distribution as defined above is one by evaluating this integral. Note that \mu=0 by the definitions above.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+** solution                                                        :solution:
+
+This is a standard integral.
+
+#+BEGIN_SRC ipython
+import numpy as np
+from scipy.integrate import quad
+
+mu, sigma = 0.0, 1.0
+
+def integrand(x):
+    return np.exp(-0.5 * (x - mu)**2 / sigma**2) / (sigma * np.sqrt(2 * np.pi))
+
+quad(integrand, -np.inf, np.inf)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[49]:
+# text/plain
+: (0.9999999999999998, 1.0178191320905743e-08)
+:END:
+
+You can see by inspection the first value is practically one.
+
+To find the value of x we need to setup an objective function and use fsolve.
+
+#+BEGIN_SRC ipython
+def objective(x):
+    I, e = quad(integrand, -x, x)
+    return 0.95 - I
+
+from scipy.optimize import fsolve
+fsolve(objective, 2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[50]:
+# text/plain
+: array([ 1.95996398])
+:END:
+
+The guideline of \pm 2 is an approximation of this result.
+
+To find the mean, we evaluate the integral as following:
+
+#+BEGIN_SRC ipython
+def mean_integrand(x):
+    return x * integrand(x)
+quad(mean_integrand, -np.inf, np.inf)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[51]:
+# text/plain
+: (0.0, 0.0)
+:END:
+
+Clearly the integral (first value) is zero, as defined. Similarly this integral shows the variance.
+
+#+BEGIN_SRC ipython
+def var_integrand(x):
+    return x**2 * integrand(x)
+
+quad(var_integrand, -np.inf, np.inf)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[96]:
+# text/plain
+: (1.000000000000001, 5.274099954078797e-09)
+:END:
+
+And the variance is also 1, as defined.
+* exam2-4
+
+*This is an exam problem. It is open note, and you may consult the internet. By turning in this problem, you agree that the work is your own, and you did not work with anyone to complete it. Anything else is considered cheating. If you see students working together on this problem, it is cheating and you should report it.*
+
+The volume of a cylindrical can is $V = (\pi/4) D^2 L$. The cost of the top/bottom of the can is \$0.025 / cm^{2}, and the cost of the sides is \$0.043 / cm^{2}. If we require a volume of 355 cm^{3}, what is the optimal length and diameter to minimize the cost of the can?
+
+Hint: $L = 4 V / \pi / D^2$. Then, you can formulate the total cost as a function of only $D$.
+
+Show that your solution is a minimum, and compute the cost of the can.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+** solution                                                        :solution:
+
+The cost of the top and bottom is $ct * \pi (D/2)^2 * 2$. The side cost is $cs * L * pi * D$.
+
+We just setup a cost function, and plot it to get an initial guess for the solution.
+
+#+BEGIN_SRC ipython
+import numpy as np
+from scipy.optimize import minimize
+
+V = 355
+ct = 0.025  # Cost of the top $/cm**2
+cs = 0.043  # Cost of the side $/cm**2
+
+def cost(D):
+    radius = D / 2
+    top_area = np.pi * radius**2
+    top_bottom_cost = 2 * ct * top_area
+    L = 4 * V / np.pi / D**2 # solved from the volume
+    side_cost = cs * L * np.pi * D
+    return top_bottom_cost + side_cost
+
+D = np.linspace(1, 15)
+c = cost(D)
+
+%matplotlib inline
+import matplotlib.pyplot as plt
+plt.plot(D, c)
+plt.xlabel('Diameter')
+plt.ylabel('Cost')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[52]:
+
+
+
+
+# image/png
+[[file:obipy-resources/73232f0e737f26c048822a8e09245932-65837BYZ.png]]
+:END:
+
+You can see there is a minimum near a diameter of 10 cm. Now we just minimize the cost function.
+
+#+BEGIN_SRC ipython
+sol = minimize(cost, 10)
+print(sol)
+D, = sol.x
+L = 4 * V / np.pi / D**2
+print(f'The optimal diameter is {D:1.2f} cm. The optimal length is {L:1.2f} cm. The cost is ${sol.fun:1.2f}.')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[9]:
+# output
+:       fun: 9.960758701630086
+:  hess_inv: array([[ 4.23703911]])
+:       jac: array([ -1.19209290e-07])
+:   message: 'Optimization terminated successfully.'
+:      nfev: 18
+:       nit: 5
+:      njev: 6
+:    status: 0
+:   success: True
+:         x: array([ 9.19508297])
+: The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.96.
+:
+:END:
