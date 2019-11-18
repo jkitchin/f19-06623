@@ -1,0 +1,185 @@
+* exam3-3 nla - continuation
+
+
+*This is an exam. You must be present in the exam room to get credit for this problem unless you have prior permission from the instructor. You may not talk during the exam except to ask an instructor a question. By turning this in, you agree that this work is your own, and you did not get unauthorized help to complete it or provide unauthorized help to anyone else. You may not modify your exam answer after the due time without permission.*
+
+# http://kitchingroup.cheme.cmu.edu/blog/2013/02/22/Method-of-continuity-for-nonlinear-equation-solving/
+
+A common problem in solving nonlinear problems is /how to make the initial guess/?
+
+Let's consider finding the solution to the following nonlinear equations:
+
+$2 + x + y - x^2 + 8 x y + y^3 = 0$
+
+$1 + 2x - 3y + x^2 + xy - y e^x = 0$
+
+The strategy we work on here is to reformulate these equations with a new variable $\lambda$
+
+$2 + x + y + \lambda(- x^2 + 8 x y + y^3) = 0$
+
+$1 + 2x - 3y + \lambda(x^2 + xy - y e^x) = 0$
+
+*** Part 1 solve the linear problem
+If $\lambda=1$ then we have the original nonlinear equations. If you set $\lambda=0$ though, you have a simple linear set of equations to solve. Find a solution to those equations for $\lambda=0$:
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+This solution represents the solution to the equations when $\lambda=0$. If we could derive a set of equations for $\frac{dx}{d\lambda}$ and $\frac{dy}{d\lambda}$, then we can treat this linear solution as an initial value, and integrate the ODEs from $\lambda=0$ to $\lambda=1$ to find the solution to the nonlinear equations. In what follows, we motivate how to derive those equations.
+
+*** Part 2 formulate a system of ODEs to solve the nonlinear problem
+
+Next, we consider the equations as
+
+$f(x, y) = 2 + x + y + \lambda(- x^2 + 8 x y + y^3) = 0$
+
+$g(x, y) = 1 + 2x - 3y + \lambda(x^2 + xy - y e^x) = 0$
+
+from calculus, you can show that:
+
+$\frac{\partial f}{\partial x}\frac{\partial x}{\partial \lambda}+\frac{\partial f}{\partial y}\frac{\partial y}{\partial \lambda}=-\frac{\partial f}{\partial \lambda}$
+
+$\frac{\partial g}{\partial x}\frac{\partial x}{\partial \lambda}+\frac{\partial g}{\partial y}\frac{\partial y}{\partial \lambda}=-\frac{\partial g}{\partial \lambda}$
+
+You can rewrite this in a linear algebra form as:
+
+\begin{equation}
+\left[\begin{array}{cc}
+\frac{\partial f}{\partial x} \frac{\partial f}{\partial y} \\
+\frac{\partial g}{\partial x} \frac{\partial g}{\partial y}
+\end{array}\right]
+\left[\begin{array}{c}
+\frac{\partial x}{\partial \lambda}\\
+\frac{\partial y}{\partial \lambda}
+\end{array}\right]
+=
+\left[\begin{array}{c}
+-\frac{\partial f}{\partial \lambda}\\
+-\frac{\partial g}{\partial \lambda}
+\end{array}\right]
+\end{equation}
+
+The matrix on the left is the Jacobian of $F = [f(x,y), g(x, y)]$. This means you can solve for:
+
+\[\left[\begin{array}{c}
+\frac{\partial x}{\partial \lambda}\\
+\frac{\partial y}{\partial \lambda}
+\end{array}\right]
+=
+\mathbf{J}^{-1}
+\left[\begin{array}{c}
+-\frac{\partial f}{\partial \lambda}\\
+-\frac{\partial g}{\partial \lambda}
+\end{array}\right]\]
+
+This last equation defines a set of differential equations that can be integrated from $\lambda=0$ where we know what (x, y) are, to $\lambda=1$ which leads to a solution to the original set of nonlinear equations!
+
+Use the last equation to define a function for a system of ODEs, and then integrate the system of ODES from $\lambda=0$ to $\lambda=1$ to find the solution to the nonlinear set of equations. The solution is the value of $x, y$ at $\lambda=1$.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+*** Part 3 Verify the solution you found
+
+Use a method of your choice to verify your solution from Part 2.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+* exam3-1 uncertainty                        :autograd:uncertainty:p1:2:nori:
+
+*This is an exam. You must be present in the exam room to get credit for this problem unless you have prior permission from the instructor. You may not talk during the exam except to ask an instructor a question. By turning this in, you agree that this work is your own, and you did not get unauthorized help to complete it or provide unauthorized help to anyone else. You may not modify your exam answer after the due time without permission.*
+
+The time required to reach a particular conversion $X$ in a reactor is given by this integral equation:
+
+$t = \int_0^X \frac{1}{k C_{A0} (1 - X)^2} dX$
+
+In this problem, $k = 1e-3$ L/mol/min, and $C_{A0} = 1$ mol/L.
+
+We aim to find the uncertainty in the amount of time required to reach a conversion of 0.9. The uncertainty is estimated by:
+
+$\sigma_t = \sqrt{\frac{\partial t}{\partial k}^2 \sigma_k^2 + \frac{\partial t}{\partial C_{A0}}^2 \sigma_{C_{A0}}^2 }$
+
+with $\sigma_k = 1e-4$ and $\sigma_{C_{A0}} = 0.01$.
+
+To evaluate those derivatives, we need a differentiable integrator. You can use this implementation of the trapezoid rule for that. You cannot use the quad function.
+
+#+BEGIN_SRC ipython
+import autograd.numpy as np
+
+def trapz(y, x):
+    d = np.diff(x)
+    return np.sum((y[0:-1] + y[1:]) * d / 2)
+#+END_SRC
+
+First, use the equation above and the provided trapz function to find the time required to reach 90% conversion for this reactor.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+Next, use the formula for $\sigma_t$ to estimate the uncertainty in this time.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+* Quiz 6 - uncertainty propagation in implicit functions
+
+
+The equation $y = e^{a y}$ is implicit in $y$. Suppose we know that $a = 0.2 \pm 0.02$ ($\sigma_a = 0.02$). First, solve for the value of $y$  with a method of your choice.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+Now the question is what is the uncertainty in $y$ since we know there is some uncertainty in $a$? A good approximation for the uncertainty in $y$ is $\sigma_y \approx \frac{dy}{da} * \sigma_a$.  Use this information to estimate the uncertainty ($\sigma_y$) in the solution you obtained.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+Describe an engineering application where this could be useful.
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+
+
+* van Laar equation
+
+
+Review the expression for $\frac{G_{ex}}{RT}$ in the Van Laar equation at
+https://en.wikipedia.org/wiki/Van_Laar_equation.
+
+There are also equations for the two activity coefficients that are derived from that expression. According to the Gibbs-Duhem equation:
+
+$0 = x_1 \frac{d \ln \gamma_1}{d n_1} + x_2 \frac{d \ln \gamma_2}{d n_1}$
+
+Assuming we have a mixture of Acetone and water, use autograd to demonstrate that the Gibbs-Duhem equation is satisfied over the range of composition for $0 \le x_1 \le 1$.
+
+You may find it helpful to note that $x_1 = \frac{n_1}{n_1 + n_2}$.
+
+
+* Using the Hessian in optimization
+
+*This is a quiz. You must be present in class to get credit for it. All your work must be your own, and turning this in means you agree that you worked alone on this assignment.*
+
+Newton's method is an iterative method based on finding roots using information about the derivative. There is an improvement if we use the Hessian shown below:
+
+$x_{n+1} = x_n - \mathbf{H(x_n)}^{-1} \mathbf{\nabla f(x_n)}$
+
+where $\mathbf{H(x_n)}$ is the Hessian matrix, and $\nabla f(x_n)$ is the gradient of $f$ evaluated at $x_n$, which may be a vector. $f$ is a scalar function. This algorithm is still iterative, and starts from an initial guess.
+
+Use this information with autograd to find a minimum of the rosenbrock function starting at the point (5.0, 5.0). Verify you have found a minimum.
+
+#+BEGIN_SRC ipython
+def rosenbrock(X):
+    x, y = X
+    return (1 - x)**2 + 100 * (y - x**2)**2
+#+END_SRC
