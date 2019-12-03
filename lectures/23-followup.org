@@ -1,0 +1,407 @@
+#+TITLE:  Followup to Introduction to Gaussian Process Regression
+#+AUTHOR: John Kitchin
+#+OX-IPYNB-KEYWORD-METADATA: keywords
+#+KEYWORDS: Gaussian process
+
+One of the more confusing points in this lecture was the code that looked like:
+
+#+BEGIN_SRC ipython
+import numpy as np
+
+X = np.array([0, 1, 2])
+
+DX = X[:, None] - X[None, :]
+DX
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [2]:
+# text/plain
+: array([[ 0, -1, -2],
+:        [ 1,  0, -1],
+:        [ 2,  1,  0]])
+:end:
+
+I /think/ the points of confusion are what are =None= values for, and how should we interpret this syntax. Let's unravel what we are trying to do using some classic syntax.
+
+** Method 1 - double loops
+
+Our goal was to create an array of "distances" where \(D_{ij} = X_i - X_j\). The classic way to do this is with a double loop.
+
+#+BEGIN_SRC ipython
+n = len(X)
+D = np.empty(shape=(n, n))
+
+for i in range(n):
+    for j in range(n):
+        D[i, j] = X[i] - X[j]
+
+D
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [5]:
+# text/plain
+: array([[ 0., -1., -2.],
+:        [ 1.,  0., -1.],
+:        [ 2.,  1.,  0.]])
+:end:
+
+There is nothing technically wrong with that approach; it leads to the correct answer. However:
+
+1. It is a little verbose, we have to create five lines of code.
+2. It combines what we want with how we get it
+3. if \(n\) is very large, then this double loop will be slow, and it cannot easily be parallelized.
+
+
+A vectorized approach would be much better, because we only tell the computer what we want, and not how to get it. That way if the compiler is smarter than us, it can do it in a fast, parallelized way.
+
+
+** Method 2 - explicit arrays for vectorization
+
+To do this in fast vectorized way, we need to create /two/ arrays: one with the X values repeated in rows, and one with them repeated in columns. =np.meshgrid= can create these for us, the only trick is we have to know that there are two kinds of indexing: 'xy' and 'ij', and that we need 'ij' here. This will tile the array down the columns in the first array, and along the rows in the second array.
+
+#+BEGIN_SRC ipython
+Xi, Xj = np.meshgrid(X, X, indexing='ij')
+Xi
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [11]:
+# text/plain
+: array([[0, 0, 0],
+:        [1, 1, 1],
+:        [2, 2, 2]])
+:end:
+
+#+BEGIN_SRC ipython
+Xj
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [12]:
+# text/plain
+: array([[0, 1, 2],
+:        [0, 1, 2],
+:        [0, 1, 2]])
+:end:
+
+Now, we simply subtract them.
+
+#+BEGIN_SRC ipython
+Xi - Xj
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [13]:
+# text/plain
+: array([[ 0, -1, -2],
+:        [ 1,  0, -1],
+:        [ 2,  1,  0]])
+:end:
+
+This method also works, but relies on the clever use of meshgrid to create the arrays. Clever in the sense that you have to know you can use it, and clever in the fact that you use the right indexing method.
+
+** Method 2 - creating tiled arrays
+
+An alternative approach is to use tiling to create the array. =np.tile= will construct an array where we can repeat an array in different directions. First we repeat the \(X\) array \(n\) times along axis 0 (rows), and 1 time along the columns. The question is what should we call this array? In this case, the values are constant down the columns, and the vary along the rows. This means that this array contains the \(x\) values that vary in the \(j\) index.
+
+#+BEGIN_SRC ipython
+xj = np.tile(X, (n, 1))
+xj
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [20]:
+# text/plain
+: array([[0, 1, 2],
+:        [0, 1, 2],
+:        [0, 1, 2]])
+:end:
+
+To get the array for the \(i\) index, we simply transpose this array, then we can subtract them.
+
+#+BEGIN_SRC ipython
+xi = xj.T
+xi - xj
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [21]:
+# text/plain
+: array([[ 0, -1, -2],
+:        [ 1,  0, -1],
+:        [ 2,  1,  0]])
+:end:
+
+This also requires some cleverness. You have to know about tiling, the relationship between \(X_i\) and \(X_j\), and then we can compute the difference.
+
+This method still requires the creation of explicit, and intermediate arrays that we do not need afterwards.
+
+** Expanding the dimensions
+
+To minimize the creation of the intermediate arrays, numpy allows you to expand the dimensions of an array, and then to broadcast the operation. In numpy broadcasting, two array dimensions are considered compatible under these conditions:
+
+1. They are equal
+2. One of them is equal to 1
+
+If one of the dimensions is one, then that dimension is "stretched" or "copied" to match the other. Numpy provides a function that does this: =np.expand_dims=. Let's see what happens by example. The =axis= argument is where the new axis is added. A value of -1 means to add it at the end as the last axis, and axis=0 means add it at the front.
+
+#+BEGIN_SRC ipython
+X.shape, np.expand_dims(X, axis=-1).shape
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [24]:
+# text/plain
+: ((3,), (3, 1))
+:end:
+
+You can see that we change the shape from 1D with 3 elements, to 2D, with 3 rows, and one column.
+
+#+BEGIN_SRC ipython
+np.expand_dims(X, axis=-1)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [26]:
+# text/plain
+: array([[0],
+:        [1],
+:        [2]])
+:end:
+
+We can also change the shape from 1D to 2D by adding the dimension at the beginning, so we have 1 row and 3 columns.
+
+#+BEGIN_SRC ipython
+X.shape, np.expand_dims(X, axis=0).shape
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [25]:
+# text/plain
+: ((3,), (1, 3))
+:end:
+
+#+BEGIN_SRC ipython
+np.expand_dims(X, axis=0)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [27]:
+# text/plain
+: array([[0, 1, 2]])
+:end:
+
+Now, by broadcasting rules, an array with shape (3, 1) minus an array with shape (1, 3) will result in an array of shape (3, 3). This allows us to write in one line the desired difference.
+
+#+BEGIN_SRC ipython
+np.expand_dims(X, axis=-1) - np.expand_dims(X, axis=0)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [28]:
+# text/plain
+: array([[ 0, -1, -2],
+:        [ 1,  0, -1],
+:        [ 2,  1,  0]])
+:end:
+
+** Syntactic sugar for expanding dimensions
+
+The function approach to dimension expansion above is considered verbose. There is a syntactic sugar that is equivalent, and less verbose.
+
+#+BEGIN_SRC ipython
+np.expand_dims(X, axis=-1)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [29]:
+# text/plain
+: array([[0],
+:        [1],
+:        [2]])
+:end:
+
+is equivalent to:
+
+#+BEGIN_SRC ipython
+X[:, None]
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [30]:
+# text/plain
+: array([[0],
+:        [1],
+:        [2]])
+:end:
+
+The array above has been expanded from (3,) to (3, 1). That means the values of X will go down a column and then will be repeated in other columns.
+
+We can see how this works by adding 0.
+
+#+BEGIN_SRC ipython
+X[:, None] + np.array([0, 0, 0])[None, :]
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [34]:
+# text/plain
+: array([[0, 0, 0],
+:        [1, 1, 1],
+:        [2, 2, 2]])
+:end:
+
+The effect is the X-array is tiled along the columns, i.e. along the axis where the =None= is located.
+
+
+
+Similarly, we can expand the array along the rows. This functional approach
+
+#+BEGIN_SRC ipython
+np.expand_dims(X, axis=0)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [31]:
+# text/plain
+: array([[0, 1, 2]])
+:end:
+
+is equivalent to this syntactic sugar:
+
+#+BEGIN_SRC ipython
+X[None, :]
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [32]:
+# text/plain
+: array([[0, 1, 2]])
+:end:
+
+We can see the tiling in action again by adding zeros like this.
+
+#+BEGIN_SRC ipython
+np.array([0, 0, 0])[:, None] + X[None, :]
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [36]:
+# text/plain
+: array([[0, 1, 2],
+:        [0, 1, 2],
+:        [0, 1, 2]])
+:end:
+
+Finally, we can write the desired difference in one line. The interpretation is we want the expanded difference of these two arrays where we expand the first array along the columns, and the second one down the rows. This avoids the explicit creation of the temporary arrays. Note that these arrays /must get created somewhere/, but that is done /automatically/ and the temporary arrays are not kept. They will occupy some temporary memory though.
+
+#+BEGIN_SRC ipython
+X[:, None] - X[None, :]
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [33]:
+# text/plain
+: array([[ 0, -1, -2],
+:        [ 1,  0, -1],
+:        [ 2,  1,  0]])
+:end:
+
+This is a long-winded way of getting to a short-hand syntax for computing the arrays we need.
+
+* Asymmetric arrays and broadcasting
+
+All the examples above used arrays that are \(n \times n\). Everything still applies for differences in arrays of different sizes.
+
+#+BEGIN_SRC ipython
+x1 = np.array([0, 1, 2])
+x2 = np.array([0, 1])
+
+x1[:, None] - x2[None, :]  # (3, 1)(1, 2) = (3, 2)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [39]:
+# text/plain
+: array([[ 0, -1],
+:        [ 1,  0],
+:        [ 2,  1]])
+:end:
+
+If we switch these, then we simply get the transpose of the result above.
+
+#+BEGIN_SRC ipython
+x2[:, None] - x1[None, :]  # (2, 1) (1, 3) = (2, 3)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [40]:
+# text/plain
+: array([[ 0, -1, -2],
+:        [ 1,  0, -1]])
+:end:
+
+#+BEGIN_SRC ipython
+x1[None, :] - x2[:, None]  # (1, 3) (2, 1)  does not broadcast because 2 != 3
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [41]:
+# text/plain
+: array([[ 0,  1,  2],
+:        [-1,  0,  1]])
+:end:
+
+You have to be careful with square arrays though. Both of these work, but they are still the transpose of each other.
+
+#+BEGIN_SRC ipython
+x1[None, :] - x1[:, None]  # This is D_{ji}
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [43]:
+# text/plain
+: array([[ 0,  1,  2],
+:        [-1,  0,  1],
+:        [-2, -1,  0]])
+:end:
+
+#+BEGIN_SRC ipython
+x1[:, None] - x1[None, :]   # This is D_{ij}
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [44]:
+# text/plain
+: array([[ 0, -1, -2],
+:        [ 1,  0, -1],
+:        [ 2,  1,  0]])
+:end:
+
+The tricky thing here is only one of these is probably correct, but there is no error to tell you there is a problem.
