@@ -1,3 +1,5 @@
+#+options: toc:nil
+
 * Introduction to 06-623 Mathematical Modeling of Chemical Engineering Processes
 
 #+BEGIN_SRC ipython
@@ -8,7 +10,7 @@
 2. [[f1906623:01-jupyter.org][About Jupyter]]
 3. [[f1906623:02-integration-1.org][Numerical integration]]
 4. [[f1906623:03-fode-1.org][First order differential equations]]
-
+5. [[f1906623:04-fode-2.org][Families of first order differential equations]]
 
 * Setup the publishing project                                     :noexport:
 
