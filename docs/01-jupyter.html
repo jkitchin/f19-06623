@@ -1,0 +1,1144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 05:37 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Introduction to using Jupyter</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="jupyter" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Introduction to using Jupyter</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org2a68209">1. Markdown</a>
+<ul>
+<li><a href="#org0b0bf4d">1.1. Headings and subheadings</a>
+<ul>
+<li><a href="#org87738e1">1.1.1. Subsubheadings</a></li>
+</ul>
+</li>
+<li><a href="#org2f18584">1.2. Keyboard shortcuts</a></li>
+</ul>
+</li>
+<li><a href="#org3caf651">2. Running code</a>
+<ul>
+<li><a href="#org726b867">2.1. Debugging/getting help</a></li>
+</ul>
+</li>
+<li><a href="#orgda1d60a">3. Functions</a>
+<ul>
+<li><a href="#org6937634">3.1. Minimal definition of a function with one input</a></li>
+<li><a href="#org7679f61">3.2. Functions with multiple arguments</a></li>
+<li><a href="#org3824bac">3.3. Functions that return multiple values</a></li>
+</ul>
+</li>
+<li><a href="#orgca0be75">4. Strings</a>
+<ul>
+<li><a href="#org18764fd">4.1. Printing arrays</a></li>
+</ul>
+</li>
+<li><a href="#orgeacf1b1">5. Summary</a></li>
+</ul>
+</div>
+</div>
+<p>
+Goals today:
+</p>
+<ul class="org-ul">
+<li>Explore Jupyter</li>
+<li>Practice some Markdown</li>
+<li>Practice making and using functions</li>
+<li>Practice printing formatted strings</li>
+</ul>
+
+
+<p>
+There are two kinds of cells in Jupyter notebooks: Markdown and Code.
+</p>
+
+<div id="outline-container-org2a68209" class="outline-2">
+<h2 id="org2a68209"><span class="section-number-2">1</span> Markdown</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Markdown is a lightweight markup language for text that is meant for humans to read.
+</p>
+
+<p>
+Double click on this cell to see how to make:
+</p>
+<ol class="org-ol">
+<li>A</li>
+<li>Numbered</li>
+<li>List</li>
+</ol>
+
+<p>
+You can also make bulleted lists:
+</p>
+
+<ul class="org-ul">
+<li>A</li>
+<li>bulleted</li>
+<li>list
+<ul class="org-ul">
+<li>Including
+<ul class="org-ul">
+<li>different</li>
+<li>levels</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<p>
+Text that is <b>bold</b>, <i>italics</i>, <del>crossed-out</del>. Some &lt;font color="red"&gt;red text&lt;/font&gt;.
+</p>
+
+<p>
+Math is written in LaTeX format (<a href="https://en.wikibooks.org/wiki/LaTeX/Mathematics">https://en.wikibooks.org/wiki/LaTeX/Mathematics</a>). Consider:
+</p>
+<ul class="org-ul">
+<li>this fraction \(\frac{1}{2}\),</li>
+<li>square root \(\sqrt{3}\)</li>
+<li>sum \(\sum_{i=1}^{10} t_i\)</li>
+<li>A chemical formula: H$_2$O</li>
+<li>An integral \(\int_a^b f(x)dx\)</li>
+</ul>
+
+<hr />
+
+<p>
+You can see more details at <a href="https://jupyter-notebook.readthedocs.io/en/stable/examples/Notebook/Working%20With%20Markdown%20Cells.html">https://jupyter-notebook.readthedocs.io/en/stable/examples/Notebook/Working%20With%20Markdown%20Cells.html</a>.
+</p>
+
+<hr />
+
+<p>
+You do not need to learn all of these right now. It will be useful to pay attention to what is in the notes. It will help you express your ideas more clearly.
+</p>
+
+<p>
+You can convert a cell to Markdown by pressing escape then m. You can convert it back to a Code cell by typing escape then y.
+</p>
+
+<p>
+#+ipynb-newcell
+Try it here.
+</p>
+</div>
+
+<div id="outline-container-org0b0bf4d" class="outline-3">
+<h3 id="org0b0bf4d"><span class="section-number-3">1.1</span> Headings and subheadings</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+It can be helpful to organize your notebook into sections. You can use headings and subheadings to make logical sections. This makes it easier to read. Double click on the headings to see the syntax for making a heading.
+</p>
+</div>
+
+<div id="outline-container-org87738e1" class="outline-4">
+<h4 id="org87738e1"><span class="section-number-4">1.1.1</span> Subsubheadings</h4>
+<div class="outline-text-4" id="text-1-1-1">
+<p>
+You can learn more about Markdown syntax at <a href="https://jupyter-notebook.readthedocs.io/en/stable/examples/Notebook/Working%20With%20Markdown%20Cells.html">https://jupyter-notebook.readthedocs.io/en/stable/examples/Notebook/Working%20With%20Markdown%20Cells.html</a>.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2f18584" class="outline-3">
+<h3 id="org2f18584"><span class="section-number-3">1.2</span> Keyboard shortcuts</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+You can do most things by clicking in cells and typing, or clicking on the menus. Eventually, you may want to learn some keyboard shortcuts to speed up your work.
+</p>
+
+<p>
+&lt;div class="alert alert-warning"&gt;
+You can access a list of keyboard shortcuts in the following ways:
+</p>
+
+<ol class="org-ol">
+<li>Click on the keyboard icon</li>
+<li>Windows/Linux: Type C-shift-p</li>
+<li>Mac: Type Cmd-shift-p</li>
+</ol>
+
+<p>
+From the menus:
+Help -&gt; Keyboard Shortcuts
+&lt;/div&gt;
+</p>
+
+<p>
+You do not need to learn these if you don't want to; you can always use the mouse and menus.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3caf651" class="outline-2">
+<h2 id="org3caf651"><span class="section-number-2">2</span> Running code</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Jupyter notebooks serve two purposes:
+</p>
+
+<ol class="org-ol">
+<li>To document your work</li>
+<li>To run code</li>
+</ol>
+
+<p>
+It is important to have a basic understanding of how the notebooks work. The browser displays the notebook. The actual computations are run on a server on your computer. When you "run" a code cell, the code is sent to the server, and the server sends the results back to the browser where they are rendered.
+</p>
+
+<p>
+When you first open a notebook, <i>nothing</i> has been executed. If you try to execute cells out of order, you will get errors if anything in the cell depends on a previous cell. You should run the cells in order. Here are some ways to do that.
+</p>
+
+<ol class="org-ol">
+<li>Starting in the first cell, click the Run button until you get to the end.</li>
+<li>Starting in the first cell, click in the menu: Cell -&gt; Run all</li>
+<li>Starting in the first cell, type shift-Enter to run each cell and move to the next one.</li>
+</ol>
+
+<p>
+Occasionally, you may want to restart the server and rerun all the cells. Select the menu: Kernel -&gt; Restart &amp; Run all. If you run cells out of order, or something seems messed up for some reason, sometimes this fixes it. It also makes sure the output of each cell is consistent with running them in order from scratch.
+</p>
+</div>
+
+<div id="outline-container-org726b867" class="outline-3">
+<h3 id="org726b867"><span class="section-number-3">2.1</span> Debugging/getting help</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+See the Help menu to access general documentation about the notebook and the main libraries we will be using. I would get familiar with their contents, but I would not try to read them all at once.
+</p>
+
+<p>
+You should be able to press Shift-tab after a command to get some documentation about the command.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>
+</pre>
+</div>
+
+<p>
+While debugging a cell, you should use C-Enter to run the cell so that you see the output, but your cursor stays in the cell so you can continue editing it. To go back to editing the cell, just press Enter. It is good practice to run cells whenever you think they should work correctly, because it is easier to debug the last few lines you wrote than a long block of lines. Let's work an example.
+</p>
+
+<p>
+Create a code cell that defines two variables \(x=5\) and \(y=4\), and then compute \(x^2 + y^2\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">
+</pre>
+</div>
+
+
+<p>
+When you are happy with the cell and its output, you can insert a new cell above or below it from the Insert menu or by typing:
+</p>
+
+<dl class="org-dl">
+<dt>Esc a enter</dt><dd>insert a cell above and start editing it</dd>
+<dt>Esc b enter</dt><dd>insert a cell below and start editing it</dd>
+</dl>
+
+<p>
+Alternatively, in the cell, type shift-enter to execute it one more time, and then move to the next cell (adds a new cell if you are at the end).
+</p>
+
+<p>
+Jupyter notebooks can act in unexpected ways if you evaluate the cells out of order. It can be very difficult to debug this. When that happens, you are often best off if you restart the kernel and execute the cells from the beginning.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a</span> = 4
+</pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a</span> += 1  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">this increments the value of a by one.</span>
+</pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(a)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgda1d60a" class="outline-2">
+<h2 id="orgda1d60a"><span class="section-number-2">3</span> Functions</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Functions are an important part of any programming language. They allow you to reuse code, and make programs more readable.
+</p>
+</div>
+
+<div id="outline-container-org6937634" class="outline-3">
+<h3 id="org6937634"><span class="section-number-3">3.1</span> Minimal definition of a function with one input</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Functions are defined with the <code>def</code> keyword. You specify a name, and the arguments in parentheses, and end the line with a colon. The body of the function must be indented (conventionally by 4 spaces). The function ends when the indentation goes back down one level. You have to define what is returned from the function using the <code>return</code> keyword.
+</p>
+
+<p>
+Here is a minimal function definition that simply multiplies the input by two and returns it.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span> = x * 2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y
+</pre>
+</div>
+
+<p>
+Let's evaluate our function with a few values:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Try an integer, float, string, a list, an array (don't forget to import numpy first)</span>
+</pre>
+</div>
+
+<p>
+Python uses "duck-typing" to figure out what multiply by two means. That can lead to some surprising results when you use data types that were not intended for your function.
+</p>
+
+<p>
+Minimal is not always the most informative. You can add an optional documentation string like this.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">"""Optional, multiline documentation string</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   x should be a number. It is still not an error to use a string or array.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   """</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span> = x + 2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y
+</pre>
+</div>
+
+<p>
+The input argument <code>x</code> is mandatory here, and has no default value.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7679f61" class="outline-3">
+<h3 id="org7679f61"><span class="section-number-3">3.2</span> Functions with multiple arguments</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Suppose you want a function where you can multiply the argument by a user-specified value, that defaults to 2. We can define a function with two arguments, where one is optional with a default value. The optional argument is sometimes called a parameter.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x, a=2):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">The next string is a one line documentation string. The comment here will</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">not be visible in the help.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">"Return a * x. a is optional with default value of 2."</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span> = x * a
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y
+</pre>
+</div>
+
+<p>
+Now, there are several ways to evaluate this function. If you just provide the value of <code>x</code>, then the default value of <code>a</code> will be used.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">f(2)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">x = 2, since a is not provided, the default a=2 is used</span>
+</pre>
+</div>
+
+<pre class="example">
+4
+</pre>
+
+<p>
+Here we use the position of each argument to define the arguments as x=2 and a=3.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">f(2, 3) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">x=2, a=3</span>
+</pre>
+</div>
+
+<pre class="example">
+6
+</pre>
+
+<p>
+We can be very clear about the second value by defining it as a keyword argument:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">f(2, a=4)
+</pre>
+</div>
+
+<pre class="example">
+8
+</pre>
+
+<p>
+Note, however, that since the first argument has no default value, it is called a positional argument, and so in this case you must <i>always</i> define the first argument as the value of x. This will be an error:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">f(a=4, 2)
+</pre>
+</div>
+
+<pre class="example">
+  File "&lt;ipython-input-9-41d646a608d0&gt;", line 1
+    f(a=4, 2)
+          ^
+SyntaxError: positional argument follows keyword argument
+
+</pre>
+
+<p>
+You cannot put positional arguments after keyword arguments. This is ok, since every argument is defined by a keyword. This allows you to specify arguments in the order you want, and when there are lots of arguments makes it easier to remember what each one is for.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">f(a=4, x=2)
+</pre>
+</div>
+
+<pre class="example">
+8
+</pre>
+
+<p>
+You should be careful about when and where you define variables. In most programming languages, there is a concept of <i>variable scope</i>, that is where is the variable defined, and what value does it have there. Here, <code>a</code> is defined outside the function, so the function inherits the value of <code>a</code> when it is defined. If you change <code>a</code>, you change the function. That can be confusing.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a</span> = 2
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span> = a * x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y
+
+f(2)
+</pre>
+</div>
+
+<pre class="example">
+4
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a</span> = 3  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">changing the global value of a changes the function.</span>
+f(2)
+</pre>
+</div>
+
+<pre class="example">
+6
+</pre>
+
+<p>
+However, you can "shadow" a variable. In this example, we use an internal definition of <code>a</code> in the function, which replaces the external value of <code>a</code> <i>only inside the function</i>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a</span> = 2
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">a</span> = 3  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This only changes a inside the function</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span> = a * x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y
+
+f(2)
+</pre>
+</div>
+
+<pre class="example">
+6
+</pre>
+
+<p>
+The global value of <code>a</code> is unchanged.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">a
+</pre>
+</div>
+
+<pre class="example">
+2
+</pre>
+
+<p>
+A similar behavior is observed with arguments. Here the argument <code>a</code> will shadow (redefine) the global value of <code>a</code>, but only inside the function.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x, a):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span> = a * x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y
+
+f(2, a=3)
+</pre>
+</div>
+
+<pre class="example">
+6
+</pre>
+
+<p>
+The external value of <code>a</code> is unchanged in this case.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">a
+</pre>
+</div>
+
+<pre class="example">
+2
+</pre>
+
+<p>
+The point here is to be careful with how you define and reuse variable names. In this example, it is more clear that we are using an internal definition of <code>a</code>, simply by prefixing the variable name with an underscore (you can also just give it another name, e.g. <code>b</code>).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a</span> = 2
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x, _a):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span> = _a * x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y
+
+f(2, a=3)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3824bac" class="outline-3">
+<h3 id="org3824bac"><span class="section-number-3">3.3</span> Functions that return multiple values</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+A function can return multiple values.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">even</span> = x % 2 == 0
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x, even  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This returns a tuple</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ipython">f(2)
+</pre>
+</div>
+
+<pre class="example">
+(2, True)
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #006FE0;">type</span>(f(2))
+</pre>
+</div>
+
+<pre class="example">
+tuple
+</pre>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython">f(3)
+</pre>
+</div>
+
+<pre class="example">
+(3, False)
+</pre>
+
+<p>
+If you assign the output of the function to a variable, it will be a tuple.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">z</span> = f(3)
+z
+</pre>
+</div>
+
+<pre class="example">
+(3, False)
+</pre>
+
+<p>
+You can access the elements of the tuple by indexing.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(z[0])
+<span style="color: #0000FF;">print</span>(z[1])
+</pre>
+</div>
+
+<pre class="example">
+3
+False
+
+</pre>
+
+<p>
+You can also <i>unpack</i> the tuple into variable names. Here there are two elements in the output, and we can assign them to two variable names.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">value</span>, <span style="color: #BA36A5;">even</span> = f(3)
+<span style="color: #0000FF;">print</span>(value)
+<span style="color: #0000FF;">print</span>(even)
+</pre>
+</div>
+
+<pre class="example">
+3
+False
+
+</pre>
+
+<p>
+You can have the function return any kind of data type. If you just use comma-separated return values, you will return a tuple. If you put them in square brackets, you will return a list. In some cases you will want to return an array. When you write functions, you have to decide what they return, and then use them accordingly. When you use functions that others have written (e.g. from a library), you have to read the documentation to see what arguments are required, and what the function returns.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgca0be75" class="outline-2">
+<h2 id="orgca0be75"><span class="section-number-2">4</span> Strings</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+We will use strings a lot to present the output of our work. Suppose Amy has 10 apples, and she gives Bob 3 apples. How many apples does Amy have left?
+</p>
+
+<p>
+You could solve it like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(<span style="color: #008000;">'Amy has'</span>, 10 - 3, <span style="color: #008000;">'apples left'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Amy has 7 apples left
+
+</pre>
+
+<p>
+Or, this more clear code.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">original_count</span> = 10
+<span style="color: #BA36A5;">count_given</span> = 3
+<span style="color: #BA36A5;">apples_remaining</span> = original_count - count_given
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'Amy has </span><span style="color: #BA36A5;">{apples_remaining}</span><span style="color: #008000;"> apples left.'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Amy has 7 apples left.
+
+</pre>
+
+<p>
+We have used a <i>formatted string</i> here. A formatted string looks like f'&#x2026;', and it has elements inside it in curly brackets that are replaced with values from the environment. We can format the values using formatting codes.
+</p>
+
+<p>
+The most common use will be formatting floats. If you just print these, you will get a lot of decimal places, more than is commonly needed for engineering problems.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a</span> = 2 / 3
+<span style="color: #0000FF;">print</span>(a)
+</pre>
+</div>
+
+<pre class="example">
+0.6666666666666666
+
+</pre>
+
+<p>
+We can print this as a float with only three decimal places like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'a = </span><span style="color: #BA36A5;">{a:1.3f}</span><span style="color: #008000;">.'</span>)
+</pre>
+</div>
+
+<pre class="example">
+a = 0.667.
+
+</pre>
+
+<p>
+The syntax here for float numbers is {varname:width.decimalsf}. We will usually set the width to 1, and just change the number of decimal places.
+</p>
+
+<p>
+There are other ways to format strings in Python, but I will try to only use this method. It is the most readable in my opinion (note: this only works in Python 3. For Python 2, you may have to use one of the other methods.).
+</p>
+
+<p>
+You can do some math inside these strings
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">volume</span> = 10.0  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">L</span>
+<span style="color: #BA36A5;">flowrate</span> = 4.0  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">L/s</span>
+
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'The residence time is </span><span style="color: #BA36A5;">{volume / flowrate:1.2f}</span><span style="color: #008000;"> seconds.'</span>)
+</pre>
+</div>
+
+<pre class="example">
+The residence time is 2.50 seconds.
+
+</pre>
+
+<p>
+You can also call functions in the formatted strings:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> 1 / x
+
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'The value of 1 / 4.1 to 4 decimal places is </span><span style="color: #BA36A5;">{f(4.1):1.4f}</span><span style="color: #008000;">.'</span>)
+</pre>
+</div>
+
+<pre class="example">
+The value of 1 / 4.1 to 4 decimal places is 0.2439.
+
+</pre>
+
+<p>
+There are many ways to use these, and you should use the method that is most readable.
+</p>
+
+<p>
+We will see many examples of this in the class. For complete reference on the formatting codes see <a href="https://docs.python.org/3.6/library/string.html#format-specification-mini-language">https://docs.python.org/3.6/library/string.html#format-specification-mini-language</a>.
+</p>
+</div>
+
+<div id="outline-container-org18764fd" class="outline-3">
+<h3 id="org18764fd"><span class="section-number-3">4.1</span> Printing arrays</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Arrays are printed in full accuracy by default. This often results in hard to read outputs. Consider this array.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #BA36A5;">x</span> = np.linspace(0, 10, 4) + 1e-15
+x
+</pre>
+</div>
+
+<pre class="example">
+array([1.00000000e-15, 3.33333333e+00, 6.66666667e+00, 1.00000000e+01])
+</pre>
+
+<p>
+You cannot use formatted strings on arrays like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'x = </span><span style="color: #BA36A5;">{x:1.3f}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+TypeErrorTraceback (most recent call last)
+&lt;ipython-input-2-42ea60810d4c&gt; in &lt;module&gt;()
+-&#x2014;&gt; 1 print(f'x = {x:1.3f}')
+</p>
+
+<p>
+TypeError: unsupported format string passed to numpy.ndarray.__format__
+</p>
+
+<p>
+You can use this to print individual elements of the array (you access them with [] indexing). First, we print the first element as a float:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'x = </span><span style="color: #BA36A5;">{x[0]:1.3f}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+x = 0.000
+</p>
+
+<p>
+And in exponential (Scientific notation):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'x = </span><span style="color: #BA36A5;">{x[0]:1.3e}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+x = 1.000e-15
+</p>
+
+
+<p>
+Instead, you can control how arrays are <i>printed</i> with this line. Note this does not affect the value of the arrays, just how they are printed. The precision argument specifies how many decimal places, and suppress means do not print very small numbers, e.g. 1e-15 is approximately zero, so print it as zero. Note that this affects printing of all arrays globally.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.set_printoptions(precision=3, suppress=<span style="color: #D0372D;">True</span>)
+x
+</pre>
+</div>
+
+<pre class="example">
+array([ 0.   ,  3.333,  6.667, 10.   ])
+</pre>
+
+<p>
+It is possible to only <i>temporarily</i> affect how this prints with this syntax:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">with</span> np.printoptions(precision=4, suppress=<span style="color: #D0372D;">True</span>):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(x)
+</pre>
+</div>
+
+<p>
+[ 0.      3.3333  6.6667 10.    ]
+</p>
+
+
+<p>
+Here we just illustrate that x[0] is not zero as printed. If it was, we would get a DivisionByZero error here.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">1 / x[0]
+</pre>
+</div>
+
+<pre class="example">
+999999999999999.88
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgeacf1b1" class="outline-2">
+<h2 id="orgeacf1b1"><span class="section-number-2">5</span> Summary</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+You should get comfortable with:
+</p>
+<ul class="org-ul">
+<li>Creating markdown cells in Jupyter notebooks that express the problem you are solving, and your approach to it.</li>
+<li>Creating code cells to evaluate Python expressions</li>
+<li>Defining functions with arguments</li>
+<li>Printing formatted strings containing your results</li>
+</ul>
+
+<p>
+Next time:
+We will start using functions to solve integrals and differential equations.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Date: 2019-08-26 Mon 00:00</p>
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 05:37</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

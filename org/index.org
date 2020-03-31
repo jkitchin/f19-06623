@@ -4,4 +4,5 @@
 
 #+END_SRC
 
-1. f1906623:00-intro.org
+1. [[f1906623:00-intro.org][A brief introduction]]
+2. [[f1906623:01-jupyter.org][About Jupyter]]
