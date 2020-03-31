@@ -1,0 +1,7 @@
+* Introduction to 06-623 Mathematical Modeling of Chemical Engineering Processes
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+1. f1906623:00-intro.org
