@@ -4,6 +4,8 @@
 
 Please report errors/typos and issues at https://github.com/jkitchin/f19-06623/issues.
 
+[[./06623-roadmap.png]]
+
 #+BEGIN_SRC ipython
 
 #+END_SRC
