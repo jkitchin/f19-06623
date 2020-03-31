@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 06:01 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>N<sup>th</sup> order differential equations</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="solve_ivp" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">N<sup>th</sup> order differential equations</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgfa83d95">0.1. Solving a parameterized ODE many times</a></li>
+</ul>
+</li>
+<li><a href="#orgb37a2ae">1. Summary</a></div>
+</div>
+<p>
+So far we have focused on computational solutions to first order differential equations, including systems of first order differential equations. The reason for that is simply that all numerical integration strategies only work with the first derivative.
+</p>
+
+<p>
+Many differential equations involve higher order derivatives though. We can solve these by converting them to systems of first-order differential equations through a series of variable changes.
+</p>
+
+<p>
+Let's consider the <a href="https://en.wikipedia.org/wiki/Van_der_Pol_oscillator">Van der Pol oscillator</a>.
+</p>
+
+<p>
+\(\frac{d^2x}{dt^2} - \mu(1-x^2)\frac{dx}{dt} + x = 0\)
+</p>
+
+<p>
+We define a new variable: \(v = x'\), and then have \(v' = x''\).
+</p>
+
+<p>
+That leads to a set of equivalent first-order differential equations:
+</p>
+
+<p>
+\(x' = v\)
+</p>
+
+<p>
+\(v' - \mu (1-x^2)v + x = 0\)
+</p>
+
+<p>
+You can still think of \(x\) as the position of the oscillator, and \(y\) as the velocity of the oscillator. Now, we can integrate these equations from some initial condition.
+</p>
+
+<p>
+Let's do this and plot the position and velocity of the oscillator. Rather than use <code>t_eval</code>, we will instead set the optional argument <code>max_step</code> to tell the solver how often it should make a step.
+</p>
+
+<p>
+This is different than using <code>t_eval</code>, which uses interpolation <i>after</i> the solution has been found to evaluate the solution. This will become important later when we use events, which are only evaluated at the <i>solver</i> points.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> solve_ivp
+
+<span style="color: #BA36A5;">mu</span> = 0.2
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">dXdt</span>(t, X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">v</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dxdt</span> = v
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dvdt</span> = mu * (1 - x**2) * v - x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.array([dxdt, dvdt])
+
+<span style="color: #BA36A5;">X0</span> = np.array((1, 2)) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">you can pick any x0, and v0 you want.</span>
+<span style="color: #BA36A5;">tspan</span> = np.array((0, 40))
+<span style="color: #BA36A5;">teval</span>, <span style="color: #BA36A5;">h</span> = np.linspace(*tspan, 500, retstep=<span style="color: #D0372D;">True</span>)
+
+<span style="color: #BA36A5;">sol</span> = solve_ivp(dXdt, tspan, X0, max_step=h)
+sol.message, sol.success
+</pre>
+</div>
+
+<pre class="example">
+('The solver successfully reached the end of the integration interval.', True)
+</pre>
+
+<p>
+Now, we can plot the solutions.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+plt.plot(sol.t, sol.y.T);
+plt.xlabel(<span style="color: #008000;">'t'</span>)
+plt.ylabel(<span style="color: #008000;">'x,v'</span>)
+plt.legend([<span style="color: #008000;">'x'</span>, <span style="color: #008000;">'v'</span>])
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/c1f4c94d90a889225272fea2bb93e8597ac73432/8718324eb838a0fe15092e645f996781649e9931.png" alt="8718324eb838a0fe15092e645f996781649e9931.png" />
+</p>
+</div>
+
+<p>
+You can see that the solution appears oscillatory. Let's be more quantitative than what it <i>looks</i> like. An alternative way to visualize this solution is called the phase portrait where we plot the two state variables (x, v) against each other. We include the starting point for visualization.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(*sol.y)
+plt.plot(*sol.y[:, 0], <span style="color: #008000;">'go'</span>) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">starting point</span>
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'v'</span>)
+plt.axis(<span style="color: #008000;">'equal'</span>);
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/c1f4c94d90a889225272fea2bb93e8597ac73432/1086bbafaf4f806be5d67c367fc1e8903e38c61f.png" alt="1086bbafaf4f806be5d67c367fc1e8903e38c61f.png" />
+</p>
+</div>
+
+<p>
+So, evidently it is not exactly periodic in the beginning, but seems to take some time to settle down into a periodic rhythm. That seems to be the case, because if it didn't we would expect to see a continued spiral in or out of this limit cycle. Another way we can assess this quantitatively is to look at the peak positions in our solution. We return to an event type of solution. We seek an event where the derivative \(dx/dt=0\), and it is a maximum, which means \(x'\) starts positive, becomes zero, and then is negative. Note this is appropriate for this problem, where there is only one, periodic maximum. For other problems, you might need a different approach.
+</p>
+
+<p>
+Now, it is important to remember that the event function is only evaluated after a solver point, so we need to make sure the solver points bracket where events occur. This is accomplished by making sure that when we graph the solution from the solver (not from t_eval), that we can visually see where the events will occur.
+</p>
+
+<p>
+We use a new optional argument, <code>dense_output=True</code> in <code>solve_ivp</code> which will let us evaluate the solution at the event times.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">max_x_event</span>(t, X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">v</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">Xprime</span> = dXdt(t, X)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> Xprime[0]  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">first derivative = 0</span>
+
+<span style="color: #BA36A5;">max_x_event.direction</span> = -1 <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">event must go from positive to negative, i.e. a max</span>
+
+<span style="color: #BA36A5;">sol</span> = solve_ivp(dXdt, tspan, X0, max_step=h, events=max_x_event, dense_output=<span style="color: #D0372D;">True</span>)
+sol.t_events
+</pre>
+</div>
+
+<pre class="example">
+[array([ 0.98712369,  7.29961546, 13.60207133, 19.90194032, 26.2010961 ,
+        32.50005162, 38.79895061])]
+</pre>
+
+<p>
+You can see we found seven events. We need to evaluate the solution at these points, and we should plot them on the solution to see that they are in fact maxima. (what could possibly go wrong? if you get the wrong direction, then you will either see minima, or minima and maxima! If your event function is wrong, then it will just be wrong.) When you use <code>dense_output=True</code>, you get a new attribute on the solution which can be used to estimate the solution at some t values. Note we get two rows in our solution, one for x and one for v. From the numbers here, you can see that the x_max values seem to be settling down to about 2.0.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">sol.sol(sol.t_events[0])
+</pre>
+</div>
+
+<pre class="example">
+array([[ 2.07283325e+00,  2.02004874e+00,  2.00590349e+00,
+         2.00196134e+00,  2.00085100e+00,  2.00053732e+00,
+         2.00044864e+00],
+       [ 0.00000000e+00,  5.84601811e-16,  5.82867088e-16,
+        -3.21270788e-15,  2.44249065e-15, -4.48252546e-15,
+         6.62664368e-15]])
+</pre>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(sol.t, sol.y.T)
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">break up this calculation for ease of reading</span>
+<span style="color: #BA36A5;">te</span> = sol.t_events[0]
+<span style="color: #BA36A5;">xmax</span>, <span style="color: #BA36A5;">v_at_xmax</span> = sol.sol(te)
+plt.plot(te, xmax, <span style="color: #008000;">'ro'</span>)
+plt.plot(te, v_at_xmax, <span style="color: #008000;">'bo'</span>)
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">compare to. Don't do this, it is confusing and hard to figure out.</span>
+plt.plot(sol.t_events[0], sol.sol(sol.t_events[0])[0], <span style="color: #008000;">'ro'</span>)
+
+plt.xlabel(<span style="color: #008000;">'t'</span>)
+plt.ylabel(<span style="color: #008000;">'x,v'</span>)
+plt.legend([<span style="color: #008000;">'x'</span>, <span style="color: #008000;">'v'</span>])
+
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/c1f4c94d90a889225272fea2bb93e8597ac73432/4a7f7e6d32c3dcc4d3a9c795ee5210608057b5e7.png" alt="4a7f7e6d32c3dcc4d3a9c795ee5210608057b5e7.png" />
+</p>
+</div>
+
+<p>
+That looks good, the red dots appear at the maxima, and they are periodic, so now we can see how x<sub>max</sub> varies with time.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(te, xmax, <span style="color: #008000;">'ro'</span>)
+plt.xlabel(<span style="color: #008000;">'t'</span>)
+plt.ylabel(<span style="color: #008000;">'$x_{max}$'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, '$x_{max}$')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/c1f4c94d90a889225272fea2bb93e8597ac73432/e8be5c73ea04921738dad9b788f0d3b386979fa7.png" alt="e8be5c73ea04921738dad9b788f0d3b386979fa7.png" />
+</p>
+</div>
+
+<p>
+You can see that after about 5 cycles, xmax is practically constant. We can also see that the period (the time between maxima) is converging to a constant. We cannot say much about what happens at longer times. You could integrate longer if it is important to know that. This is a limitation of numerical methods though. To <i>prove</i> that it will be constant, you need to do some analytical math that would show the period and x<sub>max</sub> go to a constant.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(np.diff(te), <span style="color: #008000;">'bo'</span>)
+plt.xlabel(<span style="color: #008000;">'cycle'</span>)
+plt.ylabel(<span style="color: #008000;">'period'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'period')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/c1f4c94d90a889225272fea2bb93e8597ac73432/2ed2d01360af5f15d91ee1b7515a1464142515a0.png" alt="2ed2d01360af5f15d91ee1b7515a1464142515a0.png" />
+</p>
+</div>
+
+<p>
+If we seek the steady state, oscillatory behavior of this system, we should discard the solutions in at least the first 4 cycles, since the maxima and periods are still changing.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">te[-1]
+sol.sol(te[-1])
+</pre>
+</div>
+
+<pre class="example">
+array([2.00044864e+00, 6.62664368e-15])
+</pre>
+
+<p>
+Alternatively, we can use the last point as an initial value for a new integration that should be close to steady state oscillations.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">tspan</span> = (0, 40)
+<span style="color: #BA36A5;">X0</span> = sol.sol(te[-1])
+
+<span style="color: #BA36A5;">sol2</span> = solve_ivp(dXdt, tspan, X0, max_step=h, events=max_x_event)
+plt.plot(sol2.t, sol2.y.T)
+plt.xlabel(<span style="color: #008000;">'t'</span>)
+plt.ylabel(<span style="color: #008000;">'x,v'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'x,v')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/c1f4c94d90a889225272fea2bb93e8597ac73432/2144f6621fba0146dc56ee6970b25a657752bf42.png" alt="2144f6621fba0146dc56ee6970b25a657752bf42.png" />
+</p>
+</div>
+
+<p>
+Here you see about 6 more cycles. The period of these events is practically constant.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">sol2.t_events, np.diff(sol2.t_events[0])
+</pre>
+</div>
+
+<pre class="example">
+([array([3.31307575e-15, 6.29888301e+00, 1.25977615e+01, 1.88966387e+01,
+         2.51955156e+01, 3.14943923e+01, 3.77932690e+01])],
+ array([6.29888301, 6.2988785 , 6.29887721, 6.29887685, 6.29887676,
+        6.29887672]))
+</pre>
+
+<p>
+And the limit cycle shows practically a single curve.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(*sol2.y)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.axis(<span style="color: #008000;">'equal'</span>); <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">makes x-ticks have the same dimension as y-ticks</span>
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/c1f4c94d90a889225272fea2bb93e8597ac73432/2018a8d6b72c3b7295a635e4af726b58134bc4bc.png" alt="2018a8d6b72c3b7295a635e4af726b58134bc4bc.png" />
+</p>
+</div>
+
+<p>
+This limit cycle shows the oscillatory behavior. You can see here that each cycle repeats on top of itself.
+</p>
+
+<p>
+<b>Review</b> We have been working on finding a steady state oscillatory solution to \(\frac{d^2x}{dt^2} - \mu(1-x^2)\frac{dx}{dt} + x = 0\), which describes an oscillating system. We examined some ways to tell if a system is oscillating, and to estimate the period of the oscillation.
+</p>
+
+<div id="outline-container-orgfa83d95" class="outline-3">
+<h3 id="orgfa83d95"><span class="section-number-3">0.1</span> Solving a parameterized ODE many times</h3>
+<div class="outline-text-3" id="text-0-1">
+<p>
+\(\mu\) in the Van der Pol system is called a parameter. It is common to study the solution of this system as a function of &mu;. For <a href="https://en.wikipedia.org/wiki/Van_der_Pol_oscillator#/media/File:VanderPol-lc.svg">example</a>, the oscillatory behavior changes a lot as &mu; changes. Our aim here is to recreate the figure in that example, showing the steady state limit cycles as a function of &mu;.
+</p>
+
+<p>
+The example we want to create has limit cycles for 10 different values of &mu;. <i>We do not want to copy and paste code 10 times</i>. Instead, we should have some code we can <i>reuse 10 times</i>.
+</p>
+
+<p>
+Let's break this task down. For a given &mu;, we should find a solution to the ODEs that shows constant periods. That means we should integrate over a time span, check the periods, and if they are not constant, integrate from the last point over the time span again. If they are consistent, then we can just plot the solution.
+</p>
+
+<p>
+How can we check the periods are constant? One way is to see if the first and last are the same within some tolerance, say 1e-3.
+</p>
+
+<p>
+Ideally, we would have a function that takes one argument, &mu;, and returns the steady state oscillatory solution.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">We do not have to define this here, I just repeat it so you can see it again.</span>
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">max_x_event</span>(t, X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">v</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">Xprime</span> = dXdt(t, X)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> Xprime[0]  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">first derivative = 0</span>
+
+<span style="color: #BA36A5;">max_x_event.direction</span> = -1 <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">event must go from positive to negative, i.e. a max</span>
+
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">get_steady_state</span>(mu):
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">define the sys odes for this mu. We define it inside the function so it</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">uses the mu passed in to get_steady_state.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">def</span> <span style="color: #006699;">dXdt</span>(t, X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">v</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dxdt</span> = v
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dvdt</span> = mu * (1 - x**2) * v - x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.array([dxdt, dvdt])
+
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">X0</span> = np.array([2, 0])  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">start at x_max, velocity=0</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">tspan</span> = np.array([0, 40]) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">we assume we will get 4-6 periods this way</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">teval</span>, <span style="color: #BA36A5;">h</span> = np.linspace(*tspan, 1500, retstep=<span style="color: #D0372D;">True</span>)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">initial solution</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">sol</span> = solve_ivp(dXdt, tspan, X0, max_step=h, events=max_x_event, dense_output=<span style="color: #D0372D;">True</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">periods</span> = np.diff(sol.t_events[0])
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Now iterate as long as the first and last periods differ by more than the</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">tolerance. It is usually a good idea to provide a way to break out in case</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">it never ends. Here we use a max iteration count.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">i</span> = 0
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This assumes there are at least 2 periods in the tspan.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">while</span> np.<span style="color: #006FE0;">abs</span>(periods[0] - periods[-1]) &gt; 1e-3:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">last_step</span> = sol.y[:, -1] <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">this is the new initial condition to continue from.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">sol</span> = solve_ivp(dXdt, tspan, last_step, max_step=h, events=max_x_event, dense_output=<span style="color: #D0372D;">True</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">now get new periods.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">periods</span> = np.diff(sol.t_events[0])
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">i</span> += 1
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> i &gt; 5: <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">if we exceed 5 iterations, something is probably wrong, so stop.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dp</span> = np.<span style="color: #006FE0;">abs</span>(periods[0] - periods[-1])
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(dp, periods)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'Max iterations exceeded and no stability for mu=</span><span style="color: #BA36A5;">{mu}</span><span style="color: #008000;">'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">break</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'For mu=</span><span style="color: #BA36A5;">{mu}</span><span style="color: #008000;">, steady period after </span><span style="color: #BA36A5;">{i}</span><span style="color: #008000;"> iterations'</span>)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Finally, return the last solution</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> sol
+</pre>
+</div>
+
+<p>
+Note: This is a little time consuming to run.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">MU</span> = [0.01, 0.1, 0.5, 1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+MU.reverse()
+
+plt.figure(figsize=(3,6))
+<span style="color: #0000FF;">for</span> mu <span style="color: #0000FF;">in</span> MU:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">sol</span> = get_steady_state(mu)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   plt.plot(*sol.y, lw=0.5, label=f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{mu:1.2f}</span><span style="color: #008000;">'</span>)
+
+plt.legend(title=<span style="color: #008000;">'$\mu$'</span>,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  loc=<span style="color: #008000;">'upper center'</span>,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">this line says put the legend outside the box.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">(0, 0) is the lower left, (1, 1) is the upper right</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  bbox_to_anchor=(1.2, 1))
+
+plt.axis(<span style="color: #008000;">'equal'</span>);
+</pre>
+</div>
+
+<p>
+For mu=4.0, steady period after 1 iterations
+For mu=3.5, steady period after 1 iterations
+For mu=3.0, steady period after 1 iterations
+For mu=2.5, steady period after 1 iterations
+For mu=2.0, steady period after 1 iterations
+For mu=1.5, steady period after 1 iterations
+For mu=1, steady period after 1 iterations
+For mu=0.5, steady period after 1 iterations
+For mu=0.1, steady period after 0 iterations
+For mu=0.01, steady period after 0 iterations
+</p>
+
+<pre class="example">
+&lt;Figure size 216x432 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/c1f4c94d90a889225272fea2bb93e8597ac73432/b882dbd49870d7d9091ed4bd1c54a39a16dd8c93.png" alt="b882dbd49870d7d9091ed4bd1c54a39a16dd8c93.png" />
+</p>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-orgb37a2ae" class="outline-2">
+<h2 id="orgb37a2ae"><span class="section-number-2">1</span> Summary</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Today we covered the conversion of an n<sup>th</sup> order differential equation into a system of first order differential equations.
+</p>
+
+<p>
+We examined the use of the optional argument max_step to fine tune the solution points returned by the solver.
+</p>
+
+<p>
+This concludes our the first section on ordinary differential equations.
+</p>
+
+<p>
+On Wed, I will answer questions for about half of the class, and we will have a quiz on the second half of class. The quiz will be a single question, and will be representative of the exam next week.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 06:01</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

@@ -4,7 +4,7 @@
 
 Please report errors/typos and issues at https://github.com/jkitchin/f19-06623/issues.
 
-image:./06623-roadmap.png
+[[./06623-roadmap.png]]
 
 #+BEGIN_SRC ipython
 
@@ -15,6 +15,7 @@ image:./06623-roadmap.png
 3. [[f1906623:02-integration-1.org][Numerical integration]]
 4. [[f1906623:03-fode-1.org][First order differential equations]]
 5. [[f1906623:04-fode-2.org][Families of first order differential equations]]
+6. [[f1906623:05-nth-odes.org][N^{th} order ODEs]]
 
 * Setup the publishing project                                     :noexport:
 
