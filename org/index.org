@@ -6,3 +6,72 @@
 
 1. [[f1906623:00-intro.org][A brief introduction]]
 2. [[f1906623:01-jupyter.org][About Jupyter]]
+3. [[f1906623:02-integration-1.org][Numerical integration]]
+
+
+
+* Setup the publishing project                                     :noexport:
+
+I have not done that for notebooks.
+
+- org :: the org-files for the notebooks  [[./org]]
+- docs :: the place to publish the html files
+- docs/notebooks :: place to publish the notebooks
+
+https://github.com/jkitchin/f19-06623/tree/master/docs
+https://github.com/jkitchin/f19-06623/blob/master/docs/notebooks/00-intro.ipynb
+
+#+BEGIN_SRC emacs-lisp
+;; This is a link for getting links right.
+(org-link-set-parameters
+ "f1906623"
+ :follow (lambda (path)
+	   (find-file path))
+ :export (lambda (path desc backend)
+	   (let* ((html-path (concat (file-name-base path) ".html"))
+		  (ipynb (concat (file-name-base path) ".ipynb"))
+		  (colab (format "<a href=\"https://colab.research.google.com/github/jkitchin/f19-06623/blob/master/docs/notebooks/%s\" target=\"_blank\"><img align=\"left\" src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open in Colab\" title=\"Open and Execute in Google Colaboratory\"></a>"
+				 ipynb)))
+             (cond
+              ((eq 'md backend)
+               (format "[%s](%s)" desc ipynb))
+	      ((eq 'html backend)
+	       (if desc
+		   (format "<span><a href=\"%s\">%s</a> %s</span>" html-path desc colab)
+		 (format "%s" colab)))))))
+
+
+
+(require 'ox-publish)
+(setq org-publish-project-alist
+      '(("html"
+	 :base-directory "/Users/jkitchin/Desktop/f19-06623/org/"
+	 :base-extension "org"
+	 :publishing-directory "/Users/jkitchin/Desktop/f19-06623/docs/"
+	 :recursive t
+	 :publishing-function org-html-publish-to-html
+	 :auto-preamble t)
+	("notebooks"
+	 :base-directory "/Users/jkitchin/Desktop/f19-06623/org/"
+	 :base-extension "org"
+	 :publishing-directory "/Users/jkitchin/Desktop/f19-06623/docs/notebooks"
+	 :recursive t
+	 :publishing-function ox-ipynb-publish-to-notebook
+	 :auto-preamble t)
+	("static-html"
+	 :base-directory "/Users/jkitchin/Desktop/f19-06623/org/"
+	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|dat\\|mat\\|txt\\|svg"
+	 :publishing-directory "/Users/jkitchin/Desktop/f19-06623/docs/"
+	 :exclude "org\\|notebooks\\|html"
+	 :recursive t
+	 :publishing-function org-publish-attachment)
+
+
+	;; ... all the components ...
+	("f19-06623" :components ("html" "notebooks"
+			      "static-html"))))
+
+(org-publish "f19-06623" t)
+#+END_SRC
+
+#+RESULTS:
