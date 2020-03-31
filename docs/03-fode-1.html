@@ -1,0 +1,1115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 05:47 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>First-order differential equations</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="integration, quad, zeros, shape, enumerate, solve_ivp" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">First-order differential equations</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org91d1ca2">1. Solutions to first-order differential equations by integration</a>
+<ul>
+<li><a href="#org5d84d22">1.1. Homogeneous, first-order linear differential equations</a></li>
+<li><a href="#orgf921fa1">1.2. Non-homogeneous linear first-order ODEs</a></li>
+<li><a href="#orgdd3c45c">1.3. Limitations of solutions by integration</a></li>
+</ul>
+</li>
+<li><a href="#orgc2d3456">2. Numerical solutions to differential equations</a>
+<ul>
+<li><a href="#orge65f13a">2.1. Euler's method</a></li>
+<li><a href="#orgbfb8a7b">2.2. Fourth-order Runge-Kutta method</a></li>
+</ul>
+</li>
+<li><a href="#org50863ca">3. scipy.integrate.solve_ivp</a></li>
+<li><a href="#orgb39f078">4. Summary</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org91d1ca2" class="outline-2">
+<h2 id="org91d1ca2"><span class="section-number-2">1</span> Solutions to first-order differential equations by integration</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Adapted from Ch. 2 in Advanced Engineering Mathematics, 2<sup>nd</sup> Ed. by Michael Greenberg.
+</p>
+</div>
+
+<div id="outline-container-org5d84d22" class="outline-3">
+<h3 id="org5d84d22"><span class="section-number-3">1.1</span> Homogeneous, first-order linear differential equations</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+We first consider a homogeneous, first-order, linear differential equation of the form:
+</p>
+
+<p>
+\(y' + p(x) y = 0\), with \(y(a) = b\) as an initial value.
+</p>
+
+<p>
+You can derive a solution to this ODE as:
+</p>
+
+<p>
+\(y(x) = b e^{-\int_a^x p(\xi) d\xi}\)
+</p>
+
+<p>
+For concreteness, consider \((x+2) y' - xy = 0, y(0) = 3\)
+</p>
+
+<p>
+what is the value of \(y(1)\)?
+</p>
+
+<p>
+We need to cast this in the form required to identify \(p(x)\). That form is:
+</p>
+
+<p>
+\(y' + \frac{-x}{x+2}y = 0\).
+</p>
+
+<p>
+Now, we simply evaluate the required integral and use it to compute the value of the solution at the desired new \(x\) value.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a</span> = 0
+<span style="color: #BA36A5;">b</span> = 3
+<span style="color: #BA36A5;">x1</span> = 1
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">p</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -x / (x + 2)
+
+<span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> quad
+
+<span style="color: #BA36A5;">I</span>, <span style="color: #BA36A5;">err</span> = quad(p, a, x1)
+
+<span style="color: #BA36A5;">y_x1</span> = b * np.exp(-I)
+
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'y(1) = </span><span style="color: #BA36A5;">{y_x1:1.3f}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+y(1) = 3.624
+</p>
+
+<p>
+It is a little trickier to evaluate the solution at several x-values, e.g. to make a plot. The <code>quad</code> function is not "vectorized", meaning it only performs one integral for one range at a time. You cannot pass it a list of ranges to evaluate it several times. Instead, we have to use a loop for this. In the loop, we will solve the integral, and accumulate the result in a solution array. Before we do that, here are a few useful commands we will need to use.
+</p>
+
+<p>
+First, it is useful to make an array to store the results in. There are a few ways to do this, the one we use today is the <code>np.zeros</code> function. You specify the size of the array as an argument. For example, to make an array with three zeros, do this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.zeros(3)
+</pre>
+</div>
+
+<pre class="example">
+array([0., 0., 0.])
+</pre>
+
+<p>
+Second, it is helpful to get the shape of an array. You use dot notation and the shape attribute of an array for this. This allows you to create an array, and later make an array of zeros with the same shape and size.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x</span> = np.linspace(0, 3.5)
+x.shape
+</pre>
+</div>
+
+<pre class="example">
+(50,)
+</pre>
+
+<p>
+Finally we will iterate over the elements of the x array, and in each step we need to know the index of the element <i>and</i> the value of the element. <code>enumerate</code> provides this in a pretty straightforward syntax. This function iterates over an array and returns at each step the index and element, which you can assign to variables that you use inside the loop. There are other ways to achieve this, but we only consider this method today. Here, we create an array, and an array of zeros that is the same shape. Then, we iterate over the first array, and set the corresponding index in the second array equal to a computation using the index and element value.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">arr</span> = np.linspace(0, 1, 5)
+<span style="color: #BA36A5;">new_arr</span> = np.zeros(arr.shape)
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'Before the loop new_arr = </span><span style="color: #BA36A5;">{new_arr}</span><span style="color: #008000;">'</span>)
+
+<span style="color: #0000FF;">for</span> i, val <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">enumerate</span>(arr):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">new_arr</span>[i] = i * val
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'The element at index </span><span style="color: #BA36A5;">{i}</span><span style="color: #008000;"> is </span><span style="color: #BA36A5;">{val}</span><span style="color: #008000;">'</span>)
+
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'After the loop new_arr = </span><span style="color: #BA36A5;">{new_arr}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+Before the loop new_arr = [0. 0. 0. 0. 0.]
+The element at index 0 is 0.0
+The element at index 1 is 0.25
+The element at index 2 is 0.5
+The element at index 3 is 0.75
+The element at index 4 is 1.0
+After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
+</p>
+
+<p>
+Back to the solution to our integration problem. Our goal is to compute the value of the solution for an array of x-values. We will iterate over an array of x-values, and for each one compute the value of the solution at that x, and save the solution in a new array.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x</span> = np.linspace(0, 3.5)
+<span style="color: #BA36A5;">y</span> = np.zeros(x.shape)
+
+<span style="color: #0000FF;">for</span> i, x1 <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">enumerate</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">I</span>, <span style="color: #BA36A5;">err</span> = quad(p, a, x1)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span>[i] = b * np.exp(-I)
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+plt.plot(x, y)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.xlim([x.<span style="color: #006FE0;">min</span>(), x.<span style="color: #006FE0;">max</span>()])
+</pre>
+</div>
+
+<pre class="example">
+(0.0, 3.5)
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/4ecb6e42a5d3f3a68cada09d79f35c65094caf82/cd2db755fe3fcc10e983a58989ac3b70953939bc.png" alt="cd2db755fe3fcc10e983a58989ac3b70953939bc.png" />
+</p>
+</div>
+
+<p>
+We should ask, how can we tell this is correct? We can confirm the initial values, which we know are correct.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">x[0], y[0]
+</pre>
+</div>
+
+<pre class="example">
+(0.0, 3.0)
+</pre>
+
+<p>
+We can express the ODE as: \(y' = \frac{x}{x+2}y\). By inspection, we can see that the derivative will always be positive, so the solution should increase from the initial value, which it does.
+</p>
+
+<p>
+We can also examine the derivatives of our solution. We have to rely on numerical derivatives of our solution because x and y are arrays. <code>np.gradient</code> will compute the derivative using a reasonable approximation. We know the derivative analytically from the ODE.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">dydx</span> = np.gradient(y, x)
+
+plt.plot(x, dydx, label=<span style="color: #008000;">'numerical'</span>)
+plt.plot(x, x / (x + 2) * y, <span style="color: #008000;">'r--'</span>, label=<span style="color: #008000;">'analytical'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'dy/dx'</span>)
+plt.legend()
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/4ecb6e42a5d3f3a68cada09d79f35c65094caf82/e0915e69787f661b28c9cc2caf8f4513ce85728d.png" alt="e0915e69787f661b28c9cc2caf8f4513ce85728d.png" />
+</p>
+</div>
+
+<p>
+Here you see good agreement over most of the range. The end-points are always less accurate because the derivatives there are approximated by a less accurate formula. We interpret the sum of this evidence to mean our solution to the ODE is good over this range of x values.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf921fa1" class="outline-3">
+<h3 id="orgf921fa1"><span class="section-number-3">1.2</span> Non-homogeneous linear first-order ODEs</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+A non-homogenous first order, linear differential equation has this form:
+</p>
+
+<p>
+\(y' + p(x) y = q(x), y(a)=b\)
+</p>
+
+<p>
+Equations of this form are typically solved with a method called variation of parameters. In the most general form, this leads to solutions of the form:
+</p>
+
+<p>
+\(y(x) = e^{-\int_a^x p(\xi)d\xi}\left(\int_a^x e^{-\int_a^{\xi} p(\zeta)d\zeta} q(\xi)d\xi + b\right)\)
+</p>
+
+<p>
+It is a little tricky to implement this. It is helpful to break this down into several pieces. Note that it is not necessary to do this, it just makes it easier to read, debug, and see that you have done it correctly. Here are the easiest parts.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">p</span>(xi):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -2 * xi
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">q</span>(xi):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.sin(xi)
+
+<span style="color: #BA36A5;">a</span> = 0
+<span style="color: #BA36A5;">b</span> = 3
+</pre>
+</div>
+
+<p>
+Next, we will break the equation into two parts:
+</p>
+
+<p>
+\(y(x) = term1 * term2\) where
+</p>
+
+<p>
+\(term1 = e^{-\int_a^x p(\xi)d\xi}\)
+</p>
+
+<p>
+and
+</p>
+
+<p>
+\(term2 = \left(\int_a^x e^{-\int_a^{\xi} p(\zeta)d\zeta} q(\xi)d\xi + b\right)\)
+</p>
+
+<p>
+We can immediately define a function for term1 as:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">term1</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">I1</span>, <span style="color: #BA36A5;">_</span> = quad(p, a, x)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.exp(-I1)
+</pre>
+</div>
+
+<p>
+term2 is a little trickier, as it has a partial integral inside an integral. We can define a function for this term also, but we have to define an internal function to use for the integral. The internal function will have an integral inside of it.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">term2</span>(x):
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">def</span> <span style="color: #006699;">integrand</span>(xi):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">internal_term1</span>, <span style="color: #BA36A5;">_</span> = quad(p, a, xi)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">internal_term2</span> = q(xi)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.exp(internal_term1) * internal_term2
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">I2</span>, <span style="color: #BA36A5;">_</span> = quad(integrand, a, x)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> I2 + b
+</pre>
+</div>
+
+<p>
+Now, to use it, we form the product of the two terms:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x1</span> = 0.5
+<span style="color: #0000FF;">print</span>(term1(x1) * term2(x1))
+</pre>
+</div>
+
+<p>
+3.991276533834524
+</p>
+
+<p>
+With some algebra and calculus on your part, you might arrive at the following non-elementary integral solution:
+</p>
+
+<p>
+\(y(x) = e^{x^2} \left(\int_0^x e^{-\xi^2} \sin{\xi} d\xi + 3\right)\)
+</p>
+
+<p>
+The solution is called non-elementary because you cannot evaluate the integral in closed form using elementary functions, e.g. powers of x, trigonometric functions, exponentials or logarithms. You can, however, use numerical methods to integrate it.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">integrand</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.exp(-x**2) * np.sin(x)
+
+<span style="color: #BA36A5;">I</span>, <span style="color: #BA36A5;">_</span> = quad(integrand, 0, x1)
+
+<span style="color: #BA36A5;">sol</span> = np.exp(x1**2) * (I + b)
+sol
+</pre>
+</div>
+
+<pre class="example">
+3.991276533834524
+</pre>
+
+<p>
+Note there is some conservation of effort here. If you can derive the solution above correctly (and you have all learned how to do this if you had a differential equations course), the code below is quite short to get the solution at some value of x. If you are unable to derive that solution, you can use the general solution we gave, but then it is a trickier solution to implement in code.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgdd3c45c" class="outline-3">
+<h3 id="orgdd3c45c"><span class="section-number-3">1.3</span> Limitations of solutions by integration</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+Solution by integration has some advantages. You get an estimate of the error in the solution from the <code>quad</code> function, which is helpful to know how good the solution is. However, the methods described above are limited to <i>linear</i> differential equations of the form described. If you have a nonlinear differential equation, or if you are unable to separate the equations into integrable form, the methods simply don't work. Next, we consider how to approach equations where we cannot use integration to solve the problems.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc2d3456" class="outline-2">
+<h2 id="orgc2d3456"><span class="section-number-2">2</span> Numerical solutions to differential equations</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+We begin with a brief review of first order differential equations. The equations we are concerned with here all have the form:
+</p>
+
+<p>
+\(\frac{dy}{dx} = f(x, y)\)
+</p>
+
+<p>
+And the value of the solution is known at some point, e.g. \(y(x0) = y0\). \(f(x, y)\) can be linear or nonlinear. Our goal in this section is to motivate how numerical solutions are obtained.
+</p>
+
+<p>
+These notes were adapted from Chapter 6 in Advanced Engineering Mathematics 2<sup>nd</sup> ed. by Michael D. Greenberg.
+</p>
+
+<p>
+The basic idea behind these methods is that we know the initial value of the solution <i>and</i> the derivative of the solution (it is defined by the ODE definition above), and so we can estimate the solution a small distance away from the initial value. If you repeat this process with the newly estimated point, you can estimate the next point, and so on. There are many algorithms for performing the estimation, and we will consider a two of them. These algorithms differ in efficiency, ease of implementation, and accuracy.
+</p>
+</div>
+
+<div id="outline-container-orge65f13a" class="outline-3">
+<h3 id="orge65f13a"><span class="section-number-3">2.1</span> Euler's method</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+The main idea of Euler's method is that if you know the value of the solution at some point, and you know the derivative at that point, you can estimate the solution nearby at \(x0 + h\), where \(h\) is a small number:
+</p>
+
+<p>
+\(y_{n+1} = y_n + f(x_n, y_n) h\)
+</p>
+
+<p>
+Now, you just repeat this until you get to the x-value that you want. For concreteness, consider:
+</p>
+
+<p>
+\(y' = y + 2x - x^2; y(0) = 1\).
+</p>
+
+<p>
+This ODE has a known analytical solution: \(y(x) = x^2 + e^x\). We will use this for comparison.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x, y):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y + 2 * x - x**2
+
+<span style="color: #BA36A5;">x0</span> = 0
+<span style="color: #BA36A5;">y0</span> = 1
+
+<span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">h</span> = np.linspace(x0, 1.5, 5, retstep=<span style="color: #D0372D;">True</span>)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Note the optional argument to get the stepsize.</span>
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'h = </span><span style="color: #BA36A5;">{h}</span><span style="color: #008000;">'</span>)
+
+<span style="color: #BA36A5;">y</span> = np.zeros(x.shape)
+<span style="color: #BA36A5;">y</span>[0] = y0
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Implementation of Euler's method</span>
+<span style="color: #0000FF;">for</span> n <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(0, <span style="color: #006FE0;">len</span>(x) - 1):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span>[n + 1] = y[n] + f(x[n], y[n]) * h
+</pre>
+</div>
+
+<p>
+h = 0.375
+</p>
+
+<p>
+We can check out the solution graphically:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+plt.plot(x, y, label=<span style="color: #008000;">'Euler'</span>)
+plt.plot(x, x**2 + np.exp(x), <span style="color: #008000;">'r--'</span>, label=<span style="color: #008000;">'Analytical'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.legend()
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/4ecb6e42a5d3f3a68cada09d79f35c65094caf82/bf30a4475b03f8c2a8b4172221e9373552acc36c.png" alt="bf30a4475b03f8c2a8b4172221e9373552acc36c.png" />
+</p>
+</div>
+
+<p>
+This solution does not look that good until you increase the number of points (i.e. decrease the value of \(h\), significantly). It is known the error decreases only linearly with \(h\).
+</p>
+
+<p>
+<b>Exercise</b> Increase the number of points in the x array and see how it affects the solution.
+</p>
+
+<p>
+This method is not used in practice; it is not very accurate, and you need quite small \(h\) to get a good solution. It is used here to illustrate the idea of how one integrates a differential equation. We will consider one more advanced method, the fourth-order Runge-Kutta method.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgbfb8a7b" class="outline-3">
+<h3 id="orgbfb8a7b"><span class="section-number-3">2.2</span> Fourth-order Runge-Kutta method</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+The general idea of the more advanced methods is to use a weighted average of slopes at various points around a point to best estimate the next function value. Here we consider the fourth-order Runge-Kutta algorithm. The terms are tedious to derive, and we will not do it here as they can be looked up in several places (e.g. <a href="https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods#The_Runge%E2%80%93Kutta_method">https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods#The_Runge%E2%80%93Kutta_method</a>).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x0</span> = 0
+<span style="color: #BA36A5;">y0</span> = 1
+
+<span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">h</span> = np.linspace(x0, 1.5, 5, retstep=<span style="color: #D0372D;">True</span>)
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'h = </span><span style="color: #BA36A5;">{h}</span><span style="color: #008000;">'</span>)
+<span style="color: #BA36A5;">y</span> = np.zeros(x.shape)
+<span style="color: #BA36A5;">y</span>[0] = y0
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Implementation of fourth order Runge Kutta method</span>
+<span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(0, <span style="color: #006FE0;">len</span>(x) - 1):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">k1</span> = h * f(x[i], y[i]) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Note this is like Euler's method</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">k2</span> = h * f(x[i] + h / 2, y[i] + k1 / 2)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This is the increment at the midpoint using y, k1</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">k3</span> = h * f(x[i] + h / 2, y[i] + k2 / 2)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This is the increment at the midpoint using y, k2</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">k4</span> = h * f(x[i + 1], y[i] + k3) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This is the increment at the end of the interval</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This is a weighted average of the four increments computed above. There is a heavier weight on the midpoints</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">y</span>[i + 1] = y[i] + (k1 + (2 * k2) + (2 * k3) + k4) / 6
+</pre>
+</div>
+
+<p>
+h = 0.375
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(x, y, label=<span style="color: #008000;">'RK-4'</span>)
+plt.plot(x, x**2 + np.exp(x), <span style="color: #008000;">'r--'</span>, label=<span style="color: #008000;">'Analytical'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.legend()
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/4ecb6e42a5d3f3a68cada09d79f35c65094caf82/9d026b85b8d384598a4b17d8bb14b7873efb7af5.png" alt="9d026b85b8d384598a4b17d8bb14b7873efb7af5.png" />
+</p>
+</div>
+
+
+<p>
+Note you can get a much more accurate solution with a larger \(h\) with this method.
+</p>
+
+<p>
+<i>If</i> our differential equation is just \(\frac{dy}{dt} = f(x)\), i.e. \(f\) is independent of \(y\), then this method is equivalent to Simpson't rule of integration.
+</p>
+
+<p>
+Both of these methods leave some things to be desired:
+</p>
+
+<ol class="org-ol">
+<li>We had to code them, and there are many places to make mistakes.</li>
+<li>You have to choose \(h\), or equivalently the number of points to use, and then make sure the solution has converged (does not depend on your choice).</li>
+<li>\(h\) is fixed in these examples, and you might prefer to use an adaptive value.</li>
+<li>It is not easy to solve the inverse problem, e.g. for what value of \(x\) does \(y=4\)?</li>
+</ol>
+
+<p>
+In practice, there are well-written ODE integrators to solve this kind of problem that address all the short-comings listed above. To use them, we just need to learn the syntax. We do that next.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org50863ca" class="outline-2">
+<h2 id="org50863ca"><span class="section-number-2">3</span> scipy.integrate.solve_ivp</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+The <code>scipy.integrate</code> library provides <code>solve_ivp</code> to solve first order differential equations. It is not the only one available, but this function is recommended. You import the function like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> solve_ivp
+</pre>
+</div>
+
+<p>
+Here is a minimal use of the function, with keyword arguments.
+</p>
+
+
+<p>
+<code>y0</code> is an array containing the initial values.  <code>fun</code> is a function with a signature of f(t, y). Here, \(t\) is considered the independent variable. You can call it whatever you want, so f(x, y) is also fine. Since <code>solve_ivp</code> had \(t\) in mind, the second argument is the <code>t_span</code>, which is a tuple of two numbers for where the integration starts (t0, or x0) and where it ends.  <code>solve_ivp</code> returns an object.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">y0</span> = np.array([y0]) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">It is a good idea to make y0 an array. It will be important later.</span>
+<span style="color: #BA36A5;">sol</span> = solve_ivp(fun=f, t_span=(x0, 1.5), y0=y0)
+</pre>
+</div>
+
+<p>
+The output of <code>solve_ip</code> is an object containing results in attributes on the object.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">sol
+</pre>
+</div>
+
+<pre class="example">
+ message: 'The solver successfully reached the end of the integration interval.'
+    nfev: 20
+    njev: 0
+     nlu: 0
+     sol: None
+  status: 0
+ success: True
+       t: array([0.        , 0.08034384, 0.86683456, 1.5       ])
+t_events: None
+       y: array([[1.        , 1.09011474, 3.13086569, 6.73191444]])
+y_events: None
+</pre>
+
+<p>
+You should look for a few things here. One is that the message indicates success. Second, we access the solution using dot notation. Here are the independent variable values the solution was evaluated at.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">sol.t
+</pre>
+</div>
+
+<pre class="example">
+array([0.        , 0.08034384, 0.86683456, 1.5       ])
+</pre>
+
+<p>
+Third, the solution is in a 2D array. We only have one equation here, so we use indexing to get the first row as an array.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">sol.y[0]
+</pre>
+</div>
+
+<pre class="example">
+array([1.        , 1.09011474, 3.13086569, 6.73191444])
+</pre>
+
+<p>
+Now, we can plot the solution.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(sol.t, sol.y[0], label=<span style="color: #008000;">'solve_ivp'</span>)
+plt.plot(sol.t, sol.t**2 + np.exp(sol.t), <span style="color: #008000;">'r--'</span>, label=<span style="color: #008000;">'Analytical'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.legend()
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/4ecb6e42a5d3f3a68cada09d79f35c65094caf82/c04d7a2308e2e655b76e9244b3a0494d0cb8a68d.png" alt="c04d7a2308e2e655b76e9244b3a0494d0cb8a68d.png" />
+</p>
+</div>
+
+<p>
+That doesn't looks so great since there are only four data points. By default, the algorithm only uses as many points as it needs to achieve a specified tolerance. We can specify that we want the solution evaluated at other points using the optional <code>t_eval</code> keyword arg.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">X</span> = np.linspace(x0, 1.5)
+<span style="color: #BA36A5;">sol</span> = solve_ivp(fun=f, t_span=(x0, 1.5), y0=y0, t_eval=X)
+sol
+</pre>
+</div>
+
+<pre class="example">
+ message: 'The solver successfully reached the end of the integration interval.'
+    nfev: 20
+    njev: 0
+     nlu: 0
+     sol: None
+  status: 0
+ success: True
+       t: array([0.        , 0.03061224, 0.06122449, 0.09183673, 0.12244898,
+      0.15306122, 0.18367347, 0.21428571, 0.24489796, 0.2755102 ,
+      0.30612245, 0.33673469, 0.36734694, 0.39795918, 0.42857143,
+      0.45918367, 0.48979592, 0.52040816, 0.55102041, 0.58163265,
+      0.6122449 , 0.64285714, 0.67346939, 0.70408163, 0.73469388,
+      0.76530612, 0.79591837, 0.82653061, 0.85714286, 0.8877551 ,
+      0.91836735, 0.94897959, 0.97959184, 1.01020408, 1.04081633,
+      1.07142857, 1.10204082, 1.13265306, 1.16326531, 1.19387755,
+      1.2244898 , 1.25510204, 1.28571429, 1.31632653, 1.34693878,
+      1.37755102, 1.40816327, 1.43877551, 1.46938776, 1.5       ])
+t_events: None
+       y: array([[1.        , 1.03202273, 1.06688599, 1.10462029, 1.14526069,
+       1.18883821, 1.23538386, 1.28493005, 1.33751066, 1.39316097,
+       1.45191772, 1.51381907, 1.57890465, 1.64721547, 1.71879402,
+       1.79368421, 1.87193138, 1.95358232, 2.03868524, 2.12728979,
+       2.21944707, 2.31520959, 2.41463131, 2.51776762, 2.62467537,
+       2.7354128 , 2.85003963, 2.96861698, 3.09120744, 3.21787836,
+       3.34870553, 3.48375748, 3.6231049 , 3.76682143, 3.91498364,
+       4.06767101, 4.22496595, 4.38695382, 4.55372287, 4.7253643 ,
+       4.90197223, 5.08364371, 5.2704787 , 5.46258012, 5.66005377,
+       5.86300842, 6.07155575, 6.28581035, 6.50588976, 6.73191444]])
+y_events: None
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(sol.t, sol.y[0], label=<span style="color: #008000;">'solve_ivp'</span>)
+plt.plot(X, X**2 + np.exp(X), <span style="color: #008000;">'r--'</span>, label=<span style="color: #008000;">'Analytical'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.legend()
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/4ecb6e42a5d3f3a68cada09d79f35c65094caf82/e8213952317338541822719de16878903b7dacb6.png" alt="e8213952317338541822719de16878903b7dacb6.png" />
+</p>
+</div>
+
+<p>
+So far, <code>solve_ivp</code> solves the issues with item 1 (we did not have to code the algorithm), and items 2 and 3 (it uses an adaptive step and converges to a tolerance for us). It will also help us solve for the inverse problem, i.e. for what value of \(x\) is \(y=4\)?
+</p>
+
+<p>
+To do this, we need a new concept of an "event function". During each step of the integration, you can run a function that can detect an "event". When an event is detected, the location of the event is stored, and if desired integration can be terminated. <code>solve_ivp</code> can take a list of event functions. We consider only one for now.
+</p>
+
+<p>
+An event occurs when an event function is equal to zero. During integration, if the event function changes sign, then it is clear an event has occurred, and the algorithm determines where it occurred. Since we want to know when \(y=4\), we will define a function that returns \(y - 4\), because that will equal zero at that condition. We want the integration to terminate when that happens, so we set the "terminal" attribute on our function to True.
+</p>
+
+<p>
+An event function has a signature of f(x, y). Remember that \(y\) is going to be an array,
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">event1</span>(x, y):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y[0] - 4
+
+<span style="color: #BA36A5;">event1.terminal</span> = <span style="color: #D0372D;">True</span>
+
+<span style="color: #BA36A5;">sol</span> = solve_ivp(fun=f, t_span=(x0, 1.5), y0=y0, events=event1)
+sol
+</pre>
+</div>
+
+<pre class="example">
+ message: 'A termination event occurred.'
+    nfev: 20
+    njev: 0
+     nlu: 0
+     sol: None
+  status: 1
+ success: True
+       t: array([0.        , 0.08034384, 0.86683456, 1.05797402])
+t_events: [array([1.05797402])]
+       y: array([[1.        , 1.09011474, 3.13086569, 4.        ]])
+y_events: [array([[4.]])]
+</pre>
+
+<p>
+Now, there are a couple of new things to note. First, we got a message that a termination event occurred. Second, the sol.y array ends at 4.0, because we made the event function <i>terminal</i>. Next, sol.t_events is not empty, because an event occurred. It now contains the value where the event occurred, which is where \(y=4\)!
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">sol.t_events[0]
+</pre>
+</div>
+
+<pre class="example">
+array([1.05797402])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython">sol.t
+</pre>
+</div>
+
+<pre class="example">
+array([0.        , 0.08034384, 0.86683456, 1.05797402])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'y=4 at x=</span><span style="color: #BA36A5;">{sol.t[-1]}</span><span style="color: #008000;">. Confirming: y = </span><span style="color: #BA36A5;">{sol.t[-1]**2 + np.exp(sol.t[-1])}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+y=4 at x=1.0579740235381914. Confirming: y = 3.9998382237380805
+</p>
+
+
+<p>
+That is pretty close. You have to decide if it is close enough for the purpose you want. You can control the tolerance with optional <code>atol</code> and <code>rtol</code> keywords. You should read the documentation before changing this.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">event1</span>(x, y):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> y[0] - 4
+
+<span style="color: #BA36A5;">event1.terminal</span> = <span style="color: #D0372D;">True</span>
+
+<span style="color: #BA36A5;">sol</span> = solve_ivp(fun=f, t_span=(x0, 1.5), y0=y0, events=event1, rtol=1e-9)
+sol
+sol.t[-1]**2 + np.exp(sol.t[-1])
+</pre>
+</div>
+
+<pre class="example">
+3.9999994300847344
+</pre>
+</div>
+</div>
+
+
+
+<div id="outline-container-orgb39f078" class="outline-2">
+<h2 id="orgb39f078"><span class="section-number-2">4</span> Summary</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+We learned how to solve different types of first-order differential equations. Linear equations can be solved by integration, which has the benefit of providing an estimate of error if the <code>scipy.integrate.quad</code> function is used.
+</p>
+
+<p>
+Most first-order differential equations can be solved numerically with <code>scipy.integrate.solve_ivp</code>. This solver allows you to specify the points the solution is evaluated on, and to define event functions that can terminate the integration, or record where events occur.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 05:47</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

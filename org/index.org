@@ -7,7 +7,7 @@
 1. [[f1906623:00-intro.org][A brief introduction]]
 2. [[f1906623:01-jupyter.org][About Jupyter]]
 3. [[f1906623:02-integration-1.org][Numerical integration]]
-
+4. [[f1906623:03-fode-1.org][First order differential equations]]
 
 
 * Setup the publishing project                                     :noexport:
@@ -30,7 +30,7 @@ https://github.com/jkitchin/f19-06623/blob/master/docs/notebooks/00-intro.ipynb
  :export (lambda (path desc backend)
 	   (let* ((html-path (concat (file-name-base path) ".html"))
 		  (ipynb (concat (file-name-base path) ".ipynb"))
-		  (colab (format "<a href=\"https://colab.research.google.com/github/jkitchin/f19-06623/blob/master/docs/notebooks/%s\" target=\"_blank\"><img align=\"left\" src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open in Colab\" title=\"Open and Execute in Google Colaboratory\"></a>"
+		  (colab (format "<a href=\"https://colab.research.google.com/github/jkitchin/f19-06623/blob/master/docs/notebooks/%s\" target=\"_blank\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open in Colab\" title=\"Open and Execute in Google Colaboratory\"></a>"
 				 ipynb)))
              (cond
               ((eq 'md backend)
