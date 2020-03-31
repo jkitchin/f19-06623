@@ -2,6 +2,8 @@
 
 * Introduction to 06-623 Mathematical Modeling of Chemical Engineering Processes
 
+Please report errors/typos and issues at https://github.com/jkitchin/f19-06623/issues.
+
 #+BEGIN_SRC ipython
 
 #+END_SRC
