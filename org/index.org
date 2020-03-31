@@ -16,6 +16,9 @@ Please report errors/typos and issues at https://github.com/jkitchin/f19-06623/i
 4. [[f1906623:03-fode-1.org][First order differential equations]]
 5. [[f1906623:04-fode-2.org][Families of first order differential equations]]
 6. [[f1906623:05-nth-odes.org][N^{th} order ODEs]]
+7. [[f1906623:07-nla-1.org][Introduction to nonlinear algebra]]
+8. [[f1906623:08-nla-2.org][Polynomials and systems of nonlinear algebraic equations]]
+9. [[f1906623:09-bvp.org][Boundary value problems]]
 
 * Setup the publishing project                                     :noexport:
 

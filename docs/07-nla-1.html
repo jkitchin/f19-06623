@@ -1,0 +1,1063 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 06:12 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nonlinear algebra</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="scipy.optimize.fsolve, scipy.misc.derivative, list comprehension" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Nonlinear algebra</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgce01469">1. Introduction to nonlinear algebra</a>
+<ul>
+<li><a href="#org86e5262">1.1. Newton-Raphson method for finding solutions</a></li>
+<li><a href="#orgf6c99f0">1.2. Problem problems</a></li>
+</ul>
+</li>
+<li><a href="#org4373d5f">2. Derivatives of functions</a></li>
+<li><a href="#org8323fd5">3. fsolve</a></li>
+<li><a href="#org232afb0">4. A worked example</a></li>
+<li><a href="#orgf5bea4f">5. Parameterized objective functions</a></li>
+<li><a href="#org2bb5de2">6. Summary</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgce01469" class="outline-2">
+<h2 id="orgce01469"><span class="section-number-2">1</span> Introduction to nonlinear algebra</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+In non-linear algebra, we seek solutions to the equation \(f(x) = 0\) where \(f(x)\) is <i>non-linear</i> in \(x\). These are examples of non-linear algebraic equations:
+</p>
+
+<ul class="org-ul">
+<li>\(e^x=4\)</li>
+<li>\(x^2 + x - 1 = 0\)</li>
+<li>\(f(F_A) = F_{A0} - F_{A} - k F_A^2 / \nu / V = 0\)</li>
+</ul>
+
+<p>
+There is not a general theory for whether there is a solution, multiple solutions, or no solution to nonlinear algebraic equations. For example,
+</p>
+
+<p>
+\(sin(x) = 2\) has no solution. We define \(f(x) = sin(x) - 2\) and plot it. You can see there no intersections with the x-axis at y=0, meaning no solutions.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+<span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #BA36A5;">x</span> = np.linspace(0, 10)
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.sin(x) - 2
+
+plt.plot(x, f(x))
+plt.axhline(0, ls=<span style="color: #008000;">'--'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/927a681df1cb0fc3c4b084924336cb962489da55/3b8384e56283b75e4b46b0bfbf692bbe884b0965.png" alt="3b8384e56283b75e4b46b0bfbf692bbe884b0965.png" />
+</p>
+</div>
+
+<p>
+In contrast, \(sin(x) = 0.5\) will have an infinite number of solutions, everywhere the function intersects the x-axis.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f2</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.sin(x) - 0.5
+
+plt.plot(x, f2(x))
+plt.axhline(0, ls=<span style="color: #008000;">'--'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/927a681df1cb0fc3c4b084924336cb962489da55/dc9286ca4bc4e564cbe70999c77a6417ccea4f58.png" alt="dc9286ca4bc4e564cbe70999c77a6417ccea4f58.png" />
+</p>
+</div>
+
+<p>
+Finally, \(sin(x) = x - 1\) has only one solution.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f3</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.sin(x) - (x - 1)
+
+plt.plot(x, f3(x))
+plt.axhline(0, ls=<span style="color: #008000;">'--'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/927a681df1cb0fc3c4b084924336cb962489da55/ed80024fd309f58cb7506bce063b35a65c5cc796.png" alt="ed80024fd309f58cb7506bce063b35a65c5cc796.png" />
+</p>
+</div>
+
+<p>
+The equation \(e^{-0.5 x} \sin(x) = 0.5\), evidently has two solutions, but other versions of this equation might have 0, 1, multiple or infinite solutions.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f3</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.exp(-0.5 * x) * np.sin(x) - 0.5
+
+plt.plot(x, f3(x))
+plt.axhline(0, ls=<span style="color: #008000;">'--'</span>)
+plt.title(<span style="color: #008000;">'$e^{-0.5 x} \sin(x) = 0.5$'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'objective'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'objective')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/927a681df1cb0fc3c4b084924336cb962489da55/ea981cddd15eee6aa496d573567674e9457ffb4b.png" alt="ea981cddd15eee6aa496d573567674e9457ffb4b.png" />
+</p>
+</div>
+
+<p>
+<b>exercise</b> modify the equation to see 0, 1, many or infinite solutions.
+</p>
+
+<p>
+Graphical methods like this are invaluable to visually assess if there are any solutions, and if so how many solutions at least over some range of solutions. Sometimes, this is the fastest way to estimate a solution. Here we focus on nonlinear algebra problems that cannot be analytically solved. These kinds of problems require an iterative solution approach.
+</p>
+</div>
+
+<div id="outline-container-org86e5262" class="outline-3">
+<h3 id="org86e5262"><span class="section-number-3">1.1</span> Newton-Raphson method for finding solutions</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+Notes adapted from <a href="https://en.wikipedia.org/wiki/Newton%27s_method">https://en.wikipedia.org/wiki/Newton%27s_method</a>.
+</p>
+
+<p>
+The key idea is that we start with a guess that is close to the solution, and then the function is approximated by a line tangent to the function to find where the line intersects the x-axis. For well-behaved functions, this is a better estimate of where the function equals zero than the first guess. Then, we repeat this until we get sufficiently close to zero.
+</p>
+
+<p>
+So, we start with the point (x0, f(x0)), and we compute f'(x0), which is the slope of the line tangent to f(x0). We can express an equation for this line as: \(y - f(x0) = f'(x0)(x - x0)\) If we now solve this for the \(x\) where \(y=0\) leads to:
+</p>
+
+<p>
+\(0 = f'(x0)(x - x0) + f(x0)\)
+</p>
+
+<p>
+which leads to
+</p>
+
+<p>
+\(x = x0 - f(x0) / f'(x0)\)
+</p>
+
+<p>
+To implement this, we need to decide what is the tolerance for defining 0, and what is the maximum number of iterations we want to consider?
+</p>
+
+<p>
+We will first consider what is the square root of 612? This is equivalent to finding a solution to \(x^2 = 612\)
+</p>
+
+<p>
+\(f(x) = x^2 - 612\)
+</p>
+
+<p>
+Let's start with a guess of x=25, since we know \(x^2=625\). We also know \(f'(x) = 2x\).
+</p>
+
+<p>
+The approach is iterative, so we will specify the maximum number of steps to iterate to, and a criteria for stopping.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x0</span> = 25
+
+<span style="color: #BA36A5;">Nmax</span> = 25  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">stop if we hit this many iterations</span>
+<span style="color: #BA36A5;">TOL</span> = 1e-3 <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">stop if we are less than this number</span>
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">"The function to solve."</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x**2 - 612
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">fprime</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">"Derivative of the function to solve."</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> 2 * x
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Here is the iterative solution</span>
+<span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(Nmax):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">xnew</span> = x0 - f(x0) / fprime(x0)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x0</span> = xnew
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{i}</span><span style="color: #008000;">: </span><span style="color: #BA36A5;">{xnew}</span><span style="color: #008000;">'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> np.<span style="color: #006FE0;">abs</span>(f(xnew)) &lt; TOL:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">break</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> i == Nmax - 1:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(<span style="color: #008000;">'Max iterations exceeded'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">break</span>
+
+<span style="color: #0000FF;">print</span>(xnew, xnew**2)
+</pre>
+</div>
+
+<p>
+0: 24.74
+1: 24.738633791430882
+24.738633791430882 612.0000018665258
+</p>
+
+<p>
+That is pretty remarkable, it only took two iterations. That is partly because we started pretty close to the answer. Try this again with different initial guesses and see how the number of iterations changes. Also try with negative numbers. There are two solutions that are possible, and the one you get depends on the initial guess.
+</p>
+
+<p>
+One reason it takes so few iterations here is that Newton's method converges quadratically when you are close to the solution, and in this simple case we have a quadratic function, so we get to the answer in just a few steps.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf6c99f0" class="outline-3">
+<h3 id="orgf6c99f0"><span class="section-number-3">1.2</span> Problem problems</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+There are pathological situations you can get into. Consider this simple looking polynomial:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x**3 - 2 * x + 2
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">fprime</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> 3 * x**2 - 2
+
+<span style="color: #BA36A5;">x</span> = np.linspace(-2, 2)
+plt.plot(x, f(x))
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'f(x)'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'f(x)')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/927a681df1cb0fc3c4b084924336cb962489da55/bd0838dec85050cb39a05d3c43a59f7a84a6be7d.png" alt="bd0838dec85050cb39a05d3c43a59f7a84a6be7d.png" />
+</p>
+</div>
+
+<p>
+It seems obvious there is a root near -1.7. But if you use a guess around x=0, the algorithm simply oscillates back and forth and never converges. Let's see:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x0</span> = 0
+
+<span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(Nmax):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">xnew</span> = x0 - f(x0) / fprime(x0)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x0</span> = xnew
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{i}</span><span style="color: #008000;">: </span><span style="color: #BA36A5;">{xnew}</span><span style="color: #008000;">'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> np.<span style="color: #006FE0;">abs</span>(f(xnew)) &lt; TOL:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">break</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> i == Nmax - 1:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(<span style="color: #008000;">'Max iterations exceeded'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">break</span>
+
+<span style="color: #0000FF;">print</span>(xnew)
+</pre>
+</div>
+
+<p>
+0: 1.0
+1: 0.0
+2: 1.0
+3: 0.0
+4: 1.0
+5: 0.0
+6: 1.0
+7: 0.0
+8: 1.0
+9: 0.0
+10: 1.0
+11: 0.0
+12: 1.0
+13: 0.0
+14: 1.0
+15: 0.0
+16: 1.0
+17: 0.0
+18: 1.0
+19: 0.0
+20: 1.0
+21: 0.0
+22: 1.0
+23: 0.0
+24: 1.0
+Max iterations exceeded
+1.0
+</p>
+
+<p>
+<b>Exercise:</b> Try several initial guesses, and see which ones converge.
+</p>
+
+
+<p>
+You can also run into problems when:
+</p>
+
+<ul class="org-ul">
+<li>\(f'(x) = 0\) at the initial guess, or a subsequent unpdate, then you get a singularity in the update.</li>
+<li>The first derivative is discontinuous at the root. Then you may not converge because the update can bounce back and forth.</li>
+<li>The first derivative is undefined at the root</li>
+</ul>
+
+<p>
+We do not frequently run into these issues, but they do occur from time to time. The solution is usually to use a better initial guess.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4373d5f" class="outline-2">
+<h2 id="org4373d5f"><span class="section-number-2">2</span> Derivatives of functions</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+When you can derive an analytical derivative, you should probably consider doing that, because otherwise we have to approximate the derivatives numerically using finite differences, which is less accurate and computationally more expensive, or we need to use advance libraries that are capable of finding derivatives automatically. We will first see how to the finite differences approach, and later learn about the automatic approach.
+</p>
+
+<p>
+Let's examine the <code>scipy.misc.derivative</code> function. You provide a function, an x-value that you want the derivative at, and a dx to use in a finite-difference formula. By default, three points are used in the difference formula. You want to use a small dx to get an accurate result, but not too small or you can get numerical errors.
+</p>
+
+<p>
+<b>exercise</b>: Try this out with different values of dx from 0.1 to 1e-15.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.misc <span style="color: #0000FF;">import</span> derivative
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x**3
+
+<span style="color: #BA36A5;">x0</span> = 12
+
+derivative(f, x0, dx=1e-3), 3 * x0**2  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">the numerical and analytical derivative</span>
+</pre>
+</div>
+
+<pre class="example">
+(432.0000009997784, 432)
+</pre>
+
+<p>
+It would be nice to have some adaptive code that just does the right thing to find a dx adaptively. Here is an example:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">fprime</span>(func, x0, dx=0.1, tolerance=1e-6, nmax=10):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">"""Estimate the derivative of func at x0. dx is the initial spacing to use, and</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   it will be adaptively made smaller to get the derivative accurately with a</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   tolerance. nmax is the maximum number of divisions to make.</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   """</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">d0</span> = derivative(func, x0, dx=dx)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(nmax):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dx</span> = dx / 2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dnew</span> = derivative(func, x0, dx=dx)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> np.<span style="color: #006FE0;">abs</span>(d0 - dnew) &lt;= tolerance:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> dnew
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">else</span>:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">d0</span> = dnew
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">You only get here when the loop has completed and not returned a value</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(<span style="color: #008000;">'Maximum number of divisions reached'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> <span style="color: #D0372D;">None</span>
+</pre>
+</div>
+
+<p>
+And, here is our derivative function in action:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x**3
+
+fprime(f, 12)
+</pre>
+</div>
+
+<pre class="example">
+432.0000001520384
+</pre>
+
+<p>
+Let's wrap the Newton method in a function too, using our fprime function to get the derivative.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">newton</span>(func, x0, tolerance=1e-6, nmax=10):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(nmax):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">xnew</span> = x0 - func(x0) / fprime(func, x0)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x0</span> = xnew
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> np.<span style="color: #006FE0;">abs</span>(func(xnew)) &lt; tolerance:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> xnew
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(<span style="color: #008000;">'Max iterations exceeded'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> <span style="color: #D0372D;">None</span>
+</pre>
+</div>
+
+<p>
+Now, we have a pretty convenient way to solve equations:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x**2 - 612
+
+newton(f, 25), np.sqrt(612)
+</pre>
+</div>
+
+<pre class="example">
+(24.738633753705965, 24.73863375370596)
+</pre>
+
+<p>
+This is the basic idea behind nonlinear algebra solvers. Similar to the ode solver we used, there are functions in scipy written to solve nonlinear equations. We consider these next.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8323fd5" class="outline-2">
+<h2 id="org8323fd5"><span class="section-number-2">3</span> fsolve</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+<code>scipy.optimize.fsolve</code> is the main function we will use to solve nonlinear algebra problems. <code>fsolve</code> can be used with functions where you have the derivative, and where you don't.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> fsolve
+?fsolve
+</pre>
+</div>
+
+<p>
+Let's see the simplest example.
+</p>
+
+<p>
+Solve \(e^x = 2\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.exp(x) - 2  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">equal to zero at the solution</span>
+
+fsolve(objective, 2), np.log(2)
+</pre>
+</div>
+
+<pre class="example">
+(array([0.69314718]), 0.6931471805599453)
+</pre>
+
+<p>
+Note that the result is an array. We can <i>unpack</i> the array with this syntax. Note the comma. Why a comma? it indicates to Python that the results should be unpacked into the variable in a special way, i.e. the first value of the result goes into the first variable. That is all there is in this case.
+</p>
+
+<p>
+This is the preferred way to get the value of the solution into x:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">x, = fsolve(objective, 2)
+x
+</pre>
+</div>
+
+<pre class="example">
+0.6931471805599456
+</pre>
+
+<p>
+Here are two checks on the answer.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">objective(x), x - np.log(2)
+</pre>
+</div>
+
+<pre class="example">
+(4.440892098500626e-16, 3.3306690738754696e-16)
+</pre>
+
+<p>
+You can get a lot more information by setting full output to 1. Note you have to assign 4 variables to the output in this case. That status will be 1 if it succeeds.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">ans</span>, <span style="color: #BA36A5;">info</span>, <span style="color: #BA36A5;">status</span>, <span style="color: #BA36A5;">msg</span> = fsolve(objective, 2, full_output=1)
+ans, info, status, msg
+</pre>
+</div>
+
+<pre class="example">
+(array([0.69314718]),
+ {'nfev': 10,
+  'fjac': array([[-1.]]),
+  'r': array([-2.00000148]),
+  'qtf': array([-4.74712714e-10]),
+  'fvec': array([4.4408921e-16])},
+ 1,
+ 'The solution converged.')
+</pre>
+
+<p>
+Here is an example with no solution, and a different status flag.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">objective2</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.exp(x) + 2
+
+fsolve(objective2, 2, full_output=1)
+</pre>
+</div>
+
+<pre class="example">
+(array([-28.0696978]),
+ {'nfev': 20,
+  'fjac': array([[1.]]),
+  'r': array([6.75011061e-13]),
+  'qtf': array([2.]),
+  'fvec': array([2.])},
+ 5,
+ 'The iteration is not making good progress, as measured by the \n  improvement from the last ten iterations.')
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org232afb0" class="outline-2">
+<h2 id="org232afb0"><span class="section-number-2">4</span> A worked example</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+We can integrate fsolve with a variety of other problems. For example, here is an integral equation we need to solve in engineering problems. The volume of a plug flow reactor can be defined by this equation: \(V = \int_{Fa(V=0)}^{Fa} \frac{1}{r_a} dFa\) where \(r_a\) is the rate law. Suppose we know the reactor volume is 100 L, the inlet concentration of A is 1 mol/L, the volumetric flow is 10 L/min, and \(r_a = -k Ca\), with \(k=0.23\) 1/min. What is the exit molar flow rate? We need to solve the following equation:
+</p>
+
+<p>
+\[100 = \int_{Fa(V=0)}^{Fa} \frac{1}{-k Fa/\nu} dFa\]
+</p>
+
+<p>
+The equation to solve here is:
+</p>
+
+<p>
+\(f(Fa) = 100 - \int_{Fa(V=0)}^{Fa} \frac{1}{-k Fa/\nu} dFa\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> quad
+<span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> fsolve
+
+<span style="color: #BA36A5;">k</span> = 0.23   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">1 / min</span>
+<span style="color: #BA36A5;">nu</span> = 10.0  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">L / min</span>
+<span style="color: #BA36A5;">Cao</span> = 1.0  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">mol / L</span>
+<span style="color: #BA36A5;">Fa0</span> = Cao * nu
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">integrand</span>(Fa):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -1.0 / (k * Fa / nu)
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(Fa):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">integral</span>, <span style="color: #BA36A5;">err</span> = quad(integrand, Fa0, Fa)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> 100.0 - integral
+</pre>
+</div>
+
+<p>
+To make a plot, there is a subtlety. We cannot integrate an array of \(F_A\) values. Previously, we used a for loop to get around this. There is another syntax called <i>list comprehension</i> that we can also use:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">[objective(fa) <span style="color: #0000FF;">for</span> fa <span style="color: #0000FF;">in</span> [0.01, 0.1, 1, 2]]
+</pre>
+</div>
+
+<pre class="example">
+[-200.33718604270166,
+ -100.22479069513437,
+ -0.11239534756747105,
+ 30.024438589821685]
+</pre>
+
+<p>
+You can already see the answer must be between 1 and 2 because the sign changes between these two values, and that it is closer to 1 than 2.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #BA36A5;">fa</span> = np.linspace(0.01, 2)
+<span style="color: #BA36A5;">obj</span> = [objective(f) <span style="color: #0000FF;">for</span> f <span style="color: #0000FF;">in</span> fa]
+plt.plot(fa, obj)
+plt.xlabel(<span style="color: #008000;">'Molar flow rate (mol/min)'</span>)
+plt.ylabel(<span style="color: #008000;">'objective'</span>)
+plt.axhline(0, color=<span style="color: #008000;">'k'</span>, linestyle=<span style="color: #008000;">'--'</span>)
+plt.axvline(0.1, color=<span style="color: #008000;">'k'</span>, linestyle=<span style="color: #008000;">'--'</span>)
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/927a681df1cb0fc3c4b084924336cb962489da55/1adba6e342a90d8245f340c8158dc511c1c8986f.png" alt="1adba6e342a90d8245f340c8158dc511c1c8986f.png" />
+</p>
+</div>
+
+
+<p>
+You can see there is one answer in this range, near a flow rate of 0.1 mol/min. We use that as an initial guess for fsolve:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Fa_guess</span> = 1.0
+Fa_exit, = fsolve(objective, Fa_guess)
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'The exit flow rate is </span><span style="color: #BA36A5;">{Fa_exit:1.4f}</span><span style="color: #008000;"> mol/min.'</span>)
+</pre>
+</div>
+
+<p>
+The exit flow rate is 1.0026 mol/min.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf5bea4f" class="outline-2">
+<h2 id="orgf5bea4f"><span class="section-number-2">5</span> Parameterized objective functions</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+Now, suppose we want to see how our solution varies with a parameter value. For example, we can change the rate constant by changing the temperature. Say we want to compute the exit molar flow rate at a range of rate constants, e.g. from 0.02 to 2 1/min. In other words, we treat the rate constant as a <i>parameter</i> and use it in an additional argument.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">integrand</span>(Fa, k):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -1.0 / (k * Fa / nu)
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(Fa, k):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">integral</span>, <span style="color: #BA36A5;">err</span> = quad(integrand, Fa0, Fa, args=(k,))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> 100.0 - integral
+
+<span style="color: #BA36A5;">KRANGE</span> = np.linspace(0.02, 2)
+
+<span style="color: #BA36A5;">fa_exit</span> = np.zeros(KRANGE.shape)
+
+<span style="color: #BA36A5;">guess</span> = 0.1
+
+<span style="color: #0000FF;">for</span> i, k <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">enumerate</span>(KRANGE):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">ans</span>, <span style="color: #BA36A5;">info</span>, <span style="color: #BA36A5;">status</span>, <span style="color: #BA36A5;">msg</span> = fsolve(objective, guess, args=(k,), full_output=1)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> status == 1:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">fa_exit</span>[i] = ans
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">guess</span> = ans
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">else</span>:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'k = </span><span style="color: #BA36A5;">{k}</span><span style="color: #008000;"> failed. </span><span style="color: #BA36A5;">{msg}</span><span style="color: #008000;">'</span>)
+
+plt.plot(KRANGE, (Fa0 - fa_exit) / Fa0)
+plt.xlabel(<span style="color: #008000;">'k (1/min)'</span>)
+plt.ylabel(<span style="color: #008000;">'Conversion'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'Conversion')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/927a681df1cb0fc3c4b084924336cb962489da55/04a74735a04de65fc31eafaac55bd061410a27e7.png" alt="04a74735a04de65fc31eafaac55bd061410a27e7.png" />
+</p>
+</div>
+
+
+
+
+
+
+<div class="org-src-container">
+<pre class="src src-ipython">
+</pre>
+</div>
+
+<p>
+You can see here that any rate constant above about 0.5 1/min leads to near complete conversion, so heating above the temperature required for this would be wasteful.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-org2bb5de2" class="outline-2">
+<h2 id="org2bb5de2"><span class="section-number-2">6</span> Summary</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+In this lecture we reviewed methods to solve non-linear algebraic equations (they also work on linear algebra, but it is considered wasteful since there are more efficient methods to solve those).
+</p>
+
+<ul class="org-ul">
+<li>The key idea is to create a function that is equal to zero at the solution, and then use <code>scipy.optimize.fsolve</code> with an initial guess to find the solution.</li>
+<li>We introduced <i>list comprehension</i> which is a convenient syntax for for loops.</li>
+<li>We also looked at <code>scipy.misc.derivative</code> which is a convenient way to numerically estimate the derivative of a function by finite difference formulas.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 06:12</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

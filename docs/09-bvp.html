@@ -1,0 +1,939 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 06:12 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Boundary value problems</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="scipy.integrate.solve_bvp, numpy.polyfit" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Boundary value problems</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgd8c6839">1. Solving nonlinear BVPs by finite differences</a></li>
+<li><a href="#orgb2b5253">2. Introduction to solve_bvp</a>
+<ul>
+<li><a href="#org9d0320d">2.1. A worked bvp problem</a></li>
+<li><a href="#org3430c0b">2.2. Concentration profile in a particle</a></li>
+</ul>
+</li>
+<li><a href="#org0be8a3c">3. Summary</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgd8c6839" class="outline-2">
+<h2 id="orgd8c6839"><span class="section-number-2">1</span> Solving nonlinear BVPs by finite differences</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Adapted from Example 8.7 in <span class="underline">Numerical Methods in Engineering with Python</span> by Jaan Kiusalaas.
+</p>
+
+<p>
+We want to solve \(y''(x) = -3 y(x) y'(x)\) with \(y(0) = 0\) and \(y(2) = 1\).
+</p>
+
+<p>
+This is a boundary value problem <i>not an initial value problem</i>. First we consider using a finite difference method. We discretize the region and approximate the derivatives as:
+</p>
+
+<p>
+\(y''(x) \approx \frac{y_{i-1} - 2 y_i + y_{i+1}}{h^2} \)
+</p>
+
+<p>
+\(y'(x) \approx \frac{y_{i+1} - y_{i-1}}{2 h} \)
+</p>
+
+<p>
+We define a function \(y''(x) = F(x, y, y')\). At each node in our discretized region, we will have an equation that looks like \(y''(x) - F(x, y, y') = 0\), which will be nonlinear in the unknown solution \(y\). The set of equations to solve is:
+</p>
+
+\begin{eqnarray}
+y_0 - \alpha &=& 0 \\
+\frac{y_{i-1} - 2 y_i + y_{i+1}}{h^2} + (3 y_i) (\frac{y_{i+1} - y_{i-1}}{2 h}) &=& 0 \\
+y_L - \beta &=&0
+\end{eqnarray}
+
+<p>
+Since we use a nonlinear solver, we will have to provide an initial guess to the solution. We will in this case assume a line. In other cases, a bad initial guess may lead to no solution.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> fsolve
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #BA36A5;">x1</span> = 0.0
+<span style="color: #BA36A5;">x2</span> = 2.0
+
+<span style="color: #BA36A5;">alpha</span> = 0.0
+<span style="color: #BA36A5;">beta</span> = 1.0
+</pre>
+</div>
+
+<p>
+We need to specify a grid of points to discretize the solution on. We will start with a small grid because it is easy to visualize, but note that the grid spacing determines how good the approximation to the derivative is, so we will have to return here to see what the impact of our spacing is.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">N</span> = 10
+<span style="color: #BA36A5;">X</span>, <span style="color: #BA36A5;">h</span> = np.linspace(x1, x2, N, retstep=<span style="color: #D0372D;">True</span>)
+</pre>
+</div>
+
+<p>
+Now, we can define functions for the differential equation, and for the nonlinear equations.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">residuals</span>(y):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">"When we have the right values of y, this function will be zero."</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">res</span> = np.zeros(y.shape) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">we need a zero for each node</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">res</span>[0] = y[0] - alpha <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">this is the boundary value y(alpha) = 0</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(1, N - 1):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span> = X[i]
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Approximation of y'' from the current point</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">YPP</span> = (y[i - 1] - 2 * y[i] + y[i + 1]) / h**2
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Approximation of y'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">YP</span> = (y[i + 1] - y[i - 1]) / (2 * h)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">y'' + 3 * y * y' = 0</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">res</span>[i] = YPP + 3 * y[i] * YP
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">res</span>[-1] = y[-1] - beta <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">y(beta) = 0</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> res
+</pre>
+</div>
+
+<p>
+We need a guess, and here we guess a line. It is always a good idea to plot your guess just to make sure it does what you want. Here, we want it to have the right boundary values.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">we need an initial guess</span>
+<span style="color: #BA36A5;">init</span> = alpha + (beta - alpha) / (x2 - x1) * X
+plt.plot(X, init)
+</pre>
+</div>
+
+<pre class="example">
+[&lt;matplotlib.lines.Line2D at 0x101e22f510&gt;]
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/ea65b764c9f09d96b2d81cc37b08013a51705a55/96947d6798c5910e7fae2d023eda29e4faac86c9.png" alt="96947d6798c5910e7fae2d023eda29e4faac86c9.png" />
+</p>
+</div>
+
+<p>
+We should check our residuals function. We mostly want to see that it runs, and produces the right shaped output.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">residuals(init)
+</pre>
+</div>
+
+<pre class="example">
+array([0.        , 0.16666667, 0.33333333, 0.5       , 0.66666667,
+       0.83333333, 1.        , 1.16666667, 1.33333333, 0.        ])
+</pre>
+
+<p>
+Now, we solve the BVP.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Y</span>, <span style="color: #BA36A5;">info</span>, <span style="color: #BA36A5;">status</span>, <span style="color: #BA36A5;">msg</span> = fsolve(residuals, init, full_output=1)
+<span style="color: #0000FF;">print</span>(msg)
+
+plt.plot(X, Y)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<p>
+The solution converged.
+</p>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/ea65b764c9f09d96b2d81cc37b08013a51705a55/10ab6f91105af5f200bc84d403592f967df68806.png" alt="10ab6f91105af5f200bc84d403592f967df68806.png" />
+</p>
+</div>
+
+<p>
+The solution is has some apparent discontinuities because we only used about 10 points. How can you tell if the solution is correct? We can estimate the derivatives, and see how well they fit the equation. We look for:
+</p>
+
+<p>
+\(y'' + 3 y y' = 0\) for all \(x\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">yp</span> = np.gradient(Y, X, edge_order=2)
+<span style="color: #BA36A5;">ypp</span> = np.gradient(yp, X, edge_order=2)
+
+plt.plot(X, ypp + 3 * Y * yp)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'residuals'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'residuals')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/ea65b764c9f09d96b2d81cc37b08013a51705a55/c713d7021a873b2f2dc03c611d6ef6c7a0351c25.png" alt="c713d7021a873b2f2dc03c611d6ef6c7a0351c25.png" />
+</p>
+</div>
+
+<p>
+This result doesn't look great at the origin, but remember:
+</p>
+<ol class="org-ol">
+<li>we used a coarse grid, so the derivative <i>approximations</i> are probably not that accurate</li>
+<li>Numerical derivatives at the end-points are less accurate than in the middle.</li>
+</ol>
+
+<p>
+<b>exercise</b> Go back and repeat this for a finer grid, e.g. with 50, 100 points.
+</p>
+
+<p>
+The approach described here is pretty general. Here, we were able to solve a second-order BVP by discretizing it, approximating the derivatives at the points, and solving the corresponding nonlinear algebra equations. This approach can be extended in a variety of ways, including to systems of equations, and to 2D or 3D systems (where this approach is called finite-element). You will see these kinds of problems extensively in the spring semster in the Transport class.
+</p>
+
+<p>
+As we have seen before, however, there are functions in <code>scipy</code> that can help solve these problems.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgb2b5253" class="outline-2">
+<h2 id="orgb2b5253"><span class="section-number-2">2</span> Introduction to solve_bvp</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> solve_bvp
+
+solve_bvp?
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org9d0320d" class="outline-3">
+<h3 id="org9d0320d"><span class="section-number-3">2.1</span> A worked bvp problem</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+In the pressure driven flow of a fluid with viscosity \(\mu\) between two stationary plates separated by distance \(d\) and driven by a pressure drop \(\Delta P/\Delta x\), the governing equations on the velocity \(u\) of the fluid are (assuming flow in the x-direction with the velocity varying only in the y-direction):
+</p>
+
+<p>
+\[\frac{\Delta P}{\Delta x} = \mu \frac{d^2u}{dy^2}\]
+</p>
+
+<p>
+with boundary conditions \(u(y=0) = 0\) and \(u(y=d) = 0\), i.e. the no-slip condition at the edges of the plate.
+</p>
+
+<p>
+we convert this second order BVP to a system of ODEs by letting \(u_1 = u\), \(u_2 = u_1'\) and then \(u_2' = u_1''\). This leads to:
+</p>
+
+<p>
+\(\frac{d u_1}{dy} = u_2\)
+</p>
+
+<p>
+\(\frac{d u_2}{dy} = \frac{1}{\mu}\frac{\Delta P}{\Delta x}\)
+</p>
+
+<p>
+with boundary conditions \(u_1(y=0) = 0\) and \(u_1(y=d) = 0\).
+</p>
+
+<p>
+for this problem we let the plate separation be d=0.1, the viscosity \(\mu = 1\), and \(\frac{\Delta P}{\Delta x} = -100\).
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #BA36A5;">d</span> = 0.1
+<span style="color: #BA36A5;">mu</span> = 1
+<span style="color: #BA36A5;">deltaPdeltax</span> = -100
+</pre>
+</div>
+
+<p>
+The function defining the BVP has to return an array that has a row for each equation, and a column for each value in the grid.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">bvp</span>(y, U):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">u1</span>, <span style="color: #BA36A5;">u2</span> = U
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">du1dy</span> = u2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">du2dy</span> = np.ones(y.shape) / mu * deltaPdeltax
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> [du1dy, du2dy]
+</pre>
+</div>
+
+<p>
+The boundary condition function will get the whole numeric solution at each boundary. We want \(u1(a) = 0\) and \(u1(b)=0\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">bc</span>(Ua, Ub):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">u1a</span>, <span style="color: #BA36A5;">u2a</span> = Ua
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">u1b</span>, <span style="color: #BA36A5;">u2b</span> = Ub
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> [u1a, u1b]
+</pre>
+</div>
+
+<p>
+Next, we need an initial guess for u1 and u2 on a grid of points. You have to make some decisions here. You need a guess that is reasonably close, but not hard to construct. Here, we anticipate a solution that looks parabolic, and that goes through the points: (0, 0), (d, 0), and some point at (d / 2, ?), where ? represents the point of maximum velocity in middle. We can easily get this polynomial with np.polyfit.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">?np.polyfit
+</pre>
+</div>
+
+<p>
+We don't know what the maximum velocity is, so we make a guess, say 0.5. Then, we get the parameters, and apply them to an array of y values.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">pars</span> = np.polyfit([0, d / 2, d],  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">x-points</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [0, 0.5, 0],    <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">y-points</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> 2)              <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">polynomial order</span>
+pars
+</pre>
+</div>
+
+<pre class="example">
+array([-2.00000000e+02,  2.00000000e+01, -4.48803257e-16])
+</pre>
+
+<p>
+Now, we can define a Y grid and define the guess for the first U1.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Y</span> = np.linspace(0, d)
+
+<span style="color: #BA36A5;">U1</span> = np.polyval(pars, Y)
+</pre>
+</div>
+
+<p>
+We also need a guess for U2, and in this case we know that \(u2 = u1'\), so we just use that.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">U2</span> = np.gradient(U1, Y, edge_order=2)
+
+<span style="color: #BA36A5;">U</span> = np.array([U1, U2])
+<span style="color: #0000FF;">print</span>(U.shape)
+</pre>
+</div>
+
+<p>
+(2, 50)
+</p>
+
+<p>
+You should <i>always</i> visualize the guess to make sure it does what you want. It is <b>hard</b> to make these!
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+plt.plot(Y, U[0], label=<span style="color: #008000;">'u1'</span>)
+plt.gca().tick_params(<span style="color: #008000;">'y'</span>, colors=<span style="color: #008000;">'b'</span>)
+plt.ylabel(<span style="color: #008000;">'u1'</span>)
+
+plt.twinx()
+plt.plot(Y, U[1], <span style="color: #008000;">'r'</span>, label=<span style="color: #008000;">'u2'</span>)
+plt.gca().tick_params(<span style="color: #008000;">'y'</span>, colors=<span style="color: #008000;">'r'</span>)
+plt.ylabel(<span style="color: #008000;">'u2'</span>)
+plt.legend()
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 2 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/ea65b764c9f09d96b2d81cc37b08013a51705a55/a57fcb88e66247b98d1b6152e30503518af66013.png" alt="a57fcb88e66247b98d1b6152e30503518af66013.png" />
+</p>
+</div>
+
+<p>
+Now, we are ready to solve the BVP.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> solve_bvp
+
+<span style="color: #BA36A5;">sol</span> = solve_bvp(bvp, bc, Y, U)
+<span style="color: #0000FF;">print</span>(sol.message)
+plt.plot(sol.x, sol.y[0])
+plt.xlabel(<span style="color: #008000;">'y'</span>)
+plt.ylabel(<span style="color: #008000;">'U'</span>)
+</pre>
+</div>
+
+<p>
+The algorithm converged to the desired accuracy.
+</p>
+
+<pre class="example">
+Text(0, 0.5, 'U')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/ea65b764c9f09d96b2d81cc37b08013a51705a55/527c9d889acc8cb6ae04851bf087830281d812ca.png" alt="527c9d889acc8cb6ae04851bf087830281d812ca.png" />
+</p>
+</div>
+
+<p>
+<b>exercise</b> Try using different guesses, e.g. lines, or triangle shapes, etc. What else looks like this shape? Half a cycle of a sin wave? A semi-circle?
+</p>
+
+<p>
+<b>exercise</b> How can you show this is a solution to the BVP?
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3430c0b" class="outline-3">
+<h3 id="org3430c0b"><span class="section-number-3">2.2</span> Concentration profile in a particle</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Another typical boundary value problem in chemical engineering is the concentration profile inside a catalyst particle. Here is the dimensionless equation for a second order reaction in a slab. Note here we have a boundary condition on the derivative at the origin. This kind of condition means either there is no flux at this position, or that the slab is symmetric about this position.
+</p>
+
+<p>
+\(\frac{d^2c}{dx^2} = \Phi^2 c^2\)
+</p>
+
+<p>
+with \(c'(0)\) = 0 and \(c(1) = 1\)
+</p>
+
+<p>
+We again convert this to a system of first order differential equations like this:
+</p>
+
+<p>
+Let c1 = c, c1' = c', and c2 = c1', so c2' = c1'' = c''
+</p>
+
+<p>
+Then we have:
+</p>
+
+<p>
+\(c1' = c2\)
+</p>
+
+<p>
+\(c2' = \Phi^2 c1^2\)
+</p>
+
+<p>
+with boundary conditions \(c1'(0) = 0\) and \(c1(0) = 1\).
+</p>
+
+<p>
+We begin with the required functions:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Phi</span> = 50
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">bvp</span>(x, C):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">c1</span>, <span style="color: #BA36A5;">c2</span> = C
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dc1dx</span> = c2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dc2dx</span> = Phi**2 * c1**2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> [dc1dx, dc2dx]
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">bc</span>(Ca, Cb):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">c1a</span>, <span style="color: #BA36A5;">c2a</span> = Ca
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">c1b</span>, <span style="color: #BA36A5;">c2b</span> = Cb
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Now, evaluate the derivatives at the first boundary condition</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">c1prime</span>, <span style="color: #BA36A5;">c2prime</span> = bvp(0, [c1a, c2a])
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> [c1prime,  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">will all equal zero</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   c1b - 1]  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">c1(b) = 1</span>
+</pre>
+</div>
+
+<p>
+We need an initial guess. We make a naive one, that \(c(x) = 1\) in the slab, i.e. there is no reaction. As usual, we visualize the guess to be sure it does what we intended.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">X</span> = np.linspace(0, 1)
+
+<span style="color: #BA36A5;">C1</span> = np.ones(X.shape)
+<span style="color: #BA36A5;">C2</span> = np.gradient(C1, X)
+
+plt.plot(X, C1)
+</pre>
+</div>
+
+<pre class="example">
+[&lt;matplotlib.lines.Line2D at 0x181eab7110&gt;]
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/ea65b764c9f09d96b2d81cc37b08013a51705a55/c49931aab8f77c3fc9c29e5a0b2c12ff63e09bbb.png" alt="c49931aab8f77c3fc9c29e5a0b2c12ff63e09bbb.png" />
+</p>
+</div>
+
+
+<p>
+Now we solve the system.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">C</span> = [C1, C2]
+<span style="color: #BA36A5;">sol</span> = solve_bvp(bvp, bc, X, C)
+sol.message
+</pre>
+</div>
+
+<pre class="example">
+'The algorithm converged to the desired accuracy.'
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(sol.x, sol.y[0])
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'C'</span>)
+plt.xlim([0, 1])
+plt.ylim([0, 1])
+</pre>
+</div>
+
+<pre class="example">
+(0, 1)
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/ea65b764c9f09d96b2d81cc37b08013a51705a55/1ca3603785cdf534ab06fd1cb4276c90d7b60bc5.png" alt="1ca3603785cdf534ab06fd1cb4276c90d7b60bc5.png" />
+</p>
+</div>
+
+<p>
+You can see the solution looks nothing like our initial guess. In this case, a high thiele modulus means most of the reaction happens near the catalyst surface, and the interior of the slab has hardly any reactant in it. This solution is consistent with that.
+</p>
+
+
+<p>
+The effectiveness factor for this system is defined by:
+</p>
+
+<p>
+\(E = \int_0^1 c^2 dx\)
+</p>
+
+<p>
+We can estimate this with the trapezoid or Simpson's method (remember that the solution is a vector of numbers).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">c</span> = sol.y[0]
+<span style="color: #0000FF;">print</span>(np.trapz(c**2, sol.x))
+
+<span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> simps
+<span style="color: #0000FF;">print</span>(simps(c**2, sol.x))
+</pre>
+</div>
+
+<p>
+0.016528962860989847
+0.01633462094482091
+</p>
+
+<p>
+Or, we can use the dense_output of the solution with quad.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> quad
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">integrand</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">c1</span>, <span style="color: #BA36A5;">c2</span> = sol.sol(x)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> c1**2
+
+quad(integrand, 0, 1)
+</pre>
+</div>
+
+<pre class="example">
+(0.01632998588357348, 9.76148224805893e-09)
+</pre>
+
+
+
+
+<p>
+<b>excercise</b> Repeat this example for different values of &Phi;.
+</p>
+
+<p>
+<b>exercise</b> Try different kinds of guesses. Think of a guess that has the properties of the boundary conditions, e.g. c'(0) = 0, and c(1) = 1.
+</p>
+
+<p>
+<b>exercise</b> Evaluate the quality of the solution based on the equations.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0be8a3c" class="outline-2">
+<h2 id="org0be8a3c"><span class="section-number-2">3</span> Summary</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Today, we leveraged the ability to solve systems of nonlinear algebraic equations to solve boundary value problems by discretizing them on a grid, approximating them at the grid points, and then solving the resulting nonlinear equations.
+</p>
+
+<p>
+We also learned about the solve_bvp function, which is in scipy.integrate to solve systems of first-order boundary value problems.
+</p>
+
+<p>
+Next time, we will return to nonlinear algebra to see how the algorithms can be used to find minima and maxima.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 06:12</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

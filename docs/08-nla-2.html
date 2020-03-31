@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 06:12 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nonlinear algebra - coupled equations</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="scipy.optimize.fsolve, numpy.roots, numpy.polyder, numpy.polyval, numpy.polyint, numpy.poly1d" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Nonlinear algebra - coupled equations</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org70ee0ee">1. Special nonlinear systems - polynomials</a>
+<ul>
+<li><a href="#org5a9c4ad">1.1. Cubic equations of state</a></li>
+<li><a href="#orgf01f6de">1.2. Other useful things to remember about polynomials</a></li>
+</ul>
+</li>
+<li><a href="#org04cb4c6">2. Systems of nonlinear equations</a></li>
+<li><a href="#orge6364eb">3. Summary</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org70ee0ee" class="outline-2">
+<h2 id="org70ee0ee"><span class="section-number-2">1</span> Special nonlinear systems - polynomials</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Polynomials are a special class of nonlinear algebraic equations that are especially easy to solve. A polynomial is linear in the coefficients in front of the variable. If we consider the following \(n^{th}\) order polynomial:
+</p>
+
+<p>
+\(p_0 x^n + p_1 x^{(n-1)} + ... + p_{n-1} x + p_n = 0\)
+</p>
+
+<p>
+Let's be specific:
+</p>
+
+<p>
+\(x^2 + 8x + 16 = 0\)
+</p>
+
+<p>
+We express this as [1, 8, 16].
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #BA36A5;">p</span> = [1, 8, 16]
+<span style="color: #BA36A5;">r</span> = np.roots(p)
+r
+</pre>
+</div>
+
+<pre class="example">
+array([-4., -4.])
+</pre>
+
+<p>
+Note we get all the roots. We can check that with the <code>numpy.polyval</code> command.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.polyval(p, r)
+</pre>
+</div>
+
+<pre class="example">
+array([0., 0.])
+</pre>
+
+<p>
+We can also use this to plot a polynomial.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #BA36A5;">x</span> = np.linspace(-5, -3)
+<span style="color: #BA36A5;">y</span> = np.polyval(p, x)
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+plt.plot(x, y)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/9e54bdbb600afef17c915ff83cb74d1db67e49cd/83a2acf883d49b511d21067cf2d4c6f0948691a4.png" alt="83a2acf883d49b511d21067cf2d4c6f0948691a4.png" />
+</p>
+</div>
+
+<p>
+Why is this so convenient?
+</p>
+</div>
+
+<div id="outline-container-org5a9c4ad" class="outline-3">
+<h3 id="org5a9c4ad"><span class="section-number-3">1.1</span> Cubic equations of state</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+There are applications of polynomials in thermodynamics. The van der waal equation is a cubic polynomial \(f(V) = V^3 - \frac{p n b + n R T}{p} V^2 + \frac{n^2 a}{p}V - \frac{n^3 a b}{p} = 0\), where \(a\) and \(b\) are constants, \(p\) is the pressure, \(R\) is the gas constant, \(T\) is an absolute temperature and \(n\) is the number of moles. The roots of this equation tell you the volume of the gas at those conditions.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">numerical values of the constants</span>
+<span style="color: #BA36A5;">a</span> = 3.49e4
+<span style="color: #BA36A5;">b</span> = 1.45
+<span style="color: #BA36A5;">p</span> = 679.7   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">pressure in psi</span>
+<span style="color: #BA36A5;">T</span> = 683     <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">T in Rankine</span>
+<span style="color: #BA36A5;">n</span> = 1.136   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">lb-moles</span>
+<span style="color: #BA36A5;">R</span> = 10.73   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">ft^3 * psi / R / lb-mol</span>
+
+<span style="color: #BA36A5;">ppar</span> = [1.0,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   -(p * n * b + n * R * T) / p,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   n**2 * a / p,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   -n**3 * a * b / p]
+
+<span style="color: #0000FF;">print</span>(np.roots(ppar))
+</pre>
+</div>
+
+<p>
+[5.09432376+0.j         4.4006681 +1.43502848j 4.4006681 -1.43502848j]
+</p>
+
+<p>
+Note that only one root is real (and even then, we have to interpret 0.j as not being imaginary. Also, in a cubic polynomial, there can only be two imaginary roots). In this case that means there is only one phase present.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf01f6de" class="outline-3">
+<h3 id="orgf01f6de"><span class="section-number-3">1.2</span> Other useful things to remember about polynomials</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+You can easily get the parameters of the derivative of the polynomial with <code>numpy.polyder</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">p</span> = [1, 8, 16]
+
+<span style="color: #BA36A5;">pd</span> = np.polyder(p)
+pd
+</pre>
+</div>
+
+<pre class="example">
+array([2, 8])
+</pre>
+
+<p>
+You can use these with <code>numpy.polyval</code> to compute the derivative at different points.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.polyval(pd, 0)
+</pre>
+</div>
+
+<pre class="example">
+8
+</pre>
+
+<p>
+You can also get the coefficients of the integral of the polynomial. The integration constant is assumed to be 0 by default.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">pint</span> = np.polyint(p)
+pint
+</pre>
+</div>
+
+<pre class="example">
+array([ 0.33333333,  4.        , 16.        ,  0.        ])
+</pre>
+
+<p>
+You can use this to compute definite integrals, e.g. from x=1 to x=2:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.polyval(pint, 2) - np.polyval(pint, 1)
+</pre>
+</div>
+
+<pre class="example">
+30.33333333333334
+</pre>
+
+<p>
+<b>exercise</b> Use another method to confirm the result above.
+</p>
+
+<p>
+Finally, the syntax <code>np.polyval(pint, 2)</code> can be a little tedious. You can create a function with <code>numpy.poly1d</code> using the array of coefficients. Conveniently, you can use the function in the roots, polyder and polyint commands!
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">p</span> = np.poly1d(pint)
+p(2) - p(1)
+</pre>
+</div>
+
+<pre class="example">
+30.33333333333334
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.roots(p)
+</pre>
+</div>
+
+<pre class="example">
+array([-6.+3.46410162j, -6.-3.46410162j,  0.+0.j        ])
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org04cb4c6" class="outline-2">
+<h2 id="org04cb4c6"><span class="section-number-2">2</span> Systems of nonlinear equations</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Analogously to systems of ordinary differential equations, with systems of nonlinear equations we define functions that will return a zero for each equation in the system. Then we have to pass an initial guess for each variable to fsolve, and it will return an array of values, one for each variable.
+</p>
+
+<p>
+It is considerably more difficult to visualize systems of nonlinear equations. With two equations and two unknowns it is sometimes easy to plot solutions, but not always.
+</p>
+
+\begin{align}
+y &=& x^2 \\
+y &=& 8 - x^2
+\end{align}
+
+<p>
+One approach to visualizing this is to plot the two curves.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #BA36A5;">x</span> = np.linspace(0, 4)
+
+<span style="color: #BA36A5;">y1</span> = x**2
+<span style="color: #BA36A5;">y2</span> = 8 - x**2
+
+plt.plot(x, y1, x, y2)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.legend([<span style="color: #008000;">'y1'</span>, <span style="color: #008000;">'y2'</span>])
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/9e54bdbb600afef17c915ff83cb74d1db67e49cd/3a0456dcb740d0436621be475a010002e6597589.png" alt="3a0456dcb740d0436621be475a010002e6597589.png" />
+</p>
+</div>
+
+<p>
+You can see that on this domain, there is one place where the two curves intersect near the point (2, 5), which is a solution point. At this point there is one (x, y) pair that is a solution to <i>both</i> equations.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> fsolve
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">z1</span> = y - x**2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">z2</span> = y - 8 + x**2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.array([z1, z2])
+
+<span style="color: #BA36A5;">guess</span> = [2, 5]
+fsolve(objective, guess)
+</pre>
+</div>
+
+<pre class="example">
+array([2., 4.])
+</pre>
+
+<p>
+It is not always easy to solve for one variable in terms of the other though. In that case, we can resort to an alternate graphical approach where we evaluate the objective function over a range of the variables, and look for regions where they overlap.
+</p>
+
+<p>
+Consider the solution to these equations (adapted from <a href="https://www.mathworks.com/help/optim/ug/fsolve.html">https://www.mathworks.com/help/optim/ug/fsolve.html</a>):
+</p>
+
+<p>
+\(e^{-e^{-(x_1 + x_2)}} = x_2 (1 + x_1^2)\)
+</p>
+
+<p>
+and
+</p>
+
+<p>
+\(x_1 \cos(x_2) + x_2 \sin(x_1) = 1/2\)
+</p>
+
+<p>
+It is not possible to solve either one for one variable in terms of the other. So instead, we will compute the objective function for a range of \(x_1, x_2\) values, and then use a contour plot of each equation to see where there might be a solution.
+</p>
+
+<p>
+The key to this visualization is where we draw the contours. A good choice is to highlight only the part of the solutions that bracket zero. Then we can see where they intersect, because there is probably a solution in that neighborhood.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x1</span>, <span style="color: #BA36A5;">x2</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">z1</span> = np.exp(-np.exp(-(x1 + x2))) - x2 * (1 + x1**2)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">z2</span> = x1 * np.cos(x2) + x2 * np.sin(x1) - 0.5
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.array([z1, z2])
+
+
+<span style="color: #BA36A5;">x1</span> = np.linspace(0, 1)
+<span style="color: #BA36A5;">x2</span> = np.linspace(0, 1)
+
+<span style="color: #BA36A5;">X1</span>, <span style="color: #BA36A5;">X2</span> = np.meshgrid(x1, x2)
+
+<span style="color: #BA36A5;">Z1</span>, <span style="color: #BA36A5;">Z2</span> = objective([X1, X2])
+
+plt.contour(X1, X2, Z1, levels=np.linspace(-0.1, 0.1, 100))
+plt.contour(X1, X2, Z2, levels=np.linspace(-0.1, 0.1, 100))
+plt.xlabel(<span style="color: #008000;">'$x_1$'</span>)
+plt.ylabel(<span style="color: #008000;">'$x_2$'</span>)
+plt.colorbar()
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 2 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/9e54bdbb600afef17c915ff83cb74d1db67e49cd/d8a4f2f9dc657bba91e974c03f8b541c26b10376.png" alt="d8a4f2f9dc657bba91e974c03f8b541c26b10376.png" />
+</p>
+</div>
+
+<p>
+There is an intersection near \(x_1=0.4\), and $x_2 = 0.6. We can use that as an initial guess.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">ans</span> = fsolve(objective, [0.4, 0.6])  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">note we do not need ans, because ans will have two values in it.</span>
+ans, objective(ans)
+</pre>
+</div>
+
+<pre class="example">
+(array([0.35324662, 0.60608174]), array([-2.22044605e-16,  1.11022302e-16]))
+</pre>
+
+
+
+
+<p>
+This shows the solution, and that the objective is practically equal to zero at that point.
+</p>
+
+<p>
+You can see that trying to do this in more than 2 dimensions can quickly get difficult to visualize!
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge6364eb" class="outline-2">
+<h2 id="orge6364eb"><span class="section-number-2">3</span> Summary</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>We learned about a special class of nonlinear functions that are polynomials, and a series of useful functions to manipulate them.</li>
+
+<li>We learned that you can use fsolve to find solutions to coupled non-linear algebraic equations.</li>
+
+<li>Next time, we will apply this to solving a nonlinear boundary value differential equation.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 06:12</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
