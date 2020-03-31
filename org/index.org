@@ -6,9 +6,9 @@ Please report errors/typos and issues at https://github.com/jkitchin/f19-06623/i
 
 [[./06623-roadmap.png]]
 
-#+BEGIN_SRC ipython
+This is a set of course notes. Each link below corresponds to about a 90 minute lecture, and they are in the order the lectures were given.
 
-#+END_SRC
+Table of contents:
 
 1. [[f1906623:00-intro.org][A brief introduction]]
 2. [[f1906623:01-jupyter.org][About Jupyter]]
@@ -19,6 +19,26 @@ Please report errors/typos and issues at https://github.com/jkitchin/f19-06623/i
 7. [[f1906623:07-nla-1.org][Introduction to nonlinear algebra]]
 8. [[f1906623:08-nla-2.org][Polynomials and systems of nonlinear algebraic equations]]
 9. [[f1906623:09-bvp.org][Boundary value problems]]
+10. [[f1906623:10-min-max.org][Finding minima and maxima in functions]]
+11. [[f1906623:11-regression.org][Introduction to regression]]
+12. [[f1906623:12-nonlinear-regression-2.org][Nonlinear regression]]
+13. [[f1906623:13-constrained-optimization.org][Constrained optimization]]
+14. [[f1906623:15-intro-linear-algebra.org][Introduction to linear algebra]]
+15. [[f1906623:16-linear-algebra.org][Linear algebra]]
+16. [[f1906623:17-linear-algebra-2.org][Interpolation and eigenvalues]]
+17. [[f1906623:18-linear-regression.org][Linear regression and regularization]]
+18. [[f1906623:19-introduction-to-autograd.org][Introduction to derivatives]]
+19. [[f1906623:20-autograd-applications.org][Applications of autograd]]
+20. [[f1906623:21-machine-learning.org][Introduction to machine learning]]
+21. [[f1906623:22-ml-2.org][ML and extrapolation]]
+22. [[f1906623:23-gp.org][Gaussian process regression]]
+
+That concludes these lectures!
+
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
 
 * Setup the publishing project                                     :noexport:
 
@@ -29,6 +49,8 @@ Please report errors/typos and issues at https://github.com/jkitchin/f19-06623/i
 
 https://github.com/jkitchin/f19-06623/tree/master/docs
 https://github.com/jkitchin/f19-06623/blob/master/docs/notebooks/00-intro.ipynb
+
+Note I did a fair bit of editing of results that had output that looked like links.
 
 #+BEGIN_SRC emacs-lisp
 ;; This is a link for getting links right.

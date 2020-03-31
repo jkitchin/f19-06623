@@ -1,0 +1,838 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 07:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mathematical, scientific and engineering applications of autograd</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="autograd" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Mathematical, scientific and engineering applications of autograd</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org2c71e53">1. Flexible nonlinear models for regression</a>
+<ul>
+<li><a href="#org025abff">1.1. Another interpretation of neural networks</a></li>
+</ul>
+</li>
+<li><a href="#orga960744">2. Modern machine learning with neural networks</a></li>
+<li><a href="#orgd58bf84">3. Summary</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org2c71e53" class="outline-2">
+<h2 id="org2c71e53"><span class="section-number-2">1</span> Flexible nonlinear models for regression</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Today we are going to take a meandering path to using autograd to train a neural network for regression. First let us consider this very general looking nonlinear model that we might fit to data. There are 10 parameters in it, so we should expect we can get it to fit some data pretty well.
+</p>
+
+<p>
+\(y = b1 + w10 tanh(w00 x + b00) + w11 tanh(w01 x + b01) + w12 tanh(w02 x + b02)\)
+</p>
+
+<p>
+For now let us not concern ourselves with how we chose this particular model. We will return to the choices later.
+</p>
+
+<p>
+We will use it to fit data that is generated from \(y = x^\frac{1}{3}\). First, we just do a least_squares fit. This function is similar to <code>scipy.optimize.curve_fit</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> autograd.numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> jacobian
+
+<span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> least_squares
+least_squares?
+</pre>
+</div>
+
+<p>
+Here is the data we are going to work with.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Some generated data</span>
+<span style="color: #BA36A5;">X</span> = np.linspace(0, 1)
+<span style="color: #BA36A5;">Y</span> = X**(1. / 3.)
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+plt.plot(X, Y, <span style="color: #008000;">'b.'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/f9f4765bf874cfeb97d070c64909ecd60eb48691/8988523c8198cb8f37c89adf0fdecb22db42b6fd.png" alt="8988523c8198cb8f37c89adf0fdecb22db42b6fd.png" />
+</p>
+</div>
+
+<p>
+We have to define a function for our model, and then another one for the residuals. For now, we stick with a syntax we are familiar with, and one that works with <code>least_squares</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">model</span>(x, *pars):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">b1</span>, <span style="color: #BA36A5;">w10</span>, <span style="color: #BA36A5;">w00</span>, <span style="color: #BA36A5;">b00</span>, <span style="color: #BA36A5;">w11</span>, <span style="color: #BA36A5;">w01</span>, <span style="color: #BA36A5;">b01</span>, <span style="color: #BA36A5;">w12</span>, <span style="color: #BA36A5;">w02</span>, <span style="color: #BA36A5;">b02</span> = pars
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">pred</span> = (b1 + w10 * np.tanh(w00 * x + b00)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  + w11 * np.tanh(w01 * x + b01)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  + w12 * np.tanh(w02 * x + b02))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> pred
+
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">resid</span>(pars):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> Y - model(X, *pars)
+</pre>
+</div>
+
+<p>
+Finally, we call <code>least_squares</code> to get the parameters. We have a nonlinear model, and are using a nonlinear optimizer, so we need an initial guess to get started. Here we use normally distributed random numbers for the guess.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.random.randn?
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">pars</span> = least_squares(resid, x0=np.random.randn(10) * 0.1)
+pars.message
+</pre>
+</div>
+
+<pre class="example">
+'The maximum number of function evaluations is exceeded.'
+</pre>
+
+<p>
+At first, that looks bad, like we did not succeed. The cost function is small though:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">pars.cost
+</pre>
+</div>
+
+<pre class="example">
+1.3714713928534242e-05
+</pre>
+
+<p>
+Also, it looks like the gradients at the end-point are all close to zero.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.set_printoptions(precision=3, suppress=<span style="color: #D0372D;">True</span>)
+pars.grad
+</pre>
+</div>
+
+<pre class="example">
+array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
+</pre>
+
+<p>
+Finally, we can see that although our model is not positive definite at the endpoint, the non-zero eigenvalues are greater than zero.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> hessian
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">sse</span>(params):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.<span style="color: #006FE0;">sum</span>(resid(params)**2)
+<span style="color: #BA36A5;">H</span> = hessian(sse)
+np.linalg.eigvals(H(pars.x))
+</pre>
+</div>
+
+<pre class="example">
+array([532.482,  12.359,   0.627,   0.163,   0.022,   0.   ,   0.   ,
+         0.   ,   0.   ,   0.   ])
+</pre>
+
+<p>
+The zeros suggest our model is too complex, that it has more parameters than are required. We leave this point for future consideration. Also note that the Hessian is singular:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.det(H(pars.x))
+</pre>
+</div>
+
+<pre class="example">
+8.538426816841829e-34
+</pre>
+
+<p>
+That means we cannot use any method that requires an inverse Hessian to help with the optimization.
+</p>
+
+<p>
+Finally, we can graphically show that this model works ok.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(X, Y, <span style="color: #008000;">'b.'</span>, X, model(X, *pars.x))
+plt.legend([<span style="color: #008000;">'data'</span>, <span style="color: #008000;">'fit'</span>]);
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/f9f4765bf874cfeb97d070c64909ecd60eb48691/60f08cdb9bce9cfa2360cc48393d6d71f8d2154f.png" alt="60f08cdb9bce9cfa2360cc48393d6d71f8d2154f.png" />
+</p>
+</div>
+
+<p>
+Evidently, we just have not reached the required tolerances for least_squares to claim success.
+</p>
+
+<p>
+Let's inspect the parameter values. They vary by some orders of magnitude, and surprisingly are all negative.
+</p>
+
+<p>
+<b>Exercise</b> Run this sequence several times with new initializations. You should get equally good fits, but different parameters. These models are not unique. That is one thing many people do not like about machine learning.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">pars.x
+</pre>
+</div>
+
+<pre class="example">
+array([-97.773,  36.637,   5.331,   2.91 ,  18.996,  54.705,   2.532,
+        43.449,   0.509,   2.307])
+</pre>
+
+
+<p>
+We have fitted a nonlinear model to the data, and so we should not expect it to extrapolate reliably. We can show this is the case explicitly:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">EX</span> = np.linspace(0, 10)
+<span style="color: #BA36A5;">EY</span> = model(EX, *pars.x)
+<span style="color: #BA36A5;">DY</span> = EX**(1 / 3)
+
+plt.plot(EX, DY, <span style="color: #008000;">'b.'</span>, EX, EY)
+plt.legend([<span style="color: #008000;">'Real function'</span>, <span style="color: #008000;">'Model'</span>])
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/f9f4765bf874cfeb97d070c64909ecd60eb48691/858e3c016149be13eed7accdcb32d9a67b2c6b7f.png" alt="858e3c016149be13eed7accdcb32d9a67b2c6b7f.png" />
+</p>
+</div>
+
+<p>
+You can see that this model saturates for large \(x\). That might be anticipated from knowledge of the tanh function, it also saturates at large values of \(x\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">tx</span> = np.linspace(-5, 5)
+plt.plot(tx, np.tanh(tx))
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/f9f4765bf874cfeb97d070c64909ecd60eb48691/e6b1732b9ce3786ba7864d67801fd708a3471e1a.png" alt="e6b1732b9ce3786ba7864d67801fd708a3471e1a.png" />
+</p>
+</div>
+
+
+<p>
+Up to here, this is mostly review for us. It is just a nonlinear regression (admittedly to a strange looking function), and analysis of the resulting model. Note that the model is very flexible, and it can be used to fit a variety of other functions.
+</p>
+
+<p>
+I did not pull that model out of nowhere. Let's rewrite it in a few steps. If we think of <code>tanh</code> as a function that operates element-wise on a vector, we could write that equation more compactly at:
+</p>
+
+<pre class="example">
+                              [w00 * x + b01]
+y = [w10, w11, w12] @ np.tanh([w01 * x + b01]) + b1
+                              [w02 * x + b02]
+</pre>
+
+<p>
+We can rewrite this one more time in matrix notation:
+</p>
+
+<pre class="example">
+y = w1 @ np.tanh(w0 @ x + b0) + b1
+</pre>
+
+<p>
+Another way to read these equations is that we have an input of \(x\). We multiply the input by a vector weights (\(\mathbf{w0}\)), add a vector of offsets (biases), \(\mathbf{b0}\), <i>activate</i> that by the nonlinear <code>tanh</code> function, then multiply that by a new set of weights, and add a final bias. We typically call this kind of model a <i>neural network</i>. There is an input layer, one hidden layer with 3 neurons that are activated by <code>tanh</code>, and one output layer with linear activation.
+</p>
+
+<p>
+A conventional graphical representation of this function as a neural network is shown here:
+<a href="nn.png">nn.png</a>
+</p>
+
+
+<p>
+These models are called neural networks because they were originally modeled after neurons. Neurons take input, and if the input is large enough the neuron is activated and has an output. The <code>tanh</code> function approximates this behavior in a smooth, differentiable way. Remarkably, neural networks have been shown to be universal function approximators and hence they are extremely useful.
+</p>
+
+<p>
+When you use a neural network, you have several choices to make:
+</p>
+
+<ol class="org-ol">
+<li>How many layers? Here we used one layer, but it is possible to have many layers where the output of the first layer goes to the second layer, etc.  This increases the flexibility of the network.</li>
+<li>How many neurons should be in each layer? The more neurons you use, the more parameters there will be. This increases the flexibility of the network.</li>
+<li>What activation function to use. The classics are tanh and sigmoid functions, but almost any nonlinear function can be used.</li>
+</ol>
+
+<p>
+In machine learning lingo, these choices are called <i>hyperparameters</i>. These are parameters that determine the size of the model, but they are fixed, and not fitted as part of the model. It is mostly <i>art and experience</i> that is how these choices are made. There are many advanced methods for doing this more systematically, but they are computationally expensive and beyond the scope of this class.
+</p>
+</div>
+
+<div id="outline-container-org025abff" class="outline-3">
+<h3 id="org025abff"><span class="section-number-3">1.1</span> Another interpretation of neural networks</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+In this section we consider another interpretation of what a neural network is. We start with a partial Fourier series expansion of a periodic function (<a href="http://mathworld.wolfram.com/FourierSeries.html">http://mathworld.wolfram.com/FourierSeries.html</a>). This expansion can fit any even periodic function in the infinite limit, and can approximate that function otherwise.
+</p>
+
+<p>
+\(f(x) = \frac{1}{2} a_0 + \sum_{n=1}^{\infty} a_n \cos(n x)\)
+</p>
+
+<p>
+We use a partial series (leaving out the sin terms) just for simplicity of notation here. Next, we write this in a vector form. In the Fourier series, the \(a_n\) have formal definitions: \(a_n = \int_{-\pi}^{\pi} f(x) cos(n x) dx\).  Let \(\mathbf{a} = [a_0, a_1, a_2, ..., a_n]\), and \(\mathbf{n} = [1, 2, .., n]\) Then, we can replace the sum as \(\mathbf{a} \cdot \cos(\mathbf{n} x)\). We can for now imagine that \(n\) could go to \(\infty\), but it is not critical; if we truncate the expansion, then we just have an approximate expansion.
+</p>
+
+<p>
+We can represent this in a graph form like a neural network:
+</p>
+
+
+
+
+<div class="figure">
+<p><img src="./screenshots/date-19-11-2019-time-09-03-13.png" alt="date-19-11-2019-time-09-03-13.png" />
+</p>
+</div>
+
+
+<p>
+To get to a neural network, we relax a few things. First, we let \(n\) take on continuous values that are determined by fitting, not just integer values. Second, we let \(a_n\) become a fitting parameter, rather than computing it from the definition. Third, we allow other functions than \(\cos\) to "activate" the layers. In this sense, we can see that a single layer neural network is like an expansion in a basis set of the activation functions, with a more flexible definition of their form.
+</p>
+
+<p>
+A network can have multiple layers, and we interpret these as a composition of functions, e.g. f(g(x)), where the second layer serves to nonlinearly transform the output of the first layer.  Thus, "deep learning" provides a nonlinear transform of your input space to a new space with different dimensionality where the output is linear in this new space.
+</p>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-orga960744" class="outline-2">
+<h2 id="orga960744"><span class="section-number-2">2</span> Modern machine learning with neural networks</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Modern machine learning does not use the algorithms described above to fit neural networks. Most use a gradient descent based algorithm, which means we need easy access to gradient functions. The standard approaches use automatic differentiation to get these. Autograd was designed in part for building neural networks. Now we will  reformulate this regression as a neural network. This code is lightly adapted from <a href="https://github.com/HIPS/autograd/blob/master/examples/neural_net_regression.py">https://github.com/HIPS/autograd/blob/master/examples/neural_net_regression.py</a>.
+</p>
+
+<p>
+First we define a neural network function. This code is more general than what we described before, and can accommodate multiple layers.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">nn</span>(params, inputs, activation=np.tanh):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">"""a neural network.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   params is a list of (weights, bias) for each layer.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   inputs goes into the nn. Each row corresponds to one output label.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   activation is the nonlinear activation function.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #036A07;">   """</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">for</span> W, b <span style="color: #0000FF;">in</span> params[:-1]:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">outputs</span> = np.dot(inputs, W) + b
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">inputs</span> = activation(outputs)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">no activation on the last layer</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">W</span>, <span style="color: #BA36A5;">b</span> = params[-1]
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.dot(inputs, W) + b
+</pre>
+</div>
+
+<p>
+The next function initializes the weights and biases for each layer in our network. It is standard practice to initialize them to small random numbers to avoid any unintentional symmetries that might occur from a systematic initialization (e.g. all ones or zeros). This code is kind of tricky, but it is very convenient. The size of the arrays are computable. For example, we have one input into a 3 neuron layer, which requires an array of three weights and three biases. Then these get combined back into one output, so we need  again three weights, but now only one bias. In a matrix multiply sense we have: (N, 1) @ (1, 3) @ (3, 1) = (N, 1). This function just automates building this even when there are multiple layers, inputs and outputs.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> autograd.numpy.random <span style="color: #0000FF;">as</span> npr
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">init_random_params</span>(scale, layer_sizes, rs=npr.RandomState(0)):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">"""Build a list of (weights, biases) tuples, one for each layer."""</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> [(rs.randn(insize, outsize) * scale,   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">weight matrix</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>rs.randn(outsize) * scale)           <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">bias vector</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">for</span> insize, outsize <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">zip</span>(layer_sizes[:-1], layer_sizes[1:])]
+</pre>
+</div>
+
+<p>
+To use this, we specify the layer_sizes, e.g. layer_sizes=[1, 3, 1] which means one input, 3 neurons in the first layer, and one output.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">params</span> = init_random_params(0.1, layer_sizes=[1, 3, 1])
+<span style="color: #0000FF;">for</span> i, wb <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">enumerate</span>(params):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">W</span>, <span style="color: #BA36A5;">b</span> = wb
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(<span style="color: #008000;">'w{0}: {1}, b{0}: {2}'</span>.<span style="color: #006FE0;">format</span>(i, W.shape, b.shape))
+
+<span style="color: #0000FF;">print</span>(params)
+</pre>
+</div>
+
+<pre class="example">
+w0: (1, 3), b0: (3,)
+w1: (3, 1), b1: (1,)
+[(array([[0.176, 0.04 , 0.098]]), array([ 0.224,  0.187, -0.098])), (array([[ 0.095],
+       [-0.015],
+       [-0.01 ]]), array([0.041]))]
+
+</pre>
+
+<p>
+You can see w0 is a column vector of weights, and there are three biases in b0. W1 in contrast, is a row vector of weights, with one bias. So 10 parameters in total, like we had before. We will create an objective function of the mean squared error again. There is a subtle point here too. The input data will go in with a specific shape of (N, 1) where N is the number of x-points. Our input is from <code>np.linspace</code> as a 1D array. So, we build a 2D array with the 1D array as the first row, and then transpose it to get it into a column.
+</p>
+
+<p>
+Another subtle detail is the objective function has an optional step argument. We will see shortly this is a required argument for the optimizer algorithm.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(params, step=<span style="color: #D0372D;">None</span>):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">pred</span> = nn(params, np.array([X]).T)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">err</span> = np.array([Y]).T - pred
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.mean(err**2)
+</pre>
+</div>
+
+<p>
+Finally, we are ready to do some optimization. We use the <a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">Adam optimizer</a>. The details are not super important at this point, suffice to say it is a gradient descent algorithm. We use <code>autograd.grad</code> to provide that gradient of the objective function. One more important point here is the <code>step_size</code> argument. This is sometimes also called the <i>learning rate</i> in ML jargon. This parameter determines how fast the optimization converges. If it is too small, the rate of convergence is slow. If it is too large, then the convergence may not be stable. This is another <i>hyperparameter</i> that affects the model.
+</p>
+
+<p>
+We do the training iteratively, taking N steps per iteration. If you run this set of blocks many times, you will get different results from different random initial guesses. Sometimes, the optimization can get trapped in local minima. It takes experience to recognize and diagnose problems with these.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> autograd.misc.optimizers <span style="color: #0000FF;">import</span> adam
+<span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> grad
+
+<span style="color: #BA36A5;">N</span> = 50
+<span style="color: #BA36A5;">MAX_EPOCHS</span> = 500
+
+<span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(MAX_EPOCHS):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">params</span> = adam(grad(objective), params,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> step_size=0.01, num_iters=N)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> i % 100 == 0:  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">print every 100th step</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'Step </span><span style="color: #BA36A5;">{i}</span><span style="color: #008000;">: </span><span style="color: #BA36A5;">{objective(params)}</span><span style="color: #008000;">'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">if</span> objective(params, _) &lt; 2e-5:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(<span style="color: #008000;">'Tolerance reached, stopping'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">break</span>
+</pre>
+</div>
+
+<p>
+Step 0: 0.02252298981875618
+Step 100: 0.00010016662197145305
+Tolerance reached, stopping
+</p>
+
+
+<p>
+Now we can compare the output of this to our previous fit.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">for</span> i, wb <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">enumerate</span>(params):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">W</span>, <span style="color: #BA36A5;">b</span> = wb
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(<span style="color: #008000;">'w{0}: {1}, b{0}: {2}'</span>.<span style="color: #006FE0;">format</span>(i, W, b))
+<span style="color: #0000FF;">print</span>(pars.x)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">from least_squares</span>
+</pre>
+</div>
+
+<pre class="example">
+w0: [[33.09   2.896 -0.893]], b0: [0.612 0.254 0.482]
+w1: [[ 0.711]
+ [ 0.434]
+ [-0.414]], b1: [-0.306]
+[-97.773  36.637   5.331   2.91   18.996  54.705   2.532  43.449   0.509
+   2.307]
+
+</pre>
+
+<p>
+A crucial point is they don't appear related at all. They aren't. There are many sets of parameters that lead to similar fits. These parameters don't have any particular meaning. This is another thing some researchers do not like about neural networks. They are usually not interpretable as physical parameters.
+</p>
+
+<p>
+As before, this model cannot extrapolate (or generalize as ML researchers say). That is because the activation functions all saturate to a constant value. The network <b>does not learn</b> anything but a representation of the data in the region the regression is done.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">X2</span> = np.linspace(0, 10)
+<span style="color: #BA36A5;">Y2</span> = X2**(1/3)
+<span style="color: #BA36A5;">Z2</span> = nn(params, X2.reshape([-1, 1]))
+
+plt.plot(X2, Y2, <span style="color: #008000;">'b.'</span>, label=<span style="color: #008000;">'analytical'</span>)
+plt.plot(X2, Z2, label=<span style="color: #008000;">'NN'</span>)
+plt.fill_between(X2 &lt; 1, 0, 1.4, facecolor=<span style="color: #008000;">'gray'</span>, alpha=0.5)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>);
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/f9f4765bf874cfeb97d070c64909ecd60eb48691/c68500d7d534469b623a188d4e8e291d41fab85a.png" alt="c68500d7d534469b623a188d4e8e291d41fab85a.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd58bf84" class="outline-2">
+<h2 id="orgd58bf84"><span class="section-number-2">3</span> Summary</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Today we pulled together many ideas about nonlinear models, regression, and optimization as an introduction to modern machine learning. ML is little more than building computational models from data. It is usually using flexible, universal function approximators, e.g. neural networks, and all modern ML relies on automatic differentiation to do the regression.
+</p>
+
+<p>
+ML code is much more verbose than the simpler regression models we used previously. There is often data scaling that is done in advance, and <i>regularization</i> that is used to reduce overfitting. There are whole courses and now degrees on these topics. You are now at a starting point to study these topics.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 07:32</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

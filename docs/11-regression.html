@@ -1,0 +1,1008 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 07:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nonlinear regression</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="scipy.optimize.minimize, scipy.optimize.curve_fit, pycse.nlinfit" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Nonlinear regression</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgf8cc390">1. Regression of data is a form of function minimization</a></li>
+<li><a href="#org4ab30fb">2. Parameter confidence intervals</a>
+<ul>
+<li><a href="#org07a9f36">2.1. An example with curve_fit</a></li>
+<li><a href="#orgd48428c">2.2. Uncertainty estimation</a></li>
+<li><a href="#org0a77dad">2.3. What about uncertainty on the predictions?</a></li>
+</ul>
+</li>
+<li><a href="#org368830a">3. Summary</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf8cc390" class="outline-2">
+<h2 id="orgf8cc390"><span class="section-number-2">1</span> Regression of data is a form of function minimization</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+When we say regression, we really mean find some parameters of a model that best reproduces some known data. By "best reproduces" we mean the sum of all the errors between the values predicted by the model, and the real data is minimized.
+</p>
+
+<p>
+Suppose we have the following data that shows how the energy of a material depends on the volume of the material.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #BA36A5;">volumes</span> = np.array([13.71, 14.82, 16.0, 17.23, 18.52])
+<span style="color: #BA36A5;">energies</span> = np.array([-56.29, -56.41, -56.46, -56.463,-56.41])
+
+plt.plot(volumes, energies, <span style="color: #008000;">'bo'</span>)
+plt.xlabel(<span style="color: #008000;">'V'</span>)
+plt.ylabel(<span style="color: #008000;">'E'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'E')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/3499a5b7586bdd2c96f9fe9ed28c97bb17318042/c80a94d65a24979e9df7b23bed0faa9f4554e343.png" alt="c80a94d65a24979e9df7b23bed0faa9f4554e343.png" />
+</p>
+</div>
+
+<p>
+In Materials Science we often want to fit an equation of state to this data. We will use this equation:
+</p>
+
+<p>
+\(E = E_0 + \frac{B_0 V}{B_0'}\left(\frac{(V_0 / V)^{B_0'}}{B_0' - 1} + 1 \right) - \frac{V_0 B_0}{B_0' - 1}\)
+</p>
+
+<p>
+from <a href="https://journals.aps.org/prb/pdf/10.1103/PhysRevB.28.5480">https://journals.aps.org/prb/pdf/10.1103/PhysRevB.28.5480</a>. In this model there are four parameters:
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">name</th>
+<th scope="col" class="org-left">desc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">E_0</td>
+<td class="org-left">energy at the minimim</td>
+</tr>
+
+<tr>
+<td class="org-left">B_0</td>
+<td class="org-left">bulk modulus</td>
+</tr>
+
+<tr>
+<td class="org-left">B_0'</td>
+<td class="org-left">first derivative of the bulk modulus</td>
+</tr>
+
+<tr>
+<td class="org-left">V_0</td>
+<td class="org-left">volume at the energy minimum</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+We would like to find the value of these parameters that best fits the data above. That means, find the set of parameters that minimize the sum of the squared errors between the model and data.
+</p>
+
+<p>
+First we need a function that will use the parameters and return the energy for a given volume.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">Murnaghan</span>(parameters, vol):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">'From PRB 28,5480 (1983)'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">E0</span>, <span style="color: #BA36A5;">B0</span>, <span style="color: #BA36A5;">BP</span>, <span style="color: #BA36A5;">V0</span> = parameters
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">E</span> = E0 + B0 * vol / BP * \
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   (((V0 / vol)**BP) / (BP - 1) + 1) - V0 * B0 / (BP - 1.)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> E
+</pre>
+</div>
+
+<p>
+Next, we need a function that computes the summed squared errors for a set of parameters. The use of squared errors is preferable in many cases to the absolute values because it has a continuous derivative. We will learn more about this later.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(pars):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">err</span> = energies - Murnaghan(pars, volumes)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.<span style="color: #006FE0;">sum</span>(err**2)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">we return the summed squared error directly</span>
+</pre>
+</div>
+
+<p>
+Finally,  we need an initial guess to start the minimization. As with all minimization problems, this can be the most difficult step. It is always a good idea to use properties of the model and data where possible to make these guesses. We have no way to plot anything in four dimensions, so we use analysis instead.
+</p>
+
+<p>
+We can derive some of these from the data we have. First, we can get the minimum in energy and the corresponding volume that we know from the data. These are not the final answer, but they are a good guess for it.
+</p>
+
+<p>
+The B<sub>0</sub> parameter is related to the curvature at the minimum, which is the second derivative. We get that from repeated calls to <code>numpy.gradient</code>. Finally, \(B_0'\) is related to the derivative of \(B\) at the minimum, so we estimate that too.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">imin</span> = np.argmin(energies)
+<span style="color: #BA36A5;">dedv</span> = np.gradient(energies, volumes)
+<span style="color: #BA36A5;">B</span> = np.gradient(dedv, volumes)
+<span style="color: #BA36A5;">Bp</span> = np.gradient(B, volumes)
+
+
+<span style="color: #BA36A5;">x0</span> = [energies[imin],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> B[imin],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> Bp[imin],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> volumes[imin]]
+
+x0
+</pre>
+</div>
+
+<pre class="example">
+[-56.463, 0.02575384116153356, -0.00900405886406903, 17.23]
+</pre>
+
+<p>
+Finally, we are ready to fit our function. As usual, we also plot the data and the fit for visual inspection.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> minimize
+<span style="color: #BA36A5;">sol</span> = minimize(objective, x0)
+<span style="color: #0000FF;">print</span>(sol)
+
+plt.plot(volumes, energies, <span style="color: #008000;">'bo'</span>, label=<span style="color: #008000;">'Data'</span>)
+<span style="color: #BA36A5;">vfit</span> = np.linspace(<span style="color: #006FE0;">min</span>(volumes), <span style="color: #006FE0;">max</span>(volumes))
+plt.plot(vfit, Murnaghan(sol.x, vfit), label=<span style="color: #008000;">'fit'</span>)
+plt.legend()
+plt.xlabel(<span style="color: #008000;">'V'</span>)
+plt.ylabel(<span style="color: #008000;">'E'</span>)
+</pre>
+</div>
+
+<pre class="example">
+      fun: 1.4912965344598558e-05
+ hess_inv: array([[ 3.03863745e-01, -3.02573371e+00,  8.04371522e+01,
+        -2.41676767e+00],
+       [-3.02573371e+00,  5.27761683e+01, -1.63584644e+03,
+         4.76079594e+01],
+       [ 8.04371522e+01, -1.63584644e+03,  7.06615880e+04,
+        -2.81868629e+03],
+       [-2.41676767e+00,  4.76079594e+01, -2.81868629e+03,
+         1.54690538e+02]])
+      jac: array([ 3.46717718e-06,  1.36594349e-06,  7.79607490e-09, -5.30043053e-07])
+  message: 'Optimization terminated successfully.'
+     nfev: 216
+      nit: 31
+     njev: 36
+   status: 0
+  success: True
+        x: array([-56.46839794,   0.57236216,   2.74084063,  16.55900277])
+</pre>
+
+
+<pre class="example">
+Text(0, 0.5, 'E')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/3499a5b7586bdd2c96f9fe9ed28c97bb17318042/0881dadf45f6561fdad7dfe9be227011e385c68d.png" alt="0881dadf45f6561fdad7dfe9be227011e385c68d.png" />
+</p>
+</div>
+
+<p>
+That looks pretty good. We should ask ourselves, how do we know we got a minimum? We should see that the objective function is really at a minimum <i>for each of the parameters</i>. Here, we show that it is a minimum for the first parameter.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">E0_range</span> = np.linspace(0.9 * sol.x[0], 1.1 * sol.x[0])
+
+<span style="color: #BA36A5;">errs</span> = [objective([e0, *sol.x[1:]]) <span style="color: #0000FF;">for</span> e0 <span style="color: #0000FF;">in</span> E0_range]
+
+plt.plot(E0_range, errs)
+plt.axvline(sol.x[0], c=<span style="color: #008000;">'k'</span>, ls=<span style="color: #008000;">'--'</span>)
+plt.xlabel(<span style="color: #008000;">'E0'</span>)
+plt.ylabel(<span style="color: #008000;">'summed squared error'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'summed squared error')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/3499a5b7586bdd2c96f9fe9ed28c97bb17318042/f8ecc427412acd27eccf3fc7ae0c19690e31d1ee.png" alt="f8ecc427412acd27eccf3fc7ae0c19690e31d1ee.png" />
+</p>
+</div>
+
+<p>
+You can see visually that the error goes up on each side of the parameter estimate.
+</p>
+
+<p>
+<b>exercise</b> Repeat this analysis for the other three parameters.
+</p>
+
+<p>
+Later when we learn about linear algebra, we will learn that if you can show the eigenvalues of the Hessian of the objective function is positive definite, that also means you are at a minimum. It means the error goes up in any direction away from the minimum.
+</p>
+
+<p>
+Usually we do some regression to find one of these:
+</p>
+<ol class="org-ol">
+<li>Parameters for the model - because the parameters mean something</li>
+<li>Properties of the model - because the properties mean something</li>
+</ol>
+
+<p>
+In this particular case, we can do both. Some of the parameters are directly meaningful, like the E0, and V0 are the energy at the minimum, and the corresponding volume. B0 is also meaningful, it is called the bulk modulus, and it is a material property.
+</p>
+
+<p>
+Now that we have a model though we can also define properties of it, e.g. <i>in this case</i> we have from thermodynamics that \(P = -dE/dV\). We can use our model to define this derivative. I use <code>scipy.misc.derivative</code> for this for convenience. The only issue with it is the energy function has arguments that are not in the right order for the derivative, so I make a proxy function here that just reverses the order of the arguments.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.misc <span style="color: #0000FF;">import</span> derivative
+
+<span style="color: #BA36A5;">pars</span> = sol.x
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">P</span>(V):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">def</span> <span style="color: #006699;">proxy</span>(V, pars):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> Murnaghan(pars, V)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dEdV</span> = derivative(proxy, V, args=(pars,), dx=1e-6)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -dEdV
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Some examples</span>
+P(16), P(pars[-1]), P(18)
+</pre>
+</div>
+
+<pre class="example">
+(0.020610354312111667, -0.0, -0.04269126563372083)
+</pre>
+
+<p>
+The result above shows that it takes positive pressure to compress the material, the pressure is zero at the minimum, and it takes negative pressure to cause it to expand.
+</p>
+
+<p>
+This example is just meant to illustrate what one can do with a model once you have it.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4ab30fb" class="outline-2">
+<h2 id="org4ab30fb"><span class="section-number-2">2</span> Parameter confidence intervals</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+We have left out an important topic in the discussion above: How certain are we of the parameters we estimated? This is a complicated question that requires moderately sophisticated statistics to answer. We will build up to the solution in steps.
+</p>
+
+<p>
+First, we recall that in a statistical sense we are <i>estimating</i> the values of the parameters. Specifically, we estimate the <i>mean</i> of the parameters, from a fixed number of data points.
+</p>
+
+<p>
+Let's say we have made 10 measurements that have an average of 16.1, and a standard deviation of 0.01. What is the range of values that we are 95% confident the next measurement will fall in?
+</p>
+
+<p>
+We have to take into account the fact that we only have 10 measurements to make the estimation from, so the estimate is more uncertain than if we have 100 or 1000 measurements. The student t-tables tell us precisely how much more uncertain depending on the confidence level you want.
+</p>
+
+<p>
+The point here is not for you to memorize or derive these formulas, only to illustrate that the uncertainty is not simply the standard deviation. It also includes the effect of the sample size.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.stats.distributions <span style="color: #0000FF;">import</span> t
+
+<span style="color: #BA36A5;">n</span> = 10  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">number of measurements</span>
+<span style="color: #BA36A5;">dof</span> = n - 1  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">degrees of freedom</span>
+<span style="color: #BA36A5;">avg_x</span> = 16.1  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">average measurement</span>
+<span style="color: #BA36A5;">std_x</span> = 0.01  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">standard deviation of measurements</span>
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Find 95% prediction interval for next measurement</span>
+<span style="color: #BA36A5;">alpha</span> = 1.0 - 0.95
+
+<span style="color: #BA36A5;">pred_interval</span> = t.ppf(1 - alpha / 2.0, dof) * std_x / np.sqrt(n)
+
+<span style="color: #BA36A5;">plus_side</span> = avg_x + pred_interval
+<span style="color: #BA36A5;">minus_side</span> = avg_x - pred_interval
+
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'We are 95% confident the next measurement will be between </span><span style="color: #BA36A5;">{minus_side:1.3f}</span><span style="color: #008000;"> and </span><span style="color: #BA36A5;">{plus_side:1.3f}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+We are 95% confident the next measurement will be between 16.093 and 16.107
+</p>
+
+<p>
+To consider the uncertainty in model parameters, we need some way to estimate the standard deviation of the parameters. <code>scipy.optimize.minimize</code> does not provide much help with that. We will instead turn to <code>scipy.optimize.curve_fit</code>. This function will return information that is helpful in estimating the uncertainty. It is like <code>scipy.optimize.minimize</code> in the sense that it minimizes the summed squared errors between a model described in a function, and data defined in variables. Note in particular the docstring for the output variable pcov, which tells you how to compute the standard deviation errors on the parameters.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> curve_fit
+
+curve_fit?
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org07a9f36" class="outline-3">
+<h3 id="org07a9f36"><span class="section-number-3">2.1</span> An example with curve_fit</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Given the data below, fit the following curve:
+</p>
+
+<p>
+\(y(x) = \frac{a x}{b + x}\) to it.
+</p>
+
+<p>
+That means, estimate the values of \(a, b\) that best fit the data.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #BA36A5;">x</span> = np.array([0.5, 0.387, 0.24, 0.136, 0.04, 0.011])
+<span style="color: #BA36A5;">y</span> = np.array([1.255, 1.25, 1.189, 1.124, 0.783, 0.402])
+
+plt.plot(x, y, <span style="color: #008000;">'bo'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/3499a5b7586bdd2c96f9fe9ed28c97bb17318042/effa576767becd11d0432773dc7683157628eeaa.png" alt="effa576767becd11d0432773dc7683157628eeaa.png" />
+</p>
+</div>
+
+<p>
+What should we use for an initial guess? At \(x=0\), \(y = 0\), which isn't that helpful. At large \(x\), we have \(y=a\). From the data, we can guess that \(a \approx 1.2\). For small x, we have \(y = a/b x\). So, if we estimate the slope, we can estimate b. We arrive at these guesses by thoughtful inspection of the data, and the model that we use to fit it.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">a0</span> = 1.2
+<span style="color: #BA36A5;">m</span> = np.gradient(y, x, edge_order=2) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">m = a / b  -&gt;  b = a / m</span>
+
+<span style="color: #BA36A5;">b0</span> = a0 / m[-1]
+a0, b0
+</pre>
+</div>
+
+<pre class="example">
+(1.2, 0.0781156032363354)
+</pre>
+
+<p>
+Now for the fitting.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">this is the function we want to fit to our data</span>
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">func</span>(x, a, b):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> a * x / (b + x)
+
+<span style="color: #BA36A5;">initial_guess</span> = [a0, b0]
+<span style="color: #BA36A5;">pars</span>, <span style="color: #BA36A5;">pcov</span> = curve_fit(func, x, y, p0=initial_guess)
+
+pars, pcov
+</pre>
+</div>
+
+<pre class="example">
+(array([1.32753143, 0.02646156]),
+ array([[9.45332917e-05, 7.10675655e-06],
+        [7.10675655e-06, 1.05658850e-06]]))
+</pre>
+
+<p>
+<i>Always</i> check the fit visually.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(x, y, <span style="color: #008000;">'bo'</span>)
+<span style="color: #BA36A5;">xfit</span> = np.linspace(0, 0.5)
+plt.plot(xfit, func(xfit, *pars))
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.legend([<span style="color: #008000;">'data'</span>, <span style="color: #008000;">'fit'</span>])
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/3499a5b7586bdd2c96f9fe9ed28c97bb17318042/f8b259d7e14398d603361cb10ddb4def2fe82fb8.png" alt="f8b259d7e14398d603361cb10ddb4def2fe82fb8.png" />
+</p>
+</div>
+
+<p>
+<b>exercise</b> Try different initial guesses and find one that does not look this good.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgd48428c" class="outline-3">
+<h3 id="orgd48428c"><span class="section-number-3">2.2</span> Uncertainty estimation</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Recall from the documentation of curve_fit that the standard deviation of each parameter is defined by:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.sqrt(np.diag(pcov))
+</pre>
+</div>
+
+<pre class="example">
+array([0.00972282, 0.0010279 ])
+</pre>
+
+<p>
+We can use these to estimate confidence intervals on the two parameters. Note that here we still use the student-t multipliers to account for the uncertainty caused by having a small data set.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.stats.distributions <span style="color: #0000FF;">import</span> t
+
+<span style="color: #BA36A5;">alpha</span> = 0.05  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">95% confidence interval = 100*(1-alpha)</span>
+
+<span style="color: #BA36A5;">n</span> = <span style="color: #006FE0;">len</span>(y)    <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">number of data points</span>
+<span style="color: #BA36A5;">p</span> = <span style="color: #006FE0;">len</span>(pars)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">number of parameters</span>
+
+<span style="color: #BA36A5;">dof</span> = <span style="color: #006FE0;">max</span>(0, n - p)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">number of degrees of freedom</span>
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">student-t value for the dof and confidence level</span>
+<span style="color: #BA36A5;">tval</span> = t.ppf(1.0 - alpha / 2., dof)
+
+<span style="color: #0000FF;">for</span> i, p, var <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">zip</span>(<span style="color: #006FE0;">range</span>(n), pars, np.diag(pcov)):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">sigma</span> = var**0.5
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'p</span><span style="color: #BA36A5;">{i}</span><span style="color: #008000;">: </span><span style="color: #BA36A5;">{p:1.2f}</span><span style="color: #008000;"> [</span><span style="color: #BA36A5;">{p - sigma * tval:1.3f}</span><span style="color: #008000;">  </span><span style="color: #BA36A5;">{p + sigma * tval:1.3f}</span><span style="color: #008000;">]'</span>)
+</pre>
+</div>
+
+<p>
+p0: 1.33 [1.301  1.355]
+p1: 0.03 [0.024  0.029]
+</p>
+
+<p>
+The interpretation of this is that we do not know exactly what the parameters are, but we can be 95% confident that they fall in these ranges. These ranges do not include zero, so that is an indication that the parameters are significant.
+</p>
+
+<p>
+It is <i>not expected</i> that you learn all the details above. They have been coded into the "Python computations in science and engineering" <a href="https://kitchingroup.cheme.cmu.edu/pycse/">pycse</a> package. This is not part of Anaconda; you have to install it yourself. This code block should do that and install some dependencies (you only need to run it once).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">!pip install uncertainties
+!pip install quantities
+!pip install pycse
+</pre>
+</div>
+
+<p>
+Requirement already satisfied: uncertainties in /Users/jkitchin/opt/anaconda3/lib/python3.7/site-packages (3.1.2)
+Requirement already satisfied: quantities in /Users/jkitchin/opt/anaconda3/lib/python3.7/site-packages (0.12.4)
+Requirement already satisfied: pycse in /Users/jkitchin/Box/kitchingroup/jkitchin/projects/gumroad-books/pycse (2.0.4)
+Requirement already satisfied: uncertainties in /Users/jkitchin/opt/anaconda3/lib/python3.7/site-packages (from pycse) (3.1.2)
+Requirement already satisfied: quantities in /Users/jkitchin/opt/anaconda3/lib/python3.7/site-packages (from pycse) (0.12.4)
+Requirement already satisfied: numpy in /Users/jkitchin/opt/anaconda3/lib/python3.7/site-packages (from pycse) (1.18.1)
+Requirement already satisfied: scipy in /Users/jkitchin/opt/anaconda3/lib/python3.7/site-packages (from pycse) (1.4.1)
+</p>
+
+
+
+<p>
+After that, you can import the nlinfit command and use it to get confidence intervals directly.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> pycse <span style="color: #0000FF;">import</span> nlinfit
+
+nlinfit?
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">pars</span>, <span style="color: #BA36A5;">pars_ci</span>, <span style="color: #BA36A5;">se</span> = nlinfit(func, x, y, [a0, b0])
+
+<span style="color: #0000FF;">for</span> i, par <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">enumerate</span>(pars):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{par:1.3f}</span><span style="color: #008000;">, </span><span style="color: #BA36A5;">{np.round(pars_ci[i], 3)}</span><span style="color: #008000;">, </span><span style="color: #BA36A5;">{se[i]:1.4f}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+1.328, [1.301 1.355], 0.0097
+0.026, [0.024 0.029], 0.0010
+</p>
+
+<p>
+It is important to realize that:
+</p>
+<ol class="org-ol">
+<li>The size of the confidence interval depends on the number of parameters, data points, and desired confidence level.</li>
+<li>The root of this is the minimization of an error function.</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org0a77dad" class="outline-3">
+<h3 id="org0a77dad"><span class="section-number-3">2.3</span> What about uncertainty on the predictions?</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+Consider the fit again, and extrapolate it to larger \(x\):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">plt.plot(x, y, <span style="color: #008000;">'bo'</span>)
+<span style="color: #BA36A5;">xfit</span> = np.linspace(0, 5)
+plt.plot(xfit, func(xfit, *pars))
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+plt.legend([<span style="color: #008000;">'data'</span>, <span style="color: #008000;">'fit'</span>])
+func(xfit, *pars)[-1]
+</pre>
+</div>
+
+<pre class="example">
+1.3205427044923441
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/3499a5b7586bdd2c96f9fe9ed28c97bb17318042/dae9d9ab19dfce4c518ba82102770de866ccf195.png" alt="dae9d9ab19dfce4c518ba82102770de866ccf195.png" />
+</p>
+</div>
+
+
+<p>
+We estimate the model plateaus at about y=1.32, but what is an appropriate estimate of the error in this? There are uncertainties in the model parameters, so there must be uncertainty in the predictions. To estimate this, we first look at how to generate a distribution of random numbers with a normal distribution around some mean with some standard error.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">p0_mean</span> = pars[0]
+<span style="color: #BA36A5;">p0_se</span> = se[0]
+
+<span style="color: #BA36A5;">p0_dist</span> = np.random.normal(p0_mean, p0_se, 5000)
+plt.hist(p0_dist, bins=20)
+</pre>
+</div>
+
+<pre class="example">
+(array([  3.,   2.,  14.,  39.,  87., 217., 318., 484., 665., 715., 726.,
+        651., 466., 286., 180.,  98.,  35.,   9.,   3.,   2.]),
+ array([1.29158995, 1.29523556, 1.29888117, 1.30252679, 1.3061724 ,
+        1.30981801, 1.31346363, 1.31710924, 1.32075486, 1.32440047,
+        1.32804608, 1.3316917 , 1.33533731, 1.33898292, 1.34262854,
+        1.34627415, 1.34991977, 1.35356538, 1.35721099, 1.36085661,
+        1.36450222]),
+ &lt;a list of 20 Patch objects&gt;)
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/3499a5b7586bdd2c96f9fe9ed28c97bb17318042/b6667aeff3d65bdcd1e162ee164943f983be18d8.png" alt="b6667aeff3d65bdcd1e162ee164943f983be18d8.png" />
+</p>
+</div>
+
+<p>
+So the idea is we can generate a distribution of the parameters
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">p1_dist</span> = np.random.normal(pars[1], se[1], 5000)
+
+<span style="color: #BA36A5;">y5</span> = [func(5, p0, p1) <span style="color: #0000FF;">for</span> p0, p1 <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">zip</span>(p0_dist, p1_dist)]
+plt.hist(y5)
+
+np.mean(y5), np.std(y5)
+</pre>
+</div>
+
+<pre class="example">
+(1.3208054619634086, 0.009597123012463358)
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/3499a5b7586bdd2c96f9fe9ed28c97bb17318042/c6bc2154285afba0391a88ef379432a831849725.png" alt="c6bc2154285afba0391a88ef379432a831849725.png" />
+</p>
+</div>
+
+<p>
+Well, in 20/20 hindsight, we might have guessed the uncertainty in the asymptote would be just like the uncertainty in the \(a\) parameter. In this case, it is appropriate to use three significant figures given the uncertainty on the answer. A useful guideline is that the 95% confidence interval is about &plusmn; 2 &sigma;. At &plusmn; 1 &sigma; you only have about a 60% confidence interval.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'At x=5, y=</span><span style="color: #BA36A5;">{np.mean(y5):1.3f}</span><span style="color: #008000;"> +- </span><span style="color: #BA36A5;">{2 * np.std(y5):1.3f}</span><span style="color: #008000;"> at about the 95% confidence level.'</span>)
+</pre>
+</div>
+
+<p>
+At x=5, y=1.321 +- 0.019 at about the 95% confidence level.
+</p>
+
+
+<p>
+So we are not that uncertain after all in this case.
+</p>
+
+<p>
+This method of error propagation is not perfect as it assumes the errors between the parameters are independent, and that they are normally distributed. However, the method is very simple to do, and simply relies on sampling the parameters from their respective distributions, and letting the results propagate naturally through the model. You do need to check for convergence with the sample size. This method is called a Monte Carlo propagation of errors.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org368830a" class="outline-2">
+<h2 id="org368830a"><span class="section-number-2">3</span> Summary</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+We covered a lot of ground today. The key points are:
+</p>
+<ol class="org-ol">
+<li>Regression is a minimization of an accumulated error function.</li>
+<li>If you need uncertainty on the parameters from a regression, use <code>pycse.nlinfit</code>.</li>
+<li>If you need uncertainty on model predictions, you can either simulate it, or derive it. We will learn more about deriving it later.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 07:32</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

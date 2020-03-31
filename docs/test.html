@@ -1,0 +1,1484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 07:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#derivatives-in-scientific-programming">1. Derivatives in scientific programming</a>
+<ul>
+<li><a href="#numpygradient">1.1. <code>numpy.gradient</code></a></li>
+<li><a href="#scipymiscderivative">1.2. <code>scipy.misc.derivative</code></a></li>
+<li><a href="#limitations-of-numeric-derivatives">1.3. Limitations of numeric derivatives</a></li>
+</ul>
+</li>
+<li><a href="#symbolic-differentiation">2. Symbolic differentiation</a></li>
+<li><a href="#automatic-differentiation">3. Automatic differentiation</a>
+<ul>
+<li><a href="#derivatives-of-scalar-functions">3.1. Derivatives of scalar functions</a></li>
+<li><a href="#derivatives-of-multivalue-functions---jacobian">3.2. Derivatives of multivalue functions - Jacobian</a></li>
+<li><a href="#hessians">3.3. Hessians</a></li>
+<li><a href="#applications-to-optimization">3.4. Applications to optimization</a></li>
+</ul>
+</li>
+<li><a href="#summary">4. Summary</a></li>
+</ul>
+</div>
+</div>
+<ul class="org-ul">
+<li>KEYWORDS: autograd</li>
+</ul>
+
+<div id="outline-container-org1737eb8" class="outline-2">
+<h2 id="derivatives-in-scientific-programming"><span class="section-number-2">1</span> Derivatives in scientific programming</h2>
+<div class="outline-text-2" id="text-derivatives-in-scientific-programming">
+<p>
+Derivatives play an important role in modeling engineering processes.
+They serve mathematical roles in optimization where we need them to find
+stationary points (i.e. where the first derivatives are zero), and to
+determine if these points are minima, maxima or saddle points.
+</p>
+
+<p>
+Derivatives also play a central role in uncertainty propagation and
+sensitivity analysis. These analyses require derivatives of equations
+with respect to parameters.
+</p>
+
+<p>
+Derivatives also serve in physical roles. When we write mass/energy
+balances we are defining how those variables change in time, which is a
+derivative. If you recall Fick's law, we way that the flux of a material
+is proportional to the <i>gradient</i> in concentration, which is a
+derivative. In thermodynamics, we relate many properties to derivatives
+of some thermodynamic variable. For example, the heat capacity is
+defined by a partial derivative of the enthalpy:
+\(\left(\frac{\partial H}{\partial T}\right)_P = C_p\). There are many
+more examples where derivatives are important.
+</p>
+
+<p>
+We usually think about deriving derivatives using calculus. That
+requires, however, that you have an analytical equation, that you know
+how to derive the derivative, and finally that you correctly evaluate
+the result. When you have an analytical equation, that approach is
+probably the best one when done correctly.
+</p>
+
+<p>
+In many cases, however, we may not have an equation, or the equation
+could change regularly or be tedious to derive the derivative. As we
+increasingly express equations in the form of a program, it is
+increasingly inconvenient and difficult to work through the program to
+derive derivatives. In these cases, we need a computational approach to
+getting derivatives.
+</p>
+
+<p>
+We have primarily considered two approaches to <i>estimating</i> or
+<i>approximating</i> derivatives so far:
+</p>
+
+<ol class="org-ol">
+<li><code>numpy.gradient</code></li>
+<li><code>scipy.misc.derivative</code></li>
+</ol>
+
+<p>
+Both of these approaches have limitations we review below.
+</p>
+</div>
+
+<div id="outline-container-org74234b1" class="outline-3">
+<h3 id="numpygradient"><span class="section-number-3">1.1</span> <code>numpy.gradient</code></h3>
+<div class="outline-text-3" id="text-numpygradient">
+<p>
+<code>numpy.gradient</code> uses
+<a href="https://en.wikipedia.org/wiki/Numerical_differentiation">finite
+difference</a> formulas to estimate the derivatives <i>from data</i>. This data
+may be obtained from experiments, or by numeric integration of an ODE,
+or from the solution to a BVP. In these cases we do not have analytical
+formulas to get derivatives from, and we have to resort to numerical
+methods.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> %matplotlib inline
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> ?np.gradient
+</pre>
+</div>
+
+<p>
+The accuracy of these derivatives depends on the spacing between the
+data points. We have seen the derivatives at the edges of the data are
+less accurate because a first-order equation is used by default.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span> = np.linspace(0.1, 1, 10)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">y</span> = x**0.5
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.plot(x, 0.5 * x**-0.5, x, np.gradient(y, x, edge_order=2), <span style="color: #008000;">'r.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.legend([<span style="color: #008000;">'analytical'</span>, <span style="color: #008000;">'numeric'</span>])
+</pre>
+</div>
+
+<pre class="example">
+  &lt;matplotlib.legend.Legend at 0x114cd1c18&gt;
+</pre>
+
+
+<div class="figure">
+<p><img src="bd3cf4973c3e0c5bc37c7144ac8269f42e2bc862.png" alt="bd3cf4973c3e0c5bc37c7144ac8269f42e2bc862.png" />
+</p>
+</div>
+
+<p>
+You may recall we can fit a polynomial to this data, and then easily get
+the derivative of the polynomial. By increasing the polynomial order we
+can improve the derivative estimates to a point. If you start
+overfitting, you will introduce wiggles into the data.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">p</span> = np.polyfit(x, y, 5)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">dp</span>  = np.polyder(p)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.plot(x, 0.5 * x **-0.5, x, np.polyval(dp, x), <span style="color: #008000;">'r.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.legend([<span style="color: #008000;">'analytical'</span>, <span style="color: #008000;">'numeric'</span>])
+</pre>
+</div>
+
+<pre class="example">
+  &lt;matplotlib.legend.Legend at 0x115148cf8&gt;
+</pre>
+
+
+<div class="figure">
+<p><img src="5f423c75de6e3eb822a702fa2d829ecb15bf4134.png" alt="5f423c75de6e3eb822a702fa2d829ecb15bf4134.png" />
+</p>
+</div>
+
+<p>
+Let's briefly review some linear algebra and the connection with
+derivatives.
+</p>
+
+<p>
+A central difference formula is:
+</p>
+
+<p>
+\(y'(x_i) \approx \frac{y_{i+1} - y_{i-1}}{2h}\)
+</p>
+
+<p>
+We cannot evaluate this for y0 or y-1. We need a simpler formula for
+that:
+</p>
+
+<p>
+We use a forward formula at the beginning:
+\(y'(x_0) \approx \frac{y_1 - y_0}{h}\)
+</p>
+
+<p>
+and a backward formula at the end:
+\(y'(x_{-1} \approx \frac{y_{-1} - y_{-2}}{h}\)
+</p>
+
+<p>
+We can express these formulas in matrix algebra form:
+</p>
+
+<p>
+\(\mathbf{y'} = \mathbf{D} \mathbf{y}\)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">h</span> = np.linspace(0.1, 1, 10, retstep=<span style="color: #D0372D;">True</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">y</span> = x**0.5
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">D</span> = np.zeros((<span style="color: #006FE0;">len</span>(x), <span style="color: #006FE0;">len</span>(x)))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">D</span> += np.diag(np.ones(<span style="color: #006FE0;">len</span>(x) - 1) / (2 * h), 1)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">diagonal above main</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">D</span> += np.diag(-np.ones(<span style="color: #006FE0;">len</span>(x) - 1) / (2 * h), -1)  <span style="color: #8D8D84;">#  </span><span style="color: #8D8D84; font-style: italic;">diagonal below the main</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">D</span>[0, 0:2] = np.array([-1, 1]) / h  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">forward formula for the first row</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">D</span>[-1, -2:] = np.array([-1, 1]) / h <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">backward formula for the last row</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> D
+</pre>
+</div>
+
+<pre class="example">
+  array([[-10.,  10.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.],
+         [ -5.,   0.,   5.,   0.,   0.,   0.,   0.,   0.,   0.,   0.],
+         [  0.,  -5.,   0.,   5.,   0.,   0.,   0.,   0.,   0.,   0.],
+         [  0.,   0.,  -5.,   0.,   5.,   0.,   0.,   0.,   0.,   0.],
+         [  0.,   0.,   0.,  -5.,   0.,   5.,   0.,   0.,   0.,   0.],
+         [  0.,   0.,   0.,   0.,  -5.,   0.,   5.,   0.,   0.,   0.],
+         [  0.,   0.,   0.,   0.,   0.,  -5.,   0.,   5.,   0.,   0.],
+         [  0.,   0.,   0.,   0.,   0.,   0.,  -5.,   0.,   5.,   0.],
+         [  0.,   0.,   0.,   0.,   0.,   0.,   0.,  -5.,   0.,   5.],
+         [  0.,   0.,   0.,   0.,   0.,   0.,   0.,   0., -10.,  10.]])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">dydx</span> = D @ y
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> np.allclose(dydx, np.gradient(y, x))
+</pre>
+</div>
+
+<pre class="example">
+  True
+</pre>
+
+<p>
+There are more accurate formulas to use for these that use more data
+points, but in these cases it is better to use <code>np.gradient</code> because it
+already handles these.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4329066" class="outline-3">
+<h3 id="scipymiscderivative"><span class="section-number-3">1.2</span> <code>scipy.misc.derivative</code></h3>
+<div class="outline-text-3" id="text-scipymiscderivative">
+<p>
+When we have equations in the form of <i>functions</i> rather than data, we
+can leverage <code>scipy.misc.derivative</code>. This function also works by using
+finite differences, and so it would suffer from the same limitations on
+accuracy as we saw above with data. Nevertheless, if you don't have a
+better approach, it might still be useful.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> scipy.misc <span style="color: #0000FF;">import</span> derivative
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> ?derivative
+</pre>
+</div>
+
+<p>
+The most crucial step is choosing an appropriate value for dx. Note that
+<code>derivative</code> does not return a function; we have to <i>wrap</i> it in a
+function definition to use it like a function.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> x**0.5
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">dfdx</span>(x, dx):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> derivative(f, x, dx)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.plot(x, 0.5 * x **-0.5, x, dfdx(x, dx=0.005), <span style="color: #008000;">'r.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.legend([<span style="color: #008000;">'analytical'</span>, <span style="color: #008000;">'numeric'</span>])
+</pre>
+</div>
+
+<pre class="example">
+  &lt;matplotlib.legend.Legend at 0x1169f4400&gt;
+</pre>
+
+
+<div class="figure">
+<p><img src="7248c5a19a5fab71130f20444bc58d53557147e5.png" alt="7248c5a19a5fab71130f20444bc58d53557147e5.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> derivative(f, x, 0.005)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">this is vectorized, so the helper function is not critical here</span>
+</pre>
+</div>
+
+<pre class="example">
+  array([1.58163348, 1.11812136, 0.91290263, 0.79058486, 0.70711562,
+         0.64550283, 0.59761812, 0.55901972, 0.52704831, 0.50000156])
+</pre>
+
+<p>
+We can combine the ideas for data and functions with
+<code>scipy.interpolate.interp1d</code>. This is similar in spirit to using
+polyfit, but the polynomials are locally fit rather than globally fit
+through all the data points. As with polyfit, this can result in
+spurious wiggles being introduced, especially near data points where
+there are big changes.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> scipy.interpolate <span style="color: #0000FF;">import</span> interp1d
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> ?interp1d
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">h</span> = np.linspace(0.1, 1, 10, retstep=<span style="color: #D0372D;">True</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">y</span> = x**0.5 + np.random.normal(0, 0.005, size=x.shape)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">af</span> = interp1d(x, y, kind=<span style="color: #008000;">'cubic'</span>, bounds_error=<span style="color: #D0372D;">False</span>, fill_value=<span style="color: #008000;">'extrapolate'</span>)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">dfadx</span>(x, dx):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> derivative(af, x, dx)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.plot(x, 0.5 * x **-0.5, x, dfadx(x, dx=0.005), <span style="color: #008000;">'r.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.legend([<span style="color: #008000;">'analytical'</span>, <span style="color: #008000;">'numeric'</span>])
+</pre>
+</div>
+
+<pre class="example">
+  &lt;matplotlib.legend.Legend at 0x1152ebe48&gt;
+</pre>
+
+
+<div class="figure">
+<p><img src="01b4a3c7f71e81cf26b6b323ee84444ed2c22b63.png" alt="01b4a3c7f71e81cf26b6b323ee84444ed2c22b63.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.plot(x, 0.5 * x **-0.5, x, np.gradient(y, x), <span style="color: #008000;">'r.'</span>)
+</pre>
+</div>
+
+<pre class="example">
+  [&lt;matplotlib.lines.Line2D at 0x116fecef0&gt;,
+   &lt;matplotlib.lines.Line2D at 0x116ff9080&gt;]
+</pre>
+
+
+<div class="figure">
+<p><img src="d1736127354ddc95b543e904cb64374d2a9e1328.png" alt="d1736127354ddc95b543e904cb64374d2a9e1328.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org9e0ebaa" class="outline-3">
+<h3 id="limitations-of-numeric-derivatives"><span class="section-number-3">1.3</span> Limitations of numeric derivatives</h3>
+<div class="outline-text-3" id="text-limitations-of-numeric-derivatives">
+<p>
+There are several limitations of numeric derivatives. The biggest one is
+that they are all <i>approximations</i> to the real derivative, and their
+accuracy depends on how small the spacing between the data points is. If
+the spacing is too small, however, these methods can suffer from
+numerical instabilities. These issues are exacerbated with higher order
+derivatives; derivatives tend to magnify errors in data.
+</p>
+
+<p>
+Fitting models to the data leads to analytical models that can be
+analytically differentiated. Here you have to be aware of the properties
+of the model, and its derivatives.
+</p>
+
+<p>
+The methods above apply to scalar functions of a single variable. It is
+not convenient to use them for multivariable functions.
+</p>
+
+<p>
+Numdifftools (<a href="https://numdifftools.readthedocs.io/en/latest/">https://numdifftools.readthedocs.io/en/latest/</a>) is a
+more advanced library for numerical differentiation that can do
+multivariable functions, but it too can have numerical instabilities and
+needs to be checked for convergence.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgffec937" class="outline-2">
+<h2 id="symbolic-differentiation"><span class="section-number-2">2</span> Symbolic differentiation</h2>
+<div class="outline-text-2" id="text-symbolic-differentiation">
+<p>
+<a href="https://docs.sympy.org/latest/tutorial/calculus.html">https://docs.sympy.org/latest/tutorial/calculus.html</a>
+</p>
+
+<p>
+Computer algebra systems have increasingly been able to compute symbolic
+derivatives of expressions.
+<a href="https://docs.sympy.org/latest/index.html">sympy</a> can do some
+<a href="https://docs.sympy.org/latest/tutorial/calculus.html">calculus</a>,
+including taking derivatives symbolically.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> sympy <span style="color: #0000FF;">import</span> *
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span> = symbols(<span style="color: #008000;">'x'</span>)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">df</span> = diff(x**0.5, x)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">print</span>(df)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> df.subs(x, 0.5)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">X</span> = np.linspace(0.1, 2)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.plot(X, 0.5 * X**-0.5, <span style="color: #008000;">'r-'</span>, X,  [df.subs(x, a) <span style="color: #0000FF;">for</span> a <span style="color: #0000FF;">in</span> X], <span style="color: #008000;">'b.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.legend([<span style="color: #008000;">'analytical'</span>, <span style="color: #008000;">'symbolic'</span>])
+</pre>
+</div>
+
+<pre class="example">
+  0.5*x**(-0.5)
+</pre>
+
+<pre class="example">
+  &lt;matplotlib.legend.Legend at 0x117ef2e10&gt;
+</pre>
+
+
+<div class="figure">
+<p><img src="fe2b6c3f23f357236ec9ada8ef285341a094017c.png" alt="fe2b6c3f23f357236ec9ada8ef285341a094017c.png" />
+</p>
+</div>
+
+<p>
+For some applications, this is very useful. Symbolic derivatives do not
+work on programs though, and in some cases there are not simple
+derivatives to find.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2a6a56b" class="outline-2">
+<h2 id="automatic-differentiation"><span class="section-number-2">3</span> Automatic differentiation</h2>
+<div class="outline-text-2" id="text-automatic-differentiation">
+<p>
+The third kind of computational derivatives we need to know about is
+called
+<a href="https://en.wikipedia.org/wiki/Automatic_differentiation">automatic
+differentiation</a> (AD). It is completely different from both finite
+differences and symbolic differentiation. In AD, we use the chain rule
+to take derivatives of computer programs.
+</p>
+
+<p>
+AD solves many of the problems described above:
+</p>
+
+<ol class="org-ol">
+<li>It is not an approximation like the finite difference approach.</li>
+<li>It works on programs, unlike symbolic differentiation</li>
+</ol>
+
+<p>
+However, these features come at some cost; we have to use an AD library
+and learn how to write code with it. Most importantly, AD is usually an
+add-on feature and its implementation introduces some constraints on
+what can be programmed.
+</p>
+
+<p>
+There are several AD frameworks available in Python that have been
+developed for machine learning applications. The main ones in use today
+are:
+</p>
+
+<ol class="org-ol">
+<li>autograd - <a href="https://github.com/HIPS/autograd">https://github.com/HIPS/autograd</a></li>
+<li>Tensorflow - <a href="https://www.tensorflow.org/">https://www.tensorflow.org/</a></li>
+<li>pytorch - <a href="https://pytorch.org/">https://pytorch.org/</a></li>
+</ol>
+
+<p>
+We will focus on autograd for the rest of the semester.
+</p>
+
+<p>
+You can install it like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> !pip install autograd
+</pre>
+</div>
+
+<p>
+autograd works by modifying <code>numpy</code> so that derivatives can be
+automatically computed.
+</p>
+
+<p>
+<b>The most important step</b> in using autograd is to import the autograd
+version of numpy. Not doing this will lead to errors eventually.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">import</span> autograd.numpy <span style="color: #0000FF;">as</span> np
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgf7b0ad5" class="outline-3">
+<h3 id="derivatives-of-scalar-functions"><span class="section-number-3">3.1</span> Derivatives of scalar functions</h3>
+<div class="outline-text-3" id="text-derivatives-of-scalar-functions">
+<p>
+Autograd provides four basic derivative functions. We first consider the
+derivative of a scalar function, i.e. a function of several arguments
+that outputs a number. There are two functions for this: <code>grad</code> and
+<code>elementwise_grad</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> grad, elementwise_grad
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> ?grad
+</pre>
+</div>
+
+<p>
+You use grad when your function outputs a single number, and you want a
+single derivative of that function with respect to an argument. For
+example, it could be an objective function.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> x**2
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">dfdx</span> = grad(f)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> dfdx(5.0) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">the analytical derivative is 2x</span>
+</pre>
+</div>
+
+<pre class="example">
+  10.0
+</pre>
+
+<p>
+Note: we cannot use integers as the input. Why? Integers are <i>not
+differentiable</i>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> dfdx(1.0)
+</pre>
+</div>
+
+<pre class="example">
+  2.0
+</pre>
+
+<p>
+We have to be careful about what kind of argument we use. You should not
+use lists when you mean arrays. Autograd can only work on arrays defined
+in the autograd.numpy library.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> dfdx([1.5, 2.0])
+</pre>
+</div>
+
+<pre class="example">
+  ---------------------------------------------------------------------------
+  TypeError                                 Traceback (most recent call last)
+  &lt;ipython-input-34-455fcca68474&gt; in &lt;module&gt;()
+  ----&gt; 1 dfdx([1.5, 2.0])
+
+  ~/anaconda/lib/python3.6/site-packages/autograd/wrap_util.py in nary_f(*args, **kwargs)
+       18             else:
+       19                 x = tuple(args[i] for i in argnum)
+  ---&gt; 20             return unary_operator(unary_f, x, *nary_op_args, **nary_op_kwargs)
+       21         return nary_f
+       22     return nary_operator
+
+  ~/anaconda/lib/python3.6/site-packages/autograd/differential_operators.py in grad(fun, x)
+       23     arguments as `fun`, but returns the gradient instead. The function `fun`
+       24     should be scalar-valued. The gradient has the same type as the argument."""
+  ---&gt; 25     vjp, ans = _make_vjp(fun, x)
+       26     if not vspace(ans).size == 1:
+       27         raise TypeError("Grad only applies to real scalar-output functions. "
+
+  ~/anaconda/lib/python3.6/site-packages/autograd/core.py in make_vjp(fun, x)
+        8 def make_vjp(fun, x):
+        9     start_node = VJPNode.new_root()
+  ---&gt; 10     end_value, end_node =  trace(start_node, fun, x)
+       11     if end_node is None:
+       12         def vjp(g): return vspace(x).zeros()
+
+  ~/anaconda/lib/python3.6/site-packages/autograd/tracer.py in trace(start_node, fun, x)
+        8     with trace_stack.new_trace() as t:
+        9         start_box = new_box(x, t, start_node)
+  ---&gt; 10         end_box = fun(start_box)
+       11         if isbox(end_box) and end_box._trace == start_box._trace:
+       12             return end_box._value, end_box._node
+
+  ~/anaconda/lib/python3.6/site-packages/autograd/wrap_util.py in unary_f(x)
+       13                 else:
+       14                     subargs = subvals(args, zip(argnum, x))
+  ---&gt; 15                 return fun(*subargs, **kwargs)
+       16             if isinstance(argnum, int):
+       17                 x = args[argnum]
+
+  &lt;ipython-input-31-acbbf0022719&gt; in f(x)
+        1 def f(x):
+  ----&gt; 2     return x**2
+        3
+        4 dfdx = grad(f)
+        5
+
+  TypeError: unsupported operand type(s) for ** or pow(): 'SequenceBox' and 'int'
+</pre>
+
+<p>
+Here is another error:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> dfdx(np.array([1.5, 2.0]))
+</pre>
+</div>
+
+<pre class="example">
+  ---------------------------------------------------------------------------
+  TypeError                                 Traceback (most recent call last)
+  &lt;ipython-input-35-7d335e2ead81&gt; in &lt;module&gt;()
+  ----&gt; 1 dfdx(np.array([1.5, 2.0]))
+
+  ~/anaconda/lib/python3.6/site-packages/autograd/wrap_util.py in nary_f(*args, **kwargs)
+       18             else:
+       19                 x = tuple(args[i] for i in argnum)
+  ---&gt; 20             return unary_operator(unary_f, x, *nary_op_args, **nary_op_kwargs)
+       21         return nary_f
+       22     return nary_operator
+
+  ~/anaconda/lib/python3.6/site-packages/autograd/differential_operators.py in grad(fun, x)
+       25     vjp, ans = _make_vjp(fun, x)
+       26     if not vspace(ans).size == 1:
+  ---&gt; 27         raise TypeError("Grad only applies to real scalar-output functions. "
+       28                         "Try jacobian, elementwise_grad or holomorphic_grad.")
+       29     return vjp(vspace(ans).ones())
+
+  TypeError: Grad only applies to real scalar-output functions. Try jacobian, elementwise_grad or holomorphic_grad.
+</pre>
+
+<p>
+The problem is with an array input, <code>f</code> is not a scalar function; it
+outputs an array.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> f(np.array([1.5, 2.0]))
+</pre>
+</div>
+
+<pre class="example">
+  array([2.25, 4.  ])
+</pre>
+
+<p>
+To address this, we can use <code>elementwise_grad</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> elementwise_grad
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> ?elementwise_grad
+</pre>
+</div>
+
+<p>
+You use elementwise_grad when you might use an array as input, and you
+get an array of values out, but you want the derivative of each element
+in the output with respect to the corresponding element in the input.
+This is still a <i>scalar</i> function in the sense that each element in the
+input produces one element in the output.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> elementwise_grad(f)(np.array([1.5, 2.0, -2.0, 5.0]))
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">eg</span> = elementwise_grad(f)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> eg(np.array([1.5, 2.0, -2.0, 5.0]))
+</pre>
+</div>
+
+<pre class="example">
+  array([ 3.,  4., -4., 10.])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [dfdx(_x) <span style="color: #0000FF;">for</span> _x <span style="color: #0000FF;">in</span> [1.5, 2.0, -2.0, 5.0]]  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">equivalent to elementwise_Grad</span>
+</pre>
+</div>
+
+<pre class="example">
+  [3.0, 4.0, -4.0, 10.0]
+</pre>
+
+<p>
+Here is an example usage similar to the examples we have used so far.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> x**0.5
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">df</span> = elementwise_grad(f)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This returns a callable function</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span> = np.linspace(0.1, 2)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.plot(x, 0.5 * x**-0.5, <span style="color: #008000;">'r-'</span>, x, df(x), <span style="color: #008000;">'b.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.legend([<span style="color: #008000;">'analytical'</span>, <span style="color: #008000;">'autograd'</span>])
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> np.allclose(0.5 * x**-0.5, df(x))
+</pre>
+</div>
+
+<pre class="example">
+  True
+</pre>
+
+
+<div class="figure">
+<p><img src="5c7b4b598f0651d5e02cc5d24239bc26862db0c6.png" alt="5c7b4b598f0651d5e02cc5d24239bc26862db0c6.png" />
+</p>
+</div>
+
+<p>
+The AD derivatives are identical within tolerance to the analytical
+formula because autograd simply applies the chain rule to the program to
+evaluate the derivatives.
+</p>
+
+<p>
+<b>Limitation</b> Derivatives with integers is not well-defined since
+integers are not continuous.
+</p>
+
+<p>
+It might not seem like a big deal that this works. The significance
+really shows when you have more complex programs. This Rube-Goldberg
+program is equivalent to the previous program. You could work out the
+derivative by the chain rule your self, but autograd has no problem
+doing this through all the operations and loops!
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">a</span> = 2.0 * x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">b</span> = a**2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">c</span> = b / 4.0
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">d</span> = c**0.5
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(5):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">d</span> = d * 2
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(5):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">d</span> = d / 2
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">e</span> = np.sqrt(d)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> e
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">df</span> = elementwise_grad(f)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This returns a callable function</span>
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span> = np.linspace(0.1, 2)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.plot(x, 0.5 * x**-0.5, <span style="color: #008000;">'r-'</span>, x, df(x), <span style="color: #008000;">'b.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> plt.legend([<span style="color: #008000;">'analytical'</span>, <span style="color: #008000;">'autograd'</span>])
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> np.allclose(0.5 * x**-0.5, df(x))
+</pre>
+</div>
+
+<pre class="example">
+  True
+</pre>
+
+
+<div class="figure">
+<p><img src="5c7b4b598f0651d5e02cc5d24239bc26862db0c6.png" alt="5c7b4b598f0651d5e02cc5d24239bc26862db0c6.png" />
+</p>
+</div>
+
+<p>
+Of course, autograd cannot make derivatives where they are not defined.
+The derivative of the square root function is not defined at \(x=0\), and
+we get warnings and a <code>nan</code> result if we try to evaluate it there.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> df(0.0)
+</pre>
+</div>
+
+<pre class="example">
+  /Users/jkitchin/anaconda/lib/python3.6/site-packages/autograd/numpy/numpy_vjps.py:99: RuntimeWarning: divide by zero encountered in double_scalars
+    defvjp(anp.sqrt,    lambda ans, x : lambda g: g * 0.5 * x**-0.5)
+  /Users/jkitchin/anaconda/lib/python3.6/site-packages/autograd/numpy/numpy_vjps.py:59: RuntimeWarning: divide by zero encountered in double_scalars
+    lambda ans, x, y : unbroadcast_f(x, lambda g: g * y * x ** anp.where(y, y - 1, 1.)),
+  /Users/jkitchin/anaconda/lib/python3.6/site-packages/autograd/numpy/numpy_vjps.py:59: RuntimeWarning: invalid value encountered in double_scalars
+    lambda ans, x, y : unbroadcast_f(x, lambda g: g * y * x ** anp.where(y, y - 1, 1.)),
+</pre>
+
+<pre class="example">
+  nan
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orga9ade6a" class="outline-3">
+<h3 id="derivatives-of-multivalue-functions---jacobian"><span class="section-number-3">3.2</span> Derivatives of multivalue functions - Jacobian</h3>
+<div class="outline-text-3" id="text-derivatives-of-multivalue-functions---jacobian">
+<p>
+Autograd really starts to shine when we have vector functions. If we
+have a function that takes an input with \(n\) and produces \(m\) outputs,
+then we frequently need to compute the derivatives of the output with
+respect to the inputs. These are defined by:
+</p>
+
+<p>
+\(\mathbf{J}_{ij} = \frac{\partial f_i}{\partial x_j}\)
+</p>
+
+<p>
+autograd provides the <code>jacobian</code> function for this. Let's consider an
+example:
+</p>
+
+<p>
+\(f_1(x, y) = x^2 y\)
+</p>
+
+<p>
+\(f_2(x, y) = 5 x + \sin(y)\)
+</p>
+
+<p>
+The Jacobian of this system is:
+</p>
+
+\begin{equation} \left[\begin{array}{cc} 2 x y & x^2 \ 5 & \cos y \
+\end{array}\right] \end{equation}
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> jacobian
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> np.array([x**2 * y, 5 * x + np.sin(y)])
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">Jf</span> = jacobian(f)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">now show the equivalence</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = 0.5, 0.5
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">print</span>(Jf(np.array([x, y])))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">print</span>(np.array([[2 * x * y, x**2], [5, np.cos(y)]]))
+</pre>
+</div>
+
+<pre class="example">
+  [[0.5        0.25      ]
+   [5.         0.87758256]]
+  [[0.5        0.25      ]
+   [5.         0.87758256]]
+</pre>
+
+<p>
+<b>Limitation</b> Note the explicit use of arrays in the above code. Autograd
+requires you to use arrays explicitly most of the time, and you can get
+errors if you are lazy and use lists/tuples.
+</p>
+
+<p>
+We use Jacobians in a variety of applications, but one important one is
+for changing variables in integrations, presumably because this results
+in a simpler integral.
+</p>
+
+<p>
+\(\int \int_R f(x, y) dx dy = \int \int_{R'} f(x(u, v), y(u, v)) \left|\frac{\partial(x, y)}{\partial(u, v)}\right| du dv\)
+</p>
+
+<p>
+Where \(\left|\frac{\partial(x, y)}{\partial(u, v)}\right|\) is defined as
+the determinant of the Jacobian:
+</p>
+
+<p>
+\(\left|\begin{array}{cc} \frac{\partial x}{\partial u} & \frac{\partial x}{\partial v} \\ \frac{\partial y}{\partial u} & \frac{\partial y}{\partial v} \end{array}\right|\)
+</p>
+
+<p>
+Here is an example we work out that is adapted from:
+<a href="http://www.stat.rice.edu/~dobelman/notes_papers/math/Jacobian.pdf">http://www.stat.rice.edu/~dobelman/notes_papers/math/Jacobian.pdf</a>
+</p>
+
+
+<div class="figure">
+<p><img src="./screenshots/date-13-11-2019-time-12-45-10.png" alt="date-13-11-2019-time-12-45-10.png" />
+</p>
+</div>
+
+<p>
+Executing that double integral in cartesian coordinates is not
+convenient because the integral limits would be a function for \(y\). If
+we instead switch to polar coordinates, then we have the simpler limits
+of \(\rho\) from 0 to \(r\), and \(\theta\) from 0 to \(2\pi\). There is no
+\(f(x, y)\) here, the integrand is just 1.
+</p>
+
+<p>
+This is a double integral, and we use <code>scipy.integrate.dblquad</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> dblquad
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> ?dblquad
+</pre>
+</div>
+
+<p>
+Return the double (definite) integral of ``func(y, x)`` from ``x =
+a..b`` and ``y = gfun(x)..hfun(x)``.
+</p>
+
+<p>
+We want:
+</p>
+
+<p>
+\(\int_{\rho=0}^{\rho=1} \int_{\theta=0}^{\theta=2\pi} det(J) d\rho d\theta = \pi\)
+</p>
+
+<p>
+That leads to this implementation:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(P):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">rho</span>, <span style="color: #BA36A5;">theta</span> = P
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> np.array([rho * np.cos(theta), rho * np.sin(theta)])
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">jf</span> = jacobian(f)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">integrand</span>(rho, theta):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">J</span> = jf(np.array([rho, theta]))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> np.linalg.det(J)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">integrand(y, x)</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">xa</span>, <span style="color: #BA36A5;">xb</span> = 0, 2 * np.pi
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">ya</span>, <span style="color: #BA36A5;">yb</span> = 0, 1
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> dblquad(integrand, xa, xb, ya, yb)
+</pre>
+</div>
+
+<pre class="example">
+  (3.141592653589793, 3.487868498008632e-14)
+</pre>
+
+<p>
+And the expected answer. Compare that to the cartesian coordinate
+system:
+</p>
+
+<p>
+\(\int_{-1}^1 \int_{-\sqrt{1 - x^2}}^{\sqrt{1 - x^2}} dx dy\)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">integrand</span>(y, x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> 1
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">yl</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> -np.sqrt(1 - x**2)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">yu</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> np.sqrt(1 - x**2)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> dblquad(integrand, -1, 1, yl, yu)
+</pre>
+</div>
+
+<pre class="example">
+  (3.1415926535897967, 2.000470900043183e-09)
+</pre>
+
+<p>
+The answer is the same, but the integral limits are more complex. Of
+course, one can invoke Kitchin's conservation of complexity law here; we
+can give up the complexity of the limits if we take on the complexity of
+autograd.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0eb81d6" class="outline-3">
+<h3 id="hessians"><span class="section-number-3">3.3</span> Hessians</h3>
+<div class="outline-text-3" id="text-hessians">
+<p>
+The <a href="https://en.wikipedia.org/wiki/Hessian_matrix">Hessian matrix</a> is
+a square matrix of second-order partial derivatives of a scalar-valued
+function.
+</p>
+
+<p>
+\(\mathbf{H}_{ij} = \frac{\partial^2 f}{\partial x_i x_j}\)
+</p>
+
+<p>
+<code>autograd.hessian</code> also returns a callable function.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> hessian
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> x**2 + y**2
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">H</span> = hessian(f)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> H(np.array([0.5, 0.5]))
+</pre>
+</div>
+
+<pre class="example">
+  array([[2., 0.],
+         [0., 2.]])
+</pre>
+
+<p>
+The Hessian is used to classify what kind of stationary points have been
+found. It is also used in some optimization algorithms.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org888b012" class="outline-3">
+<h3 id="applications-to-optimization"><span class="section-number-3">3.4</span> Applications to optimization</h3>
+<div class="outline-text-3" id="text-applications-to-optimization">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> minimize
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> ?minimize
+</pre>
+</div>
+
+<pre class="example">
+  # Out[1]:
+</pre>
+
+<p>
+We will consider the
+<a href="https://en.wikipedia.org/wiki/Rosenbrock_function">Rosenbrock
+function</a>, which has a minimum at (1, 1) with a value of 0. The
+standard optimization approach is shown here for comparison.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> minimize
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">def</span> <span style="color: #006699;">rosenbrock</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">return</span> (1 - x)**2 + 100 * (y - x**2)**2
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">sol</span> = minimize(rosenbrock, [1, 0])
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">print</span>(sol)
+</pre>
+</div>
+
+<pre class="example">
+        fun: 2.110919359934138e-11
+   hess_inv: array([[0.49386353, 0.98772557],
+         [0.98772557, 1.98044813]])
+        jac: array([-2.89523431e-07,  2.86334956e-08])
+    message: 'Optimization terminated successfully.'
+       nfev: 148
+        nit: 32
+       njev: 37
+     status: 0
+    success: True
+          x: array([0.99999541, 0.9999908 ])
+</pre>
+
+<p>
+The solution is pretty good, but we can get a better answer if we
+provide the Jacobian. Usually you are expected to derive and implement
+this. We do it in one like with autograd.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> grad
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">df</span> = grad(rosenbrock)
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">sol_j</span> = minimize(rosenbrock, [1, 0], jac=df)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">print</span>(sol_j)
+</pre>
+</div>
+
+<pre class="example">
+        fun: 1.929228346365973e-14
+   hess_inv: array([[0.49289915, 0.98579551],
+         [0.98579551, 1.97658546]])
+        jac: array([-2.94106502e-07,  8.15718604e-09])
+    message: 'Optimization terminated successfully.'
+       nfev: 37
+        nit: 32
+       njev: 37
+     status: 0
+    success: True
+          x: array([0.99999986, 0.99999972])
+</pre>
+
+<p>
+Note that the function is closer to zero (although it was small to start
+with).
+</p>
+
+<p>
+Finally, we get an even better answer if we also provide the Hessian,
+and use an algorithm that uses the Hessian (most of them do not).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> hessian
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #BA36A5;">hf</span> = hessian(rosenbrock)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span> minimize(rosenbrock, [1, 0], jac=df, hess=hf, method=<span style="color: #008000;">'dogleg'</span>)
+</pre>
+</div>
+
+<pre class="example">
+       fun: 4.930380657631324e-30
+      hess: array([[ 802., -400.],
+         [-400.,  200.]])
+       jac: array([-8.8817842e-14,  4.4408921e-14])
+   message: 'Optimization terminated successfully.'
+      nfev: 2
+      nhev: 1
+       nit: 1
+      njev: 2
+    status: 0
+   success: True
+         x: array([1., 1.])
+</pre>
+
+<p>
+Note we get an almost exact answer, with only two function evaluations!
+</p>
+
+<p>
+You can see that the Hessian returned by this solver is identical to the
+Hessian we would compute.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> hf(np.array([1.0, 1.0]))
+</pre>
+</div>
+
+<pre class="example">
+  array([[ 802., -400.],
+         [-400.,  200.]])
+</pre>
+
+<p>
+Note that in the example where we just provided the Jacobian that the
+Hessian is approximated. You can see that here. It is pretty close, but
+not exact.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #9B9B9B; background-color: #EDEDED;"> </span> <span style="color: #0000FF;">print</span>(np.linalg.inv(sol_j.hess_inv))
+</pre>
+</div>
+
+<pre class="example">
+  [[ 802.02588665 -399.99966532]
+   [-399.99966532  200.00039681]]
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga864acc" class="outline-2">
+<h2 id="summary"><span class="section-number-2">4</span> Summary</h2>
+<div class="outline-text-2" id="text-summary">
+<p>
+Today we reviewed computational approaches to taking derivatives. The
+star of this lecture is automatic differentiation.
+</p>
+
+<p>
+Autograd is pretty good, but it has some limitations. You should review
+<a href="https://github.com/HIPS/autograd/blob/master/docs/tutorial.md#supported-and-unsupported-parts-of-numpyscipy">these
+best practices</a>. One of the reasons we reviewed the first two methods
+is that we need to be able to verify results sometimes, and those
+methods are useful for that.
+</p>
+
+<p>
+Next time we will look at several applications of AD in calculus,
+science and engineering. After that, we will return to nonlinear
+regression and conclude with an introduction to machine learning.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 07:32</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,834 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 07:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Constrained minimization</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="scipy.optimize.minimize" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Constrained minimization</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org7888856">1. Constrained minimization</a>
+<ul>
+<li><a href="#org52b383d">1.1. scipy.optimize.minimize with constraints</a></li>
+<li><a href="#org624f308">1.2. Equality constraints</a></li>
+<li><a href="#org5b3b01b">1.3. Inequality constraints</a></li>
+<li><a href="#org2c2273d">1.4. An application</a></li>
+<li><a href="#orgc9845a0">1.5. Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org7888856" class="outline-2">
+<h2 id="org7888856"><span class="section-number-2">1</span> Constrained minimization</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+So far we have predominantly focused on unconstrained minimization. Sometimes, however, we seek to minimize an objective function and find solutions that meet some kind of constraint.
+</p>
+
+<p>
+The volume of a cylindrical can is \(V = (\pi/4) D^2 L\). The cost of the top/bottom of the can is \$0.025 / cm<sup>2</sup>, and the cost of the sides is \$0.043 / cm<sup>2</sup>. If we require a volume of 355 cm<sup>3</sup>, what is the optimal length and diameter to minimize the cost of the can?
+</p>
+
+<p>
+This is a constrained minimization; we want to minimize the cost by changing the height of the can and the diameter of the top while maintaining the volume.
+</p>
+
+
+<p>
+The key to solving this problem is recognizing that the equality constraint means the can length and diameter are not independent because of the equation for the volume. This allows us to solve for one, and then use it in the cost function
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> minimize
+
+<span style="color: #BA36A5;">V</span> = 355
+<span style="color: #BA36A5;">ct</span> = 0.025  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Cost of the top $/cm**2</span>
+<span style="color: #BA36A5;">cs</span> = 0.043  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Cost of the side $/cm**2</span>
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">cost</span>(D):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">radius</span> = D / 2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">top_area</span> = np.pi * radius**2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">top_bottom_cost</span> = 2 * ct * top_area
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">L</span> = 4 * V / np.pi / D**2 <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">solved from the volume</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">side_cost</span> = cs * L * np.pi * D
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> top_bottom_cost + side_cost
+
+<span style="color: #BA36A5;">D</span> = np.linspace(1, 15)
+<span style="color: #BA36A5;">c</span> = cost(D)
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+plt.plot(D, c)
+plt.xlabel(<span style="color: #008000;">'Diameter'</span>)
+plt.ylabel(<span style="color: #008000;">'Cost'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'Cost')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/821f1aea2d16c717c869c6179e10887f97b626b0/5a81b8481719cb1c7c4b4d27ef2f4bcfb4557cd8.png" alt="5a81b8481719cb1c7c4b4d27ef2f4bcfb4557cd8.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">sol</span> = minimize(cost, 10)
+<span style="color: #0000FF;">print</span>(sol)
+D, = sol.x
+<span style="color: #BA36A5;">L</span> = 4 * V / np.pi / D**2
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'The optimal diameter is </span><span style="color: #BA36A5;">{D:1.2f}</span><span style="color: #008000;"> cm. The optimal length is </span><span style="color: #BA36A5;">{L:1.2f}</span><span style="color: #008000;"> cm. The cost is $</span><span style="color: #BA36A5;">{sol.fun:1.2f}</span><span style="color: #008000;">.'</span>)
+</pre>
+</div>
+
+<pre class="example">
+      fun: 9.960758701630086
+      hess_inv: array([[4.23703911]])
+      jac: array([-1.1920929e-07])
+  message: 'Optimization terminated successfully.'
+     nfev: 18
+      nit: 5
+     njev: 6
+   status: 0
+  success: True
+        x: array([9.19508297])
+The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.96.
+</pre>
+
+<p>
+Here we used the method of elimination to solve an <i>equality constraint</i> minimization.
+</p>
+</div>
+
+<div id="outline-container-org52b383d" class="outline-3">
+<h3 id="org52b383d"><span class="section-number-3">1.1</span> scipy.optimize.minimize with constraints</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+In other problems, we might simply require some part of the solution to be less than or greater than some number. We call these inequality constraints.
+</p>
+
+<p>
+Here we will consider a strategy for solving these kinds of problems.
+</p>
+
+
+<p>
+<code>scipy.optimize.minimize</code> can be used with constraints. Before we get to how this is done, we need to introduce a new data type in Python: the dictionary.
+</p>
+
+<p>
+A dictionary, also known as a lookup or hash table, is a data structure that allows you to look up values by a key. A dictionary is created with curly brackets {} that contain <code>key: value</code> pairs. You can use anything that is "hashable" as a key, and anything as a value. Things that are hashable are: strings, numbers, tuples. You cannot use a list or array; they are mutable and not hashable. Here is an example.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x**2
+
+<span style="color: #BA36A5;">d</span> = {<span style="color: #008000;">'a'</span>: 1,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #008000;">'type'</span>: <span style="color: #008000;">'function'</span>,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span><span style="color: #008000;">'func'</span>: f,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>4: <span style="color: #008000;">'int'</span>,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>5.0: <span style="color: #008000;">'float'</span>}
+</pre>
+</div>
+
+<p>
+Now, we can retrieve data from it like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">d[<span style="color: #008000;">'a'</span>], d[4], d[5.0]
+</pre>
+</div>
+
+<pre class="example">
+(1, 'int', 'float')
+</pre>
+
+<p>
+It is usually an error to ask for a key that does not exist.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">d[<span style="color: #008000;">'NotHere'</span>]
+</pre>
+</div>
+
+<p>
+KeyErrorTraceback (most recent call last)
+&lt;ipython-input-5-e786609d9548&gt; in &lt;module&gt;
+-&#x2014;&gt; 1 d['NotHere']
+</p>
+
+<p>
+KeyError: 'NotHere'
+</p>
+
+
+<p>
+But, here is a little surprise. The dictionary has a key for 5.0 (a float), but not for 5 (an int):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">d[5], d[5.0], <span style="color: #006FE0;">hash</span>(5), <span style="color: #006FE0;">hash</span>(5.0)
+</pre>
+</div>
+
+<pre class="example">
+('float', 'float', 5, 5)
+</pre>
+
+<p>
+The integer 5 and float 5.0 hash to the same value, so the dictionary returns something for both of them.
+</p>
+
+
+<p>
+We can get the function, and call it:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">d[<span style="color: #008000;">'func'</span>](3)
+</pre>
+</div>
+
+<pre class="example">
+9
+</pre>
+
+<p>
+The reason we have to consider dictionaries is that <code>scipy.optimize.minimize</code> uses dictionaries to specify constraints. See the constraints arg here.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> minimize
+?minimize
+</pre>
+</div>
+
+<p>
+We have to write functions that codify the constraints, and then pass them to minimize.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org624f308" class="outline-3">
+<h3 id="org624f308"><span class="section-number-3">1.2</span> Equality constraints</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+We first repeat the problem we did before.
+</p>
+
+<p>
+The volume of a cylindrical can is \(V = (\pi/4) D^2 L\). The cost of the top/bottom of the can is \$0.025 / cm<sup>2</sup>, and the cost of the sides is \$0.043 / cm<sup>2</sup>. If we require a volume of 355 cm<sup>3</sup>, what is the optimal length and diameter to minimize the cost of the can?
+</p>
+
+<p>
+We have two variables to modify: \(D, L\), but there is an equality constraint in this problem that is described in the volume equation. We codify this in a function that returns zero when the constraint is satisfied. We also define a variable for the constraints dictionary.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">equality_constraint</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">D</span>, <span style="color: #BA36A5;">L</span> = x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">radius</span> = D / 2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">V</span> = np.pi * radius**2 * L
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> V - 355
+
+<span style="color: #BA36A5;">constraints</span> = {<span style="color: #008000;">'type'</span>: <span style="color: #008000;">'eq'</span>, <span style="color: #008000;">'fun'</span>: equality_constraint}
+</pre>
+</div>
+
+<p>
+Now, we can setup the objective function with the two variables we want to vary to find the minimum. We still need a guess. The advantage of the previous method of elimination is we had a 1D objective that was easy to plot. Here, we would have to consider a contour plot to see where the minimum is. We just use our previous answer.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">cost_top</span> = 0.025  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">$/cm^2</span>
+<span style="color: #BA36A5;">cost_side</span> = 0.043 <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">$/cm^2</span>
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">D</span>, <span style="color: #BA36A5;">L</span> = x  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Now we vary both variables.</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">radius</span> = D / 2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">top_area</span> = np.pi * radius**2
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">side_area</span> = L * np.pi * D
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">cost</span> = (2 * top_area * cost_top) + (side_area * cost_side)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> cost
+
+<span style="color: #BA36A5;">sol</span> = minimize(objective, (9.2, 5), constraints=constraints)
+equality_constraint(sol.x)
+objective(sol.x)
+sol
+</pre>
+</div>
+
+<pre class="example">
+    fun: 9.960758701245243
+    jac: array([1.44435978, 1.24215055])
+message: 'Optimization terminated successfully.'
+   nfev: 28
+    nit: 7
+   njev: 7
+ status: 0
+success: True
+      x: array([9.19508759, 5.34597263])
+</pre>
+
+
+<p>
+You can have multiple equality constraints, you just make a list of dictionaries. Suppose we seek to minimize \(x1 + x2 + x3^2\) subject to the equality constraints \(x1=1\), and \(x1^2 + x2^2 = 1\). Some analysis suggests that this really means x1=1, x2=0, and then x3 must also be zero to minimize the function, which has a minimum value of 1.
+</p>
+
+
+<p>
+Here we can set this up as a minimization problem:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x1</span>, <span style="color: #BA36A5;">x2</span>, <span style="color: #BA36A5;">x3</span> = x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x1 + x2 + x3**2
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">eq1</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x1</span>, <span style="color: #BA36A5;">x2</span>, <span style="color: #BA36A5;">x3</span> = x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x1 - 1   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">x = 1</span>
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">eq2</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x1</span>, <span style="color: #BA36A5;">x2</span>, <span style="color: #BA36A5;">x3</span> = x
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x1**2 + x2**2 - 1  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">x1**2 + x2**2 = 1</span>
+
+<span style="color: #BA36A5;">constraints</span> = [{<span style="color: #008000;">'type'</span>: <span style="color: #008000;">'eq'</span>, <span style="color: #008000;">'fun'</span>: eq1},
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  {<span style="color: #008000;">'type'</span>: <span style="color: #008000;">'eq'</span>, <span style="color: #008000;">'fun'</span>: eq2}]
+
+minimize(objective, [0, 0, 0], constraints=constraints)
+</pre>
+</div>
+
+<pre class="example">
+    fun: 1.0000051566408261
+    jac: array([ 1.        ,  1.        , -0.00425012])
+message: 'Optimization terminated successfully.'
+   nfev: 409
+    nit: 65
+   njev: 65
+ status: 0
+success: True
+      x: array([ 1.00000000e+00,  6.40736032e-07, -2.12506583e-03])
+</pre>
+
+<p>
+As expected, x1=1, and x2 and x3 are near zero. They are not zero because of tolerance. You can make the tolerance tighter, (say tol=1e-9) to see the difference.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org5b3b01b" class="outline-3">
+<h3 id="org5b3b01b"><span class="section-number-3">1.3</span> Inequality constraints</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+Inequality constraints are those where some part of the solution is greater than or less than a value. In <code>scipy.optimize.minimize</code> we codify this by writing functions that are non-negative, i.e. <b>greater than or equal to zero at the solution</b>.
+</p>
+
+<p>
+Maximize \(x^3 - 3x\) subject to \(x \le 2.5\). First, recall we can rewrite the inequality as \(-x \ge -2.5\), and again as \(-x + 2.5 \ge 0\). That means for our solution we require \(-x+2.5\) to be positive. Also, since we are maximizing the function, our objective is multiplied by -1. When possible, it is always a good idea to visualize the problem:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -1 * (x**3 - 3 * x)
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #BA36A5;">x</span> = np.linspace(-3, 3)
+plt.plot(x, objective(x))
+plt.axvline(2.5, color=<span style="color: #008000;">'k'</span>)
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/821f1aea2d16c717c869c6179e10887f97b626b0/c6e87ef698170af554ac8c929ea0b065484fc046.png" alt="c6e87ef698170af554ac8c929ea0b065484fc046.png" />
+</p>
+</div>
+
+<p>
+You can see by inspection there is a minimum around x=-1, and at x=2.5. Note the one at x=2.5 is not a minimum in the sense that the derivative=0 there, it is just the smallest value that also satisfies the constraint. To solve this problem, we set up the following code:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">ieq</span>(x):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -x + 2.5
+
+<span style="color: #BA36A5;">constraints</span> = {<span style="color: #008000;">'type'</span>: <span style="color: #008000;">'ineq'</span>, <span style="color: #008000;">'fun'</span>: ieq}
+
+minimize(objective, 3, constraints=constraints)
+</pre>
+</div>
+
+<pre class="example">
+    fun: -8.124999999955515
+    jac: array([-15.75000012])
+message: 'Optimization terminated successfully.'
+   nfev: 6
+    nit: 2
+   njev: 2
+ status: 0
+success: True
+      x: array([2.5])
+</pre>
+
+<p>
+Note that there are two solutions. Which one you get depends on your initial guess.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">minimize(objective, -0.9, constraints=constraints)
+</pre>
+</div>
+
+<pre class="example">
+    fun: -1.999999999942188
+    jac: array([2.63750553e-05])
+message: 'Optimization terminated successfully.'
+   nfev: 13
+    nit: 4
+   njev: 4
+ status: 0
+success: True
+      x: array([-0.99999561])
+</pre>
+
+<p>
+You have to decide which one is better. In this case, it is the one at x=2.5 which has a higher maximum than the one at x=-1.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2c2273d" class="outline-3">
+<h3 id="org2c2273d"><span class="section-number-3">1.4</span> An application</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+Let us suppose that a merry farmer has 75 roods (4 roods = 1 acre) on which to plant two crops: wheat and corn. To produce these crops, it costs the farmer (for seed, water, fertilizer, etc. ) \$120 per rood for the wheat, and \$210 per rood for the corn. The farmer has \$15,000 available for expenses, but after the harvest the farmer must store the crops while awaiting favorable or good market conditions. The farmer has storage space for 4,000 bushels. Each rood yields an average of 110 bushels of wheat or 30 bushels of corn. If the net profit per bushel of wheat (after all the expenses) is \$1.30 and for corn is \$2.00, how should the merry farmer plant the 75 roods to maximize profit?
+</p>
+
+<p>
+It is not obvious what to do. Wheat is cheaper to plant, and yields more per rood, but it is less profitable.
+</p>
+
+<p>
+Let \(x\) be the number of roods of wheat planted, and \(y\) be the number of roods of corn planted. The profit function is: \( P = (110)($1.3)x + (30)($2)y = 143x + 60y \)
+</p>
+
+<p>
+There are some constraint inequalities, specified by the limits on expenses, storage and roodage. They are:
+</p>
+
+<p>
+\(\$120x + \$210y <= \$15000\) (The total amount spent cannot exceed the amount the farm has)
+</p>
+
+<p>
+\(110x + 30y <= 4000\) (The amount generated should not exceed storage space.)
+</p>
+
+<p>
+\(x + y <= 75\) (We cannot plant more space than we have.)
+</p>
+
+<p>
+\(0 <= x\) and \(0 <= y \) (all amounts of planted land must be positive.)
+</p>
+
+<p>
+To solve this problem, we cast it as minimization problem, which minimizes a function f(X) subject to some constraints. We create a proxy function for the negative of profit, which we seek to minimize.
+</p>
+
+<p>
+Note we use inequality constraints here. You could put some as equality, e.g. if you want to make sure you spend all $15000, or if you want to ensure you fill up your storage. It could be a mistake to require both of those though, as it may be infeasible.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">c1</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">'Constraint on total cost to plant.'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -(120 * x + 210 * y - 15000)
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">c2</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">'Storage constraint'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -(110 * x + 30 * y - 4000)
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">c3</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">'Land area constraint'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -(x + y - 75)
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">c4</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">'positivity constraint'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> X[0]
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">c5</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">'positivity constraint'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> X[1]
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">profit</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">'Profit function'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -(143 * x + 60 * y)
+
+<span style="color: #BA36A5;">sol</span> = minimize(profit, [60, 15], constraints=[{<span style="color: #008000;">'type'</span>: <span style="color: #008000;">'ineq'</span>, <span style="color: #008000;">'fun'</span>: f} <span style="color: #0000FF;">for</span> f <span style="color: #0000FF;">in</span> [c1, c2, c3, c4, c5]])
+sol
+</pre>
+</div>
+
+<pre class="example">
+    fun: -6315.624999538349
+    jac: array([-143.,  -60.])
+message: 'Optimization terminated successfully.'
+   nfev: 13
+    nit: 3
+   njev: 3
+ status: 0
+success: True
+      x: array([21.875, 53.125])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'We should plant </span><span style="color: #BA36A5;">{sol.x[0]:1.2f}</span><span style="color: #008000;"> roods of wheat, and </span><span style="color: #BA36A5;">{sol.x[1]:1.2f}</span><span style="color: #008000;"> roods of corn. We will earn $</span><span style="color: #BA36A5;">{-sol.fun:1.2f}</span><span style="color: #008000;"> in profit.'</span>)
+</pre>
+</div>
+
+<p>
+We should plant 21.87 roods of wheat, and 53.12 roods of corn. We will earn $6315.62 in profit.
+</p>
+
+<p>
+We can always verify aspects of our solution. Here is the land area.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'We used </span><span style="color: #BA36A5;">{np.sum(sol.x):1.2f}</span><span style="color: #008000;"> roods of land'</span>)
+</pre>
+</div>
+
+<p>
+We used 75.00 roods of land
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'We will pay $</span><span style="color: #BA36A5;">{sol.x[0]*120 + sol.x[1]*210:1.2f}</span><span style="color: #008000;"> to plant.'</span>)
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'We will store </span><span style="color: #BA36A5;">{sol.x[0] * 110 + sol.x[1] * 30:1.0f}</span><span style="color: #008000;"> bushels.'</span>)
+</pre>
+</div>
+
+<p>
+We will pay $13781.25 to plant.
+We will store 4000 bushels.
+</p>
+
+<p>
+You can see we did not need to spend all the money because we do not have enough storage space to accommodate more crops. It would be a mistake to make these both equality constraints, because then there would be no feasible solution.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc9845a0" class="outline-3">
+<h3 id="orgc9845a0"><span class="section-number-3">1.5</span> Summary</h3>
+<div class="outline-text-3" id="text-1-5">
+<p>
+<code>scipy.optimize.minimize</code> provides a convenient interface to solving a broad set of optimization problems both unconstrained and constrained. There is a significant body of knowledge hidden from us under this interface. For example there are 14 choices for different optimization algorithms in the interface, and the default one is chosen for you depending on arguments passed to it. It is easy to tell if the defaults are suitable; if you get a solution they are. If you don't get a solution, then you have to assess whether there is a solution, and whether a better algorithm would be appropriate. The details of these algorithms are the subject of dedicated courses in optimization.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 07:32</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

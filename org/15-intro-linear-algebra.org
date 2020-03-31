@@ -1,0 +1,818 @@
+#+TITLE: Introduction to linear algebra
+#+AUTHOR: John Kitchin
+#+OX-IPYNB-KEYWORD-METADATA: keywords
+#+KEYWORDS: numpy.transpose, numpy.eye, numpy.diag, numpy.tri, @, numpy.transpose, numpy.allclose, numpy.linalg.det, numpy.linalg.inv, numpy.linalg.matrix_rank, numpy.linalg.cond, numpy.linalg.solve
+
+
+* Multidimensional arrays
+
+The foundation of linear algebra in Python is in multidimensional arrays.
+
+#+BEGIN_SRC ipython
+import numpy as np
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [1]:
+:end:
+
+We make multidimensional arrays by using lists of lists of numbers. For example, here is a 2D array:
+
+#+BEGIN_SRC ipython
+A = np.array([[1, 2],
+              [3, 4]])
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [2]:
+:end:
+
+We can find out the shape of an array, i.e. the number of rows and columns from the shape attribute. It returns (rows, columns).
+
+#+BEGIN_SRC ipython
+A.shape
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [3]:
+# text/plain
+: (2, 2)
+:end:
+
+** Constructing arrays
+
+You can always make arrays by typing them in. There are many convenient ways to make special ones though. For example, you can make an array of all ones or zeros with these:
+
+#+BEGIN_SRC ipython
+np.zeros(shape=[3, 3])
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [4]:
+# text/plain
+: array([[0., 0., 0.],
+:        [0., 0., 0.],
+:        [0., 0., 0.]])
+:end:
+
+
+#+BEGIN_SRC ipython
+np.ones(shape=[3, 3])
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [5]:
+# text/plain
+: array([[1., 1., 1.],
+:        [1., 1., 1.],
+:        [1., 1., 1.]])
+:end:
+
+You can make an identity matrix with:
+
+#+BEGIN_SRC ipython
+np.eye(N=3)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [6]:
+# text/plain
+: array([[1., 0., 0.],
+:        [0., 1., 0.],
+:        [0., 0., 1.]])
+:end:
+
+or a diagonal array:
+
+#+BEGIN_SRC ipython
+np.diag([1, 2, 3])
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [7]:
+# text/plain
+: array([[1, 0, 0],
+:        [0, 2, 0],
+:        [0, 0, 3]])
+:end:
+
+If you need a lower triangular array:
+
+#+BEGIN_SRC ipython
+np.tri(3)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [8]:
+# text/plain
+: array([[1., 0., 0.],
+:        [1., 1., 0.],
+:        [1., 1., 1.]])
+:end:
+
+
+** Regular Algebra with arrays
+
+It takes some getting use to how to use arrays with algebra.
+
+*** Addition and subtraction
+
+Let's start with addition and subtraction. A good rule to remember that you can add and subtract arrays with the same shape.
+
+#+BEGIN_SRC ipython
+B = np.ones(A.shape)
+
+A + B
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [9]:
+# text/plain
+: array([[2., 3.],
+:        [4., 5.]])
+:end:
+
+#+BEGIN_SRC ipython
+A - B
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [10]:
+# text/plain
+: array([[0., 1.],
+:        [2., 3.]])
+:end:
+
+This is an error though because the shapes do not match.
+
+#+BEGIN_SRC ipython
+C = np.array([[0, 0, 1],
+              [1, 0, 0]])
+
+A + C
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [11]:
+# output
+
+ValueErrorTraceback (most recent call last)
+<ipython-input-11-0cf6976d378f> in <module>
+      2               [1, 0, 0]])
+      3
+----> 4 A + C
+
+ValueError: operands could not be broadcast together with shapes (2,2) (2,3)
+:end:
+
+Note, however, that this is ok. This feature is called /broadcasting/. It works when the thing you are adding can be added to each row.
+
+#+BEGIN_SRC ipython
+C + [2, 2, 2]
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [12]:
+# text/plain
+: array([[2, 2, 3],
+:        [3, 2, 2]])
+:end:
+
+*Exercise* Use some algebra to get an array that is ones above the main diagonal, and zeros everywhere else.
+
+*** Multiplication and division
+
+The default multiplication and division operators work /element-wise/.
+
+#+BEGIN_SRC ipython
+2 * A
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [13]:
+# text/plain
+: array([[2, 4],
+:        [6, 8]])
+:end:
+
+#+BEGIN_SRC ipython
+2 / A
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [14]:
+# text/plain
+: array([[2.        , 1.        ],
+:        [0.66666667, 0.5       ]])
+:end:
+
+#+BEGIN_SRC ipython
+A * B
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [15]:
+# text/plain
+: array([[1., 2.],
+:        [3., 4.]])
+:end:
+
+#+BEGIN_SRC ipython
+B / A
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [16]:
+# text/plain
+: array([[1.        , 0.5       ],
+:        [0.33333333, 0.25      ]])
+:end:
+
+
+** Matrix algebra
+
+To do matrix multiplication you use the @ operator (This is new in Python 3.5), or the ~numpy.dot~ function. If you are not familiar with the idea of matrix multiplication you should review it at https://en.wikipedia.org/wiki/Matrix_multiplication.
+
+We write matrix multiplication as: $\mathbf{A} \mathbf{B}$. We cannot multiply any two arrays; their shapes must follow some rules. We can multiply any two arrays with these shapes:
+
+(m, c) * (c, n) = (m, n)
+
+In other words the number of columns in the first array must equal the number of rows in the second array. This means it is not generally true that $\mathbf{A} \mathbf{B} = \mathbf{B} \mathbf{A}$.
+
+#+BEGIN_SRC ipython
+A @ B
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [17]:
+# text/plain
+: array([[3., 3.],
+:        [7., 7.]])
+:end:
+
+This is the older way to do matrix multiplication.
+
+#+BEGIN_SRC ipython
+np.dot(A, B)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [18]:
+# text/plain
+: array([[3., 3.],
+:        [7., 7.]])
+:end:
+
+These rules are true:
+
+1. $(k \mathbf{A})\mathbf{B} = k(\mathbf{A} \mathbf{B}) = \mathbf{A}(k\mathbf{B})$
+2. $\mathbf{A}(\mathbf{B}\mathbf{C}) = (\mathbf{A}\mathbf{B})\mathbf{C}$
+3. $(\mathbf{A} + \mathbf{B})\mathbf{C} = \mathbf{A}\mathbf{B} + \mathbf{A}\mathbf{C}$
+4. $\mathbf{C}(\mathbf{A} + \mathbf{B}) = \mathbf{C}\mathbf{A} + \mathbf{C}\mathbf{A}$
+
+*Exercise* construct examples of each of these rules.
+
+We can also multiply a matrix and vector. This is like the shapes of (m, r) * (r, 1) = (m, 1)
+
+#+BEGIN_SRC ipython
+x = np.array([1, 2])
+A @ x
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [19]:
+# text/plain
+: array([ 5, 11])
+:end:
+
+There is a small subtle point, the x-array is 1-D:
+
+#+BEGIN_SRC ipython
+x.shape
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [20]:
+# text/plain
+: (2,)
+:end:
+
+Its shape is not (2, 1)! Numpy does the right thing here and figures out what you want. Not all languages allow this, however, and you have to be careful that everything has the right shape with them.
+
+
+* Linear algebra functions of arrays
+
+** The transpose
+
+In the transpose operation you swap the rows and columns of an array. The transpose of A is denoted $\mathbf{A}^T$.
+
+#+BEGIN_SRC ipython
+A.T
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [21]:
+# text/plain
+: array([[1, 3],
+:        [2, 4]])
+:end:
+
+There is also a function for transposing.
+
+#+BEGIN_SRC ipython
+np.transpose(A)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [22]:
+# text/plain
+: array([[1, 3],
+:        [2, 4]])
+:end:
+
+A matrix is called /symmetric/ if it is equal to its transpose: $\mathbf{A} == \mathbf{A}^T$.
+
+#+BEGIN_SRC ipython
+Q = np.array([[1, 2],
+              [2, 4]])
+
+np.allclose(Q, Q.T)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [23]:
+# text/plain
+: True
+:end:
+
+A matrix is called /skew symmetric/ if $\mathbf{A}^T = -\mathbf{A}$.
+
+#+BEGIN_SRC ipython
+Q = np.array([[0, 1],
+              [-1, 0]])
+
+np.allclose(Q.T, -Q)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [24]:
+# text/plain
+: True
+:end:
+
+
+
+A matrix is called /orthogonal/ if this equation is true: $\mathbf{A} \mathbf{A}^T = \mathbf{I}$. Here is an example of an orthogonal matrix:
+
+#+BEGIN_SRC ipython
+theta = 12
+Q = np.array([[np.cos(theta), -np.sin(theta)],
+              [np.sin(theta),  np.cos(theta)]])
+
+Q @ Q.T
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [25]:
+# text/plain
+: array([[1.00000000e+00, 2.19187673e-17],
+:        [2.19187673e-17, 1.00000000e+00]])
+:end:
+
+Here are the four rules for matrix multiplication and transposition
+
+1. $(\mathbf{A}^T)^T = \mathbf{A}$
+
+2. $(\mathbf{A}+\mathbf{B})^T = \mathbf{A}^T+\mathbf{B}^T$
+
+3. $(\mathit{c}\mathbf{A})^T = \mathit{c}\mathbf{A}^T$
+
+4. $(\mathbf{AB})^T = \mathbf{B}^T\mathbf{A}^T$
+
+*Exercise* Come up with an example for each rule.
+
+** The determinant
+
+The determinant of a matrix is noted: det(A) or |A|. Many matrices are used to linearly transform vectors, and the determinant is related to the scaling magnitude.
+
+#+BEGIN_SRC ipython
+np.linalg.det(A)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [26]:
+# text/plain
+: -2.0000000000000004
+:end:
+
+** The inverse
+
+A matrix is invertible if and only if the determinant of the matrix is non-zero.
+
+The inverse is defined by: $\mathbf{A} \mathbf{A}^{-1} = \mathbf{I}$.
+
+We compute the inverse as:
+
+#+BEGIN_SRC ipython
+np.linalg.inv(A)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [27]:
+# text/plain
+: array([[-2. ,  1. ],
+:        [ 1.5, -0.5]])
+:end:
+
+And here verify the definition.
+
+#+BEGIN_SRC ipython
+A @ np.linalg.inv(A)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [28]:
+# text/plain
+: array([[1.00000000e+00, 1.11022302e-16],
+:        [0.00000000e+00, 1.00000000e+00]])
+:end:
+
+Another way to define an orthogonal matrix is $\mathbf{A}^T = \mathbf{A}^{-1}$.
+
+#+BEGIN_SRC ipython
+theta = 12
+Q = np.array([[np.cos(theta), -np.sin(theta)],
+              [np.sin(theta),  np.cos(theta)]])
+
+np.allclose(Q.T, np.linalg.inv(Q))
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [29]:
+# text/plain
+: True
+:end:
+
+
+** Rank
+
+The rank of a matrix is equal to the number of linearly independent rows in it. Rows are linearly independent if and only if they cannot be made by constants times another row or linear combinations of other rows.
+
+#+BEGIN_SRC ipython
+np.linalg.matrix_rank(A)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [30]:
+# text/plain
+: 2
+:end:
+
+Here is an example of a rank-deficient array. The last row is a linear combination of the first two rows.
+
+#+BEGIN_SRC ipython
+A1 = [[1, 2, 3],
+      [0, 2, 3],
+      [2, 6, 9]]
+
+np.linalg.matrix_rank(A1)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [31]:
+# text/plain
+: 2
+:end:
+
+Here is an example of a /rank-deficient/ array. It is deficient because the last row is just 0 times any other row.
+
+#+BEGIN_SRC ipython
+A1 = [[1, 2, 3],
+      [0, 2, 3],
+      [0, 0, 0]]
+
+np.linalg.matrix_rank(A1)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [32]:
+# text/plain
+: 2
+:end:
+
+Note the determinant of this array is nearly zero as a result.
+
+#+BEGIN_SRC ipython
+np.linalg.det(A1)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [33]:
+# text/plain
+: 0.0
+:end:
+
+Also note the inverse has some enormous numbers in it. This is not a reliable inverse. It is never a good idea to have giant numbers and small numbers in the same calculations!
+
+#+BEGIN_SRC ipython
+np.linalg.inv(A1)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [34]:
+# output
+
+LinAlgErrorTraceback (most recent call last)
+<ipython-input-34-ebbe6da30534> in <module>
+----> 1 np.linalg.inv(A1)
+
+<__array_function__ internals> in inv(*args, **kwargs)
+
+~/opt/anaconda3/lib/python3.7/site-packages/numpy/linalg/linalg.py in inv(a)
+    545     signature = 'D->D' if isComplexType(t) else 'd->d'
+    546     extobj = get_linalg_error_extobj(_raise_linalgerror_singular)
+--> 547     ainv = _umath_linalg.inv(a, signature=signature, extobj=extobj)
+    548     return wrap(ainv.astype(result_t, copy=False))
+    549
+
+~/opt/anaconda3/lib/python3.7/site-packages/numpy/linalg/linalg.py in _raise_linalgerror_singular(err, flag)
+     95
+     96 def _raise_linalgerror_singular(err, flag):
+---> 97     raise LinAlgError("Singular matrix")
+     98
+     99 def _raise_linalgerror_nonposdef(err, flag):
+
+LinAlgError: Singular matrix
+:end:
+
+The condition number is a measure of the norm of an array times the inverse of the array. If it is very large, the array is said to be /ill-conditioned/.
+
+#+BEGIN_SRC ipython
+np.linalg.cond(A1)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [35]:
+# text/plain
+: inf
+:end:
+
+What all of these mean is that we only have two independent rows in the array.
+
+* Solving linear algebraic equations
+
+One of the key reasons to develop the tools above is for solving linear equations. Let's consider an example.
+
+Given these equations, find [x1, x2, x3]
+\begin{eqnarray}
+x_1 - x_2 + x_3 &=& 0 \\
+10 x_2 + 25 x_3 &=& 90 \\
+20 x_1 + 10 x_2 &=& 80
+\end{eqnarray}
+
+reference: Kreysig, Advanced Engineering Mathematics, 9th ed. Sec. 7.3
+
+First, we express this in the form $\mathbf{A} \mathbf{x} = \mathbf{b}$.
+
+#+BEGIN_SRC ipython
+A = np.array([[1, -1, 1],
+              [0, 10, 25],
+              [20, 10, 0]])
+
+b = np.array([0, 90, 80])
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [36]:
+:end:
+
+Now, if we /left/ multiply by $\mathbf{A}^{-1}$ then we get:
+
+$\mathbf{A}^{-1} \mathbf{A} \mathbf{x} = \mathbf{A}^{-1} \mathbf{b}$ which simplifies to:
+
+$\mathbf{x} = \mathbf{A}^{-1} \mathbf{b}$
+
+
+How do we know if there should be a solution?  First we make the augmented matrix $\mathbf{A} | \mathbf{b}$. Note for this we need \mathbf{b} as a column vector. Here is one way to make that happen. We make it a row in a 2D array, and transpose that to make it a column.
+
+#+BEGIN_SRC ipython
+Awiggle = np.hstack([A, np.array([b]).T])
+Awiggle
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [37]:
+# text/plain
+: array([[ 1, -1,  1,  0],
+:        [ 0, 10, 25, 90],
+:        [20, 10,  0, 80]])
+:end:
+
+If the rank of $\mathbf{A}$ and the rank of $\mathbf{\tilde{A}}$ are the same, then we will have one unique solution. if the rank is less than the number of unknowns, there maybe an infinite number of solutions.
+
+#+BEGIN_SRC ipython
+np.linalg.matrix_rank(A), np.linalg.matrix_rank(Awiggle)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [38]:
+# text/plain
+: (3, 3)
+:end:
+
+If $mathbf{b}$ is not all zeros, we can also use the fact that a non-zero determinant leads to a unique solution.
+
+#+BEGIN_SRC ipython
+np.linalg.det(A)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [39]:
+# text/plain
+: -950.0000000000001
+:end:
+
+It should also be evident that since we use an inverse matrix, it must exist (which is certain since the determinant is non-zero). Now we can evaluate our solution.
+
+#+BEGIN_SRC ipython
+x = np.linalg.inv(A) @ b
+x
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [40]:
+# text/plain
+: array([2., 4., 2.])
+:end:
+
+Now you might see why we /vastly/ prefer linear algebra to nonlinear algebra; there is no guessing or iteration, we just solve the equations!
+
+Let us confirm our solution:
+
+#+BEGIN_SRC ipython
+A @ x == b
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [41]:
+# text/plain
+: array([False,  True,  True])
+:end:
+
+This fails because of float tolerances:
+
+#+BEGIN_SRC ipython
+A @ x - b
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [42]:
+# text/plain
+: array([4.4408921e-16, 0.0000000e+00, 0.0000000e+00])
+:end:
+
+We should instead see if they are all close. You could roll your own comparison, but we instead leverage ~numpy.allclose~ for this comparison.
+
+#+BEGIN_SRC ipython
+np.allclose(A @ x, b)
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [43]:
+# text/plain
+: True
+:end:
+
+The formula we used above to solve for $\mathbf{x}$ is not commonly used. It turns out computing the inverse of a matrix is moderately expensive. For small systems it is negligible, but the time to compute the inverse grows as $N^3$, and there are more efficient ways to solve these when the number of equations grows large.
+
+#+BEGIN_SRC ipython
+import numpy as np
+import time
+
+t = []
+I = np.array(range(2, 5001, 500))
+for i in I:
+    m = np.eye(i)
+    t0 = time.time()
+    np.linalg.inv(m)
+    t += [time.time() - t0]
+
+%matplotlib inline
+import matplotlib.pyplot as plt
+plt.plot(I, t)
+plt.xlabel('N')
+plt.ylabel('Time to invert (s)')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [44]:
+# text/plain
+: Text(0, 0.5, 'Time to invert (s)')
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/cca8009371d6aa606718cf6d99c1cd684e512342/0d12af36b8dff026583ebfe0f9f80d9c95f43b91.png]]
+:end:
+
+As usual, there is a function we can use to solve this.
+
+#+BEGIN_SRC ipython
+np.linalg.solve(A, b)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[16]:
+# text/plain
+: array([ 2.,  4.,  2.])
+:END:
+
+#+BEGIN_SRC ipython
+t = []
+I = np.array(range(2, 5001, 500))
+for i in I:
+    A = np.eye(i)
+    b = np.arange(i)
+    t0 = time.time()
+    np.linalg.solve(A, b)
+    t += [time.time() - t0]
+
+
+plt.plot(I, t)
+plt.xlabel('N')
+plt.ylabel('Time to solve Ax=b (s)')
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out [45]:
+# text/plain
+: Text(0, 0.5, 'Time to solve Ax=b (s)')
+
+# text/plain
+: <Figure size 432x288 with 1 Axes>
+
+# image/png
+[[file:obipy-resources/cca8009371d6aa606718cf6d99c1cd684e512342/b69bff6b25b91334edb33a2cb93b6f20d5b82551.png]]
+:end:
+
+
+#+BEGIN_SRC ipython
+
+#+END_SRC
+
+You can see by inspection that solve must not be using an inverse to solve these equations; if it did, it would take much longer to solve them. It is remarkable that we can solve ~5000 simultaneous equations here in about 1 second!
+
+This may seem like a lot of equations, but it isn't really. Problems of this size routinely come up in solving linear boundary value problems where you discretize the problem into a large number of linear equations that are solved.
+
+* Summary
+
+Today we introduced many functions used in linear algebra. One of the main applications of linear algebra is solving linear equations. These arise in many engineering applications like mass balances, reaction network analysis, etc. Because we can solve them directly (not iteratively with a guess like with non-linear algebra) it is highly desirable to formulate problems as linear ones where possible.
+
+There are many more specialized routines at https://docs.scipy.org/doc/numpy-1.15.1/reference/routines.linalg.html.

@@ -1,0 +1,1012 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 07:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Linear regression</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="numpy.linalg.solve" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Linear regression</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org5279ed9">1. Linear regression</a>
+<ul>
+<li><a href="#org07710f9">1.1. An example of polynomial fitting</a></li>
+<li><a href="#org7a25fb4">1.2. Confidence intervals on the parameters</a></li>
+</ul>
+</li>
+<li><a href="#orgfae4b34">2. Regularization</a>
+<ul>
+<li><a href="#org57d57b0">2.1. Ridge regression</a></li>
+<li><a href="#orgfe59595">2.2. LASSO regression</a></li>
+<li><a href="#org33a68c3">2.3. Advanced selection of &lambda;</a></li>
+</ul>
+</li>
+<li><a href="#org4672dab">3. Summary</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5279ed9" class="outline-2">
+<h2 id="org5279ed9"><span class="section-number-2">1</span> Linear regression</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+In linear regression, we seek to find models in the form \(y = a_{0} f_{0}(x) + a_{1} f_{1}(x) + ... + a_{n} f_{n}(x) + \epsilon\), where \(a_{i}\) are coefficients to be determined, and &epsilon; are the residual errors. We call this linear regression because the model is linear in the unknown coefficients \(a_{i}\). The functions can be any function of \(x\). In the function <code>numpy.polyfit</code> these functions are polynomials in \(x\).
+</p>
+
+<p>
+If we are given some data as pairs of (x, y), we can construct a set of equations of the form:
+</p>
+
+<p>
+\([f_{0}(x_{i}), f_{1}(x_{i}), ..., f_{n}(x_{i})]\cdot[a_{0}, a_{1}, ...,  a_{n}]^T = y_{i}\)
+</p>
+
+<p>
+There will be one of these equations for every data point, so we end up with a matrix equation that looks like:
+</p>
+
+<p>
+\(\mathbf{X} \mathbf{a} = \mathbf{y}\)
+</p>
+
+<p>
+There are <i>usually</i> more data points than in the vector of \(\mathbf{a}\), so the shapes of these arrays are not suitable to solve directly. You can of course set up an objective function and use <code>scipy.optimize.minimize</code>, but there is a better approach.
+</p>
+
+<p>
+To be a little more specific, suppose we have \(m\) pairs of \((x, y)\) data points, and we want to fit a model containing \(n\) parameters. Then, the dimensions of the \(\mathbf{X}\) will be \((m, n)\), the dimensions of \(\mathbf{a}\) will be \((n, 1)\), and the dimensions of \(\mathbf{y}\) will be \((m, 1)\).  We have more equations than unknowns here, and we cannot use <code>numpy.linalg.solve</code> because \mathbf{X} is not square. Note that if it was square, we would be doing the kind of interpolation we described in the last lecture.
+</p>
+
+<p>
+We can modify the equation though if we <i>left multiply</i> each side of the equation by \(\mathbf{X}^T\).
+</p>
+
+<p>
+\(\mathbf{X}^T \mathbf{X} \mathbf{a} = \mathbf{X}^T \mathbf{y}\)
+</p>
+
+<p>
+The array \(\mathbf{X}^T \mathbf{X}\) now has the shape \((n, m) * (m, n) = (n, n)\). The right hand side \(\mathbf{X}^T \mathbf{y}\) has a shape of \((n, m) * (n, 1) = (n, 1)\), and \(\mathbf{a}\) is still \((n, 1)\). This new matrix equation can be solved efficiently with <code>numpy.linalg.solve</code>. We will not prove this, but solving this modified equation <i>is equivalent</i> to finding the set of parameters that minimizes the summed squared errors: \(\sum (\mathbf{X} \cdot \mathbf{a} - \mathbf{y})^2\).
+</p>
+
+<p>
+The parameters are then found by:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.solve(X @ X.T, X.T @ y)
+</pre>
+</div>
+
+<p>
+An alternative form is called the normal equation: \(\mathbf{a} = (\mathbf{X}\cdot\mathbf{X}^T)^{-1}\mathbf{X}^T \mathbf{y}\). This is symbolically correct, but relies on the inverse which is expensive to compute for large systems. It is not used practically, instead the equations are solved efficiently using a different algorithm.
+</p>
+</div>
+
+
+<div id="outline-container-org07710f9" class="outline-3">
+<h3 id="org07710f9"><span class="section-number-3">1.1</span> An example of polynomial fitting</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+Our goal in this example is to fit a polynomial to some time-dependent concentration data.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #BA36A5;">time</span> = np.array([0.0, 50.0, 100.0, 150.0, 200.0, 250.0, 300.0])
+<span style="color: #BA36A5;">Ca</span> = np.array([50.0, 38.0, 30.6, 25.6, 22.2, 19.5, 17.4])*1e-3
+</pre>
+</div>
+
+<p>
+Fit a fourth order polynomial to this data and determine the confidence interval for each parameter. This data is from example 5-1 in Fogler, Elements of Chemical Reaction Engineering.
+</p>
+
+<p>
+We want the equation \(Ca(t) = b0 + b1*t + b2*t^2 + b3*t^3 + b4*t^4\) fit to the data in the least squares sense. We can write this in a linear algebra form as: \(\mathbf{T} \mathbf{p} = \mathbf{Ca}\) where \(\mathbf{T}\) is a matrix of columns \([1, t, t^2, t^3, t^4]\), and \(\mathbf{p}\) is a column vector of the fitting parameters. We want to solve for the \(\mathbf{p}\) vector and estimate the confidence intervals.
+</p>
+
+<p>
+First, we setup the array of function values, and then we solve for the paramters.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">X</span> = np.column_stack([time**0, time, time**2, time**3, time**4])
+
+<span style="color: #BA36A5;">a</span> = np.linalg.solve(X.T @ X, X.T @ Ca)
+<span style="color: #0000FF;">print</span>(a)
+</pre>
+</div>
+
+<p>
+[ 4.99902597e-02 -2.97846320e-04  1.34348485e-06 -3.48484848e-09
+  3.69696970e-12]
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+plt.plot(time, Ca, <span style="color: #008000;">'bo'</span>, time, X @ a)
+plt.xlabel(<span style="color: #008000;">'Time'</span>)
+plt.ylabel(<span style="color: #008000;">'Ca'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'Ca')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/d8937f67a8f9013829d959ea93de430da7172bb2.png" alt="d8937f67a8f9013829d959ea93de430da7172bb2.png" />
+</p>
+</div>
+
+
+<p>
+We previously claimed that solving this equation was equivalent to minimizing the summed squared errors. Here we demonstrate that is consistent with our observation for the first parameter.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">P</span> = np.linspace(0.9 * a[0], 1.1 * a[0])
+
+<span style="color: #BA36A5;">errs</span> = [np.<span style="color: #006FE0;">sum</span>(np.square(X @ [p, *a[1:]] - Ca)) <span style="color: #0000FF;">for</span> p <span style="color: #0000FF;">in</span> P]
+
+plt.plot(P, errs)
+plt.axvline(a[0], color=<span style="color: #008000;">'k'</span>, linestyle=<span style="color: #008000;">'--'</span>)
+plt.xlabel(<span style="color: #008000;">'slope'</span>)
+plt.ylabel(<span style="color: #008000;">'SSE'</span>)
+plt.legend([<span style="color: #008000;">'SSE'</span>, <span style="color: #008000;">'best fit'</span>])
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/8a3a636c9996673944d3b35b29f5b1ba6977979d.png" alt="8a3a636c9996673944d3b35b29f5b1ba6977979d.png" />
+</p>
+</div>
+
+<p>
+<b>Exercise</b> Demonstrate that the SSE is minimized for the other parameters. Try estimating the Hessian of the sum of squared errors and then see if it is positive definite.
+</p>
+
+<p>
+As we have seen many times before, Numpy provides a function for doing least squares linear regression. It returns more information about the fit than what we have done so far, and is a little more convenient because we do not have to do all the transposes and left multiplications.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">?np.linalg.lstsq
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">pars</span>, <span style="color: #BA36A5;">residuals</span>, <span style="color: #BA36A5;">rank</span>, <span style="color: #BA36A5;">singular_values</span> = np.linalg.lstsq(X, Ca)
+pars, residuals, rank, singular_values
+</pre>
+</div>
+
+<p>
+/Users/jkitchin/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:1: FutureWarning: `rcond` parameter will change to the default of machine precision times ``max(M, N)`` where M and N are the input matrix dimensions.
+To use the future default and silence this warning we advise to pass `rcond=None`, to keep using the old, explicitly pass `rcond=-1`.
+  """Entry point for launching an IPython kernel.
+</p>
+
+<pre class="example">
+(array([ 4.99902596e-02, -2.97846318e-04,  1.34348481e-06, -3.48484825e-09,
+         3.69696923e-12]),
+ array([1.05194827e-08]),
+ 5,
+ array([9.14856013e+09, 3.79175229e+06, 5.21123386e+03, 2.15423668e+01,
+        1.00603128e+00]))
+</pre>
+
+<p>
+The key points to note are that the rank is equal to the number of parameters we are estimating, which means we have enough information to get pretty good estimates of the parameters.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7a25fb4" class="outline-3">
+<h3 id="org7a25fb4"><span class="section-number-3">1.2</span> Confidence intervals on the parameters</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+The confidence intervals reflect the range of values we are confident the true parameter lies in. Remember we are only <i>estimating</i> these parameters from a small amount of data.
+</p>
+
+<p>
+The degrees of freedom is roughly equal to the number of data points minus the number of parameters.
+</p>
+
+<p>
+We define \(\sigma^2 = SSE / dof\) where \(SSE\) is the summed squared error, and \(dof\) is the degrees of freedom.
+</p>
+
+<p>
+The covariance matrix is defined as \((\mathbf{X}^T \mathbf{X})^{-1}\). Finally, we compute the standard error on the parameters as:
+</p>
+
+<p>
+\(\mathbf{se} = \sqrt{diag(\sigma^2 cov)}\).
+</p>
+
+<p>
+This will be an array with one element for each parameter. You can think of this standard error as the uncertainty in the mean value of each parameter.
+</p>
+
+<p>
+The confidence intervals are finally computed by calculating a student t-value that accounts for the additional uncertainty we have because of the small number of degrees of freedom.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">dof</span> = <span style="color: #006FE0;">len</span>(Ca) - <span style="color: #006FE0;">len</span>(pars)
+<span style="color: #BA36A5;">errs</span> = Ca - X @ pars
+<span style="color: #BA36A5;">sigma2</span> = np.<span style="color: #006FE0;">sum</span>(errs**2) / dof
+
+<span style="color: #BA36A5;">covariance</span> = np.linalg.inv(X.T @ X)
+<span style="color: #BA36A5;">se</span> = np.sqrt(np.diag(sigma2 * covariance))
+
+<span style="color: #0000FF;">from</span> scipy.stats.distributions <span style="color: #0000FF;">import</span> t
+<span style="color: #BA36A5;">alpha</span> = 0.05  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">100*(1 - alpha) confidence level</span>
+<span style="color: #BA36A5;">sT</span> = t.ppf(1.0 - alpha/2.0, dof)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">student T multiplier</span>
+
+<span style="color: #BA36A5;">CI</span> = sT * se
+
+<span style="color: #0000FF;">for</span> beta, ci <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">zip</span>(pars, CI):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{beta: 1.2e}</span><span style="color: #008000;"> [</span><span style="color: #BA36A5;">{beta - ci: 1.4e}</span><span style="color: #008000;"> </span><span style="color: #BA36A5;">{beta + ci: 1.4e}</span><span style="color: #008000;">]'</span>)
+</pre>
+</div>
+
+<p>
+ 5.00e-02 [ 4.9680e-02  5.0300e-02]
+-2.98e-04 [-3.1546e-04 -2.8023e-04]
+ 1.34e-06 [ 1.0715e-06  1.6155e-06]
+-3.48e-09 [-4.9032e-09 -2.0665e-09]
+ 3.70e-12 [ 1.3501e-12  6.0439e-12]
+</p>
+
+<p>
+It is also common to estimate an \(R^2\) value, where values close to one mean the model accounts for most of the variance in the data.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">SS_tot</span> = np.<span style="color: #006FE0;">sum</span>((Ca - np.mean(Ca))**2)
+<span style="color: #BA36A5;">SS_err</span> = np.<span style="color: #006FE0;">sum</span>(errs**2)
+
+<span style="color: #8D8D84;">#  </span><span style="color: #8D8D84; font-style: italic;">http://en.wikipedia.org/wiki/Coefficient_of_determination</span>
+<span style="color: #BA36A5;">Rsq</span> = 1 - SS_err/SS_tot
+<span style="color: #0000FF;">print</span>(<span style="color: #008000;">'R^2 = {0}'</span>.<span style="color: #006FE0;">format</span>(Rsq))
+</pre>
+</div>
+
+<p>
+R^2 = 0.9999869672459532
+</p>
+
+<p>
+Here we would say the model looks very good, but with the caveat that we fit five parameters to seven data points, and some of the parameters are very small, suggesting they may not be necessary (although they are in front of terms like x<sup>4</sup> which can be very large).
+</p>
+
+<p>
+Now you can use this model to interpolate new values in the fitted range. This is not a model you can extrapolate with though, <i>even though it is a linear model</i>. What is happening?
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">newt</span> = np.linspace(0, 500)
+
+<span style="color: #BA36A5;">newT</span> = np.column_stack([newt**i <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(5)])
+<span style="color: #BA36A5;">newCa</span> = newT @ pars
+
+plt.plot(time, Ca, <span style="color: #008000;">'b.'</span>)
+plt.plot(newt, newCa)
+plt.xlabel(<span style="color: #008000;">'Time'</span>)
+plt.ylabel(<span style="color: #008000;">'Ca'</span>);
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/36e27158eee0cd324d2d556ec3a385e3c941341a.png" alt="36e27158eee0cd324d2d556ec3a385e3c941341a.png" />
+</p>
+</div>
+
+<p>
+It is almost certainly not reasonable for the concentration of A to start increasing again after about 350 time units.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfae4b34" class="outline-2">
+<h2 id="orgfae4b34"><span class="section-number-2">2</span> Regularization</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+When we do linear regression we get a coefficient for every function in the model. However, there can be bad behavior with regular regression, especially for certain classes of functions, and when the functions are correlated with each other. To explore why this happens, we will look at some regression models of varying complexity. We start by looking at some data.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+np.random.seed(10)  <span style="color: #8D8D84;">#</span><span style="color: #8D8D84; font-style: italic;">Setting seed for reproducibility</span>
+
+<span style="color: #BA36A5;">x</span> = np.linspace(0.3, 1.5 * np.pi)
+<span style="color: #BA36A5;">y</span> = np.sin(x) + np.random.normal(0, 0.15, <span style="color: #006FE0;">len</span>(x))
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+plt.plot(x, y, <span style="color: #008000;">'b.'</span>)
+plt.xlabel(<span style="color: #008000;">'x'</span>)
+plt.ylabel(<span style="color: #008000;">'y'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'y')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/1b452af5c4c1573ab4e166d52b69001f31508b61.png" alt="1b452af5c4c1573ab4e166d52b69001f31508b61.png" />
+</p>
+</div>
+
+<p>
+Our goal is to fit a linear regression model to this data. We want to avoid underfitting and overfitting. If we just fit polynomials to this data, we find some undesirable behavior. Let's look at fits up to a 12<sup>th</sup> order polynomials.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">N</span> = [1, 3, 6, 9, 12]
+
+<span style="color: #0000FF;">print</span>(<span style="color: #008000;">'       '</span>, f<span style="color: #008000;">''</span>.join([f<span style="color: #008000;">'x^{i:&lt;9d}'</span> <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(12, -1, -1)]))
+
+<span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> N:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">pars</span> = np.polyfit(x, y, i)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">p</span> = np.zeros(13)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">p</span>[13 - (i + 1):] = pars
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This way of printing is to get columnar output</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{i:2d}</span><span style="color: #008000;">'</span>, f<span style="color: #008000;">'  '</span>.join([f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{j: 9.2f}</span><span style="color: #008000;">'</span> <span style="color: #0000FF;">for</span> j <span style="color: #0000FF;">in</span> p]))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   plt.plot(x, y, <span style="color: #008000;">'b.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   plt.plot(x, np.polyval(pars, x), label=f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{i}</span><span style="color: #008000;">'</span>)
+plt.legend()
+</pre>
+</div>
+
+<p>
+        x^12       x^11       x^10       x^9        x^8        x^7        x^6        x^5        x^4        x^3        x^2        x^1        x^0
+ 1      0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00      -0.47       1.40
+ 3      0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.00       0.09      -0.92       2.08      -0.33
+ 6      0.00       0.00       0.00       0.00       0.00       0.00       0.01      -0.09       0.58      -1.80       2.37      -0.66       0.43
+ 9      0.00       0.00       0.00      -0.00       0.10      -1.02       5.90     -20.81      46.10     -63.24      50.45     -19.91       3.34
+12      0.01      -0.21       2.83     -22.43     114.61    -395.70     940.66   -1541.20    1715.97   -1258.64     574.27    -144.86      15.53
+</p>
+
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/502560d9b9494737ab74c429981d87503c426a3f.png" alt="502560d9b9494737ab74c429981d87503c426a3f.png" />
+</p>
+</div>
+
+<p>
+The most undesirable behavior is that the coefficients grow large, which puts a lot of weight in places we might not want. This also leads to <i>wiggles</i> in the fit, which are probably not reasonable. The solution to this issue is called <i>regularization</i>, which means we add a penalty to our objective function that serves to reduce the magnitude of the parameters. There are several approaches to regularization. In <i>ridge regression</i> we add an L<sub>2</sub> penalty to the parameters, i.e. the sum of the parameters squared. In <i>LASSO</i> regression we add an L<sub>1</sub> penalty to the parameters, i.e. the sum of the absolute values of the parameters.
+</p>
+
+<p>
+In <i>ridge regression</i> the parameters are driven by the penalty to become smaller. In <i>LASSO regression</i> as many of the parameters are driven to zero as possible.
+</p>
+</div>
+
+<div id="outline-container-org57d57b0" class="outline-3">
+<h3 id="org57d57b0"><span class="section-number-3">2.1</span> Ridge regression</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+In ridge regression we define our objective function to minimize the summed squared error as usual, and add a term proportional to the sum of the squared parameters.
+</p>
+
+<p>
+So, if our regression model looks like \(\mathbf{X} \mathbf{\beta} = \mathbf{y}\) we seek to minimize:
+</p>
+
+<p>
+\((\mathbf{y} - \mathbf{X} \mathbf{p})^T (\mathbf{y} - \mathbf{X} \mathbf{p}) + \lambda ||\mathbf{p}||_2^2\)
+</p>
+
+<p>
+Where \(\mathbf{p}\) are the fitting parameters, and \(\lambda\) is the proportionality constant.
+</p>
+
+<p>
+Finding the parameters is done by solving this modified normal equation:
+</p>
+
+<p>
+\((\mathbf{Z}^T \mathbf{Z} + \lambda(\mathbf{I} \mathbf{p}) = \mathb{Z}^T \mathbf{w}\)
+</p>
+
+<p>
+We have changed variable names because it is considered important to standardize our variables:
+</p>
+
+<p>
+\(\mathbf{Z} = (\mathbf{X} - mean(\mathbf{X})) / std(\mathbf{X})\)
+</p>
+
+<p>
+Standardization means that the variable has a mean of 0 and a standard deviation of 1.
+and
+</p>
+
+<p>
+\(\mathbf{w} = (\mathbf{y} - mean(\mathbf{y})) / std(\mathbf{y})\)
+</p>
+
+<p>
+&lambda; is a parameter that affects the amount of <i>regularization</i>.
+</p>
+
+<p>
+It is common to <i>standardize</i> the input/output variables which means we make the average of each column equal to zero and scale them to have unit variance. Doing this eliminates the intercept from the model since it would then go through the point (0, 0).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">X</span> = np.vander(x, 12)[:, 0:-1] <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">since we standardize we do not consider the last column of ones.</span>
+<span style="color: #BA36A5;">xmean</span> = X.mean(axis=0)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">average of every column</span>
+<span style="color: #BA36A5;">xstd</span> = X.std(axis=0)
+xmean, xstd
+</pre>
+</div>
+
+<pre class="example">
+(array([2.48293800e+06, 5.69542539e+05, 1.31727857e+05, 3.07737861e+04,
+        7.27890923e+03, 1.74895299e+03, 4.28974856e+02, 1.08219836e+02,
+        2.84377137e+01, 7.96966389e+00, 2.50619449e+00]),
+ array([5.49844745e+06, 1.19967517e+06, 2.62434616e+05, 5.75785285e+04,
+        1.26746927e+04, 2.80017452e+03, 6.20905075e+02, 1.38066119e+02,
+        3.06634869e+01, 6.68612694e+00, 1.29948184e+00]))
+</pre>
+
+<p>
+We standardize the input vector like this.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Z</span> = (X - xmean) / xstd
+</pre>
+</div>
+
+<p>
+Here we just confirm we have standardized all the columns. The only one that stands out is the column of ones, which does not have unit standard deviation.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">with</span> np.printoptions(suppress=<span style="color: #D0372D;">True</span>):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(Z.mean(axis=0), Z.std(axis=0))
+</pre>
+</div>
+
+<p>
+[-0. -0.  0.  0.  0. -0.  0.  0.  0. -0.  0.] [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.]
+</p>
+
+<p>
+We similarly standardize the y data.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">ymean</span> = y.mean()
+<span style="color: #BA36A5;">ystd</span> = y.std()
+
+<span style="color: #BA36A5;">w</span> = (y - ymean) / ystd
+</pre>
+</div>
+
+<p>
+To get an estimate of the parameters we have to specify a value of &lambda;. If we set &lambda;=0, we have regular linear regression. If we set &lambda;=&infin;, all the weights will go to zero. We need something in between. It is a good idea to try several values of &lambda; from a very small value to a large value, on a log scale.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">lambdas</span> = np.concatenate([[0], np.geomspace(1e-13, 10, 5)])
+
+<span style="color: #0000FF;">print</span>(<span style="color: #008000;">'lambda     '</span>, f<span style="color: #008000;">''</span>.join([f<span style="color: #008000;">'x^{i:&lt;11d}'</span> <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(<span style="color: #006FE0;">len</span>(X[0]), 0, -1)]))
+<span style="color: #0000FF;">for</span> lam <span style="color: #0000FF;">in</span> lambdas:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">l2p</span> = np.linalg.solve(Z.T @ Z + lam * np.eye(<span style="color: #006FE0;">len</span>(Z[0])), Z.T @ w)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">p</span> = np.zeros(<span style="color: #006FE0;">len</span>(X[0]))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   p[<span style="color: #006FE0;">len</span>(X[0] + 2) - <span style="color: #006FE0;">len</span>(l2p):] = l2p
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This way of printing is to get columnar output</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{lam:8.2g}</span><span style="color: #008000;">'</span>, f<span style="color: #008000;">''</span>.join([f<span style="color: #008000;">'{j: 12.2f}'</span> <span style="color: #0000FF;">for</span> j <span style="color: #0000FF;">in</span> p]))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   plt.plot(x, y, <span style="color: #008000;">'b.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   plt.plot(x, (Z @ l2p) * ystd + ymean, label=f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{lam:1.2g}</span><span style="color: #008000;">'</span>)
+plt.legend()
+</pre>
+</div>
+
+<p>
+lambda      x^11         x^10         x^9          x^8          x^7          x^6          x^5          x^4          x^3          x^2          x^1
+       0    -34195.37   191575.62  -466614.50   648939.78  -569731.69   330263.50  -128905.11    34080.71    -6068.14      694.85      -40.46
+   1e-13    -13094.53    64037.60  -128468.91   132101.67   -66385.96     4380.22    13092.96    -7134.16     1623.91     -158.53        4.92
+ 3.2e-10     -1054.79     3732.41    -3866.46     -865.30     3642.47     -286.71    -3426.20     3217.32    -1354.26      284.92      -24.21
+   1e-06       -11.38        6.95       17.29        8.03      -18.81      -29.90       13.53       55.80      -61.16       19.93       -1.06
+  0.0032        -0.28       -0.10        0.10        0.32        0.54        0.63        0.39       -0.43       -1.76       -2.04        1.87
+      10         0.11        0.08        0.04       -0.01       -0.06       -0.11       -0.17       -0.22       -0.25       -0.22       -0.06
+</p>
+
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/ba20bf44efff311bd657340fcc607947073b2515.png" alt="ba20bf44efff311bd657340fcc607947073b2515.png" />
+</p>
+</div>
+
+<p>
+One way people have evaluated a reasonable value of &lambda; is to look at how the coefficients vary with &lambda; using a <i>ridge plot</i>. In this plot, you look for a range that balances the large swings associated with regular unconstrained regression and the damping caused by large values of &lambda;. Here a value of \(10^{-6} \le \lambda \le 10^{-8}\) would be considered reasonable.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">lambdas</span> = np.geomspace(1e-10, 1e-5)
+
+<span style="color: #BA36A5;">pars</span> = np.zeros((11, <span style="color: #006FE0;">len</span>(lambdas)))
+
+<span style="color: #0000FF;">for</span> i, lam <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">enumerate</span>(lambdas):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">l2p</span> = np.linalg.solve(Z.T @ Z + lam * np.eye(<span style="color: #006FE0;">len</span>(Z[0])), Z.T @ w)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">pars</span>[:, i] = l2p
+
+plt.semilogx(lambdas, pars.T)
+plt.xlabel(r<span style="color: #008000;">'$\lambda$'</span>)
+plt.ylabel(<span style="color: #008000;">'parameters'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'parameters')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/b8e128f02c768f4b74df6f19e00547e7d44ce47e.png" alt="b8e128f02c768f4b74df6f19e00547e7d44ce47e.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfe59595" class="outline-3">
+<h3 id="orgfe59595"><span class="section-number-3">2.2</span> LASSO regression</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+In LASSO regression, we seek to minimize the summed squared errors <i>plus</i> the sum of the absolute value of the parameters. Unlike linear least squares regression and ridge regression, there is no analytical solution to get the parameters; they can only be obtained numerically using an iterative solver. We again have a parameter &lambda; we have to choose. Setting this parameter to zero will be equivalent to normal linear regression. Setting this parameter to infinity will again cause all coefficients to go to zero. We again have to find a balance.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(pars, lam=0.0):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">SSE</span> = np.<span style="color: #006FE0;">sum</span>(np.square(y - ((Z @ pars) * ystd + ymean)))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> SSE + lam * np.<span style="color: #006FE0;">sum</span>(np.<span style="color: #006FE0;">abs</span>(pars))
+
+<span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> minimize
+<span style="color: #BA36A5;">sol</span> = minimize(objective, np.random.random(<span style="color: #006FE0;">len</span>(Z[0])), (0.15,),
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  method=<span style="color: #008000;">'nelder-mead'</span>, options={<span style="color: #008000;">'maxiter'</span>: 5000})
+
+np.set_printoptions(suppress=<span style="color: #D0372D;">True</span>, precision=3) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">prints small numbers as practically zero</span>
+<span style="color: #0000FF;">print</span>(sol.message, sol.x)
+
+plt.plot(x, y, <span style="color: #008000;">'b.'</span>)
+plt.plot(x, (Z @ sol.x) * ystd + ymean)
+</pre>
+</div>
+
+<p>
+Optimization terminated successfully. [-0.825  1.61   0.     0.967  0.963 -2.048 -1.275 -0.371 -0.003  0.
+  0.182]
+</p>
+
+<pre class="example">
+[&lt;matplotlib.lines.Line2D at 0x1a1ee252d0&gt;]
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/3698af6101c094809d335aa1d82d9c969b9d75fd.png" alt="3698af6101c094809d335aa1d82d9c969b9d75fd.png" />
+</p>
+</div>
+
+<p>
+Now, we can explore the effect of &lambda; more thoroughly.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">lambdas</span> = np.concatenate([[0], np.geomspace(1e-5, 10, 5)])
+
+<span style="color: #0000FF;">print</span>(<span style="color: #008000;">'lambda     '</span>, f<span style="color: #008000;">''</span>.join([f<span style="color: #008000;">'x^{i:&lt;11d}'</span> <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span>(<span style="color: #006FE0;">len</span>(X[0]), 0, -1)]))
+<span style="color: #0000FF;">for</span> lam <span style="color: #0000FF;">in</span> lambdas:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">sol</span> = minimize(objective, np.random.random(<span style="color: #006FE0;">len</span>(Z[0])), (lam,),
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>  options={<span style="color: #008000;">'maxiter'</span>: 5000})
+
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This way of printing is to get columnar output</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{lam:8.2g}</span><span style="color: #008000;">'</span>, f<span style="color: #008000;">''</span>.join([f<span style="color: #008000;">'{j: 12.2f}'</span> <span style="color: #0000FF;">for</span> j <span style="color: #0000FF;">in</span> sol.x]))
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   plt.plot(x, y, <span style="color: #008000;">'b.'</span>)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   plt.plot(x, (Z @ sol.x) * ystd + ymean, label=f<span style="color: #008000;">'</span><span style="color: #BA36A5;">{lam:1.2g}</span><span style="color: #008000;">'</span>)
+plt.legend()
+</pre>
+</div>
+
+<p>
+lambda      x^11         x^10         x^9          x^8          x^7          x^6          x^5          x^4          x^3          x^2          x^1
+       0       134.67     -294.42       -4.26      292.40      107.60     -322.06     -177.60      515.63     -336.45       92.33       -8.64
+   1e-05        -9.76        6.18       13.68        9.44      -18.35      -25.57       11.52       50.70      -55.91       18.12       -0.84
+ 0.00032         0.25       -0.27       -0.04       -0.03       -0.31       -0.00        2.86        0.69       -5.21       -0.36        1.63
+    0.01        -0.11       -0.00       -0.00        0.00        0.57        0.74        0.00        0.00       -1.51       -2.42        1.96
+    0.32         0.51        0.04        0.00        0.00        0.00       -0.00       -0.00       -0.00       -1.95       -0.00        0.59
+      10        -0.00       -0.00       -0.00       -0.00       -0.00       -0.00       -0.01       -0.24       -0.17       -0.33       -0.00
+</p>
+
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cc69cd3a2d054e3bbb338ec2a3c8fff8b226cea4/9b884fd8852a216050b00535246a4fc6860feb14.png" alt="9b884fd8852a216050b00535246a4fc6860feb14.png" />
+</p>
+</div>
+
+
+
+<p>
+You can see that by increasing &lambda; we are making more and more of the parameters go to zero; in other words the functions they correspond to are not part of the model any longer. This is called sparsifying the model. It reduces over-fitting by reducing the model complexity. Finding the most suitable value for &lambda; requires some sophisticated programming and analysis, and it is an important topic in machine learning and data science.
+</p>
+
+<p>
+LASSO has some important benefits, and some disadvantanges. The benefits include sparsification of the model; the method removes inputs that are not needed, or that are highly correlated with other inputs. This can make models more interpretable as there are fewer terms, and the terms are more independent.
+</p>
+
+<p>
+The disadvantages, however, are that we cannot use linear algebra to find the parameters. The penalty imposes a nonlinear behavior to the objective function, so we must use an iterative solver. For features that are correlated, we have no control over which feature is eliminated. Different initial guesses may lead to different feature elimination. If the features are really correlated, this will not affect the fit quality, but it will mean some models favor one feature over another. This is less of a problem in polynomial models, but often a problem in models based on physical properties that are correlated, e.g. high melting points of materials tend to be correlated with how hard they are. With LASSO, one model could favor the melting point and another could favor the hardness.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org33a68c3" class="outline-3">
+<h3 id="org33a68c3"><span class="section-number-3">2.3</span> Advanced selection of &lambda;</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+A more advanced way to select a value of &lambda; is called k-fold validation. It is complex to code this, and the standard method to do it is in <a href="https://scikit-learn.org/stable/index.html">scikit-learn</a>, see specifically the <a href="https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression">ridge regression example</a> and the  <a href="https://scikit-learn.org/stable/modules/linear_model.html#lasso">LASSO example</a>. The basic idea is that you split your data set into \(k\) <i>folds</i>, and then you fit \(k-1\) folds to get the paramters. On the remaining fold (which was not used for fitting) you estimate the model errors. Initially with no regularization, the errors will be high due to overfitting. As you add regularization, the errors will begin decrease. Eventually though, the model will start underfitting, and the errors will go back up. The &lambda; that provides the lowest test errors is usually considered the best choice.
+</p>
+
+<p>
+We will not cover these more advanced methods as they rely on learning the scikit-learn API in depth, and some other higher level Python libraries we have not covered like Pandas. These are more appropriate in a data science/machine learning focused course.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4672dab" class="outline-2">
+<h2 id="org4672dab"><span class="section-number-2">3</span> Summary</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+In this lecture we introduced the concept of linear regression. In the normal linear regression, we simply solve linear equations that ultimately minimize the summed squared errors between the model and data. With some additional linear algebra, we can also estimate the confidence intervals on the parameters.
+</p>
+
+<p>
+One issue with normal linear regression is that the parameters are unconstrained, which can lead to some functions having undesirably large parameters. We introduced two types of <i>regularization</i> to mitigate this issue: ridge regression and LASSO regression. In both cases, a penalty function is added to the objective function being minimized. In ridge regression the penalty is an L2 norm on the parameters which penalizes large parameters, leading to a reduction in their magnitude. In LASSO reduction the penalty is an L1 norm, which drives parameters towards zero. Both methods rely on a hyperparameter &lambda; that determines how much regularization is applied. With both regularization approaches we have to use some judgment in how much regularization to apply (the magnitude of &lambda;), and we only provided a heuristic approach to doing this.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 07:32</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

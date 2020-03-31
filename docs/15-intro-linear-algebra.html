@@ -1,0 +1,1213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 07:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Introduction to linear algebra</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="numpy.transpose, numpy.eye, numpy.diag, numpy.tri, @, numpy.transpose, numpy.allclose, numpy.linalg.det, numpy.linalg.inv, numpy.linalg.matrix_rank, numpy.linalg.cond, numpy.linalg.solve" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Introduction to linear algebra</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org12b48b4">1. Multidimensional arrays</a>
+<ul>
+<li><a href="#orga67a692">1.1. Constructing arrays</a></li>
+<li><a href="#orgf5dc2cc">1.2. Regular Algebra with arrays</a>
+<ul>
+<li><a href="#org284d67c">1.2.1. Addition and subtraction</a></li>
+<li><a href="#orga67d25d">1.2.2. Multiplication and division</a></li>
+</ul>
+</li>
+<li><a href="#org9ff5f66">1.3. Matrix algebra</a></li>
+</ul>
+</li>
+<li><a href="#org6994854">2. Linear algebra functions of arrays</a>
+<ul>
+<li><a href="#org1f8939d">2.1. The transpose</a></li>
+<li><a href="#org4ff2226">2.2. The determinant</a></li>
+<li><a href="#org5751ead">2.3. The inverse</a></li>
+<li><a href="#org6bb9a61">2.4. Rank</a></li>
+</ul>
+</li>
+<li><a href="#orgca2099c">3. Solving linear algebraic equations</a></li>
+<li><a href="#org186528f">4. Summary</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org12b48b4" class="outline-2">
+<h2 id="org12b48b4"><span class="section-number-2">1</span> Multidimensional arrays</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+The foundation of linear algebra in Python is in multidimensional arrays.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+</pre>
+</div>
+
+<p>
+We make multidimensional arrays by using lists of lists of numbers. For example, here is a 2D array:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">A</span> = np.array([[1, 2],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [3, 4]])
+</pre>
+</div>
+
+<p>
+We can find out the shape of an array, i.e. the number of rows and columns from the shape attribute. It returns (rows, columns).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">A.shape
+</pre>
+</div>
+
+<pre class="example">
+(2, 2)
+</pre>
+</div>
+
+<div id="outline-container-orga67a692" class="outline-3">
+<h3 id="orga67a692"><span class="section-number-3">1.1</span> Constructing arrays</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+You can always make arrays by typing them in. There are many convenient ways to make special ones though. For example, you can make an array of all ones or zeros with these:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.zeros(shape=[3, 3])
+</pre>
+</div>
+
+<pre class="example">
+array([[0., 0., 0.],
+       [0., 0., 0.],
+       [0., 0., 0.]])
+</pre>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.ones(shape=[3, 3])
+</pre>
+</div>
+
+<pre class="example">
+array([[1., 1., 1.],
+       [1., 1., 1.],
+       [1., 1., 1.]])
+</pre>
+
+<p>
+You can make an identity matrix with:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.eye(N=3)
+</pre>
+</div>
+
+<pre class="example">
+array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]])
+</pre>
+
+<p>
+or a diagonal array:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.diag([1, 2, 3])
+</pre>
+</div>
+
+<pre class="example">
+array([[1, 0, 0],
+       [0, 2, 0],
+       [0, 0, 3]])
+</pre>
+
+<p>
+If you need a lower triangular array:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.tri(3)
+</pre>
+</div>
+
+<pre class="example">
+array([[1., 0., 0.],
+       [1., 1., 0.],
+       [1., 1., 1.]])
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-orgf5dc2cc" class="outline-3">
+<h3 id="orgf5dc2cc"><span class="section-number-3">1.2</span> Regular Algebra with arrays</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+It takes some getting use to how to use arrays with algebra.
+</p>
+</div>
+
+<div id="outline-container-org284d67c" class="outline-4">
+<h4 id="org284d67c"><span class="section-number-4">1.2.1</span> Addition and subtraction</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+Let's start with addition and subtraction. A good rule to remember that you can add and subtract arrays with the same shape.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">B</span> = np.ones(A.shape)
+
+A + B
+</pre>
+</div>
+
+<pre class="example">
+array([[2., 3.],
+       [4., 5.]])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython">A - B
+</pre>
+</div>
+
+<pre class="example">
+array([[0., 1.],
+       [2., 3.]])
+</pre>
+
+<p>
+This is an error though because the shapes do not match.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">C</span> = np.array([[0, 0, 1],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [1, 0, 0]])
+
+A + C
+</pre>
+</div>
+
+<p>
+ValueErrorTraceback (most recent call last)
+&lt;ipython-input-11-0cf6976d378f&gt; in &lt;module&gt;
+      2               [1, 0, 0]])
+      3
+-&#x2014;&gt; 4 A + C
+</p>
+
+<p>
+ValueError: operands could not be broadcast together with shapes (2,2) (2,3)
+</p>
+
+<p>
+Note, however, that this is ok. This feature is called <i>broadcasting</i>. It works when the thing you are adding can be added to each row.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">C + [2, 2, 2]
+</pre>
+</div>
+
+<pre class="example">
+array([[2, 2, 3],
+       [3, 2, 2]])
+</pre>
+
+<p>
+<b>Exercise</b> Use some algebra to get an array that is ones above the main diagonal, and zeros everywhere else.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orga67d25d" class="outline-4">
+<h4 id="orga67d25d"><span class="section-number-4">1.2.2</span> Multiplication and division</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<p>
+The default multiplication and division operators work <i>element-wise</i>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">2 * A
+</pre>
+</div>
+
+<pre class="example">
+array([[2, 4],
+       [6, 8]])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython">2 / A
+</pre>
+</div>
+
+<pre class="example">
+array([[2.        , 1.        ],
+       [0.66666667, 0.5       ]])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython">A * B
+</pre>
+</div>
+
+<pre class="example">
+array([[1., 2.],
+       [3., 4.]])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython">B / A
+</pre>
+</div>
+
+<pre class="example">
+array([[1.        , 0.5       ],
+       [0.33333333, 0.25      ]])
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org9ff5f66" class="outline-3">
+<h3 id="org9ff5f66"><span class="section-number-3">1.3</span> Matrix algebra</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+To do matrix multiplication you use the @ operator (This is new in Python 3.5), or the <code>numpy.dot</code> function. If you are not familiar with the idea of matrix multiplication you should review it at <a href="https://en.wikipedia.org/wiki/Matrix_multiplication">https://en.wikipedia.org/wiki/Matrix_multiplication</a>.
+</p>
+
+<p>
+We write matrix multiplication as: \(\mathbf{A} \mathbf{B}\). We cannot multiply any two arrays; their shapes must follow some rules. We can multiply any two arrays with these shapes:
+</p>
+
+<p>
+(m, c) * (c, n) = (m, n)
+</p>
+
+<p>
+In other words the number of columns in the first array must equal the number of rows in the second array. This means it is not generally true that \(\mathbf{A} \mathbf{B} = \mathbf{B} \mathbf{A}\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">A @ B
+</pre>
+</div>
+
+<pre class="example">
+array([[3., 3.],
+       [7., 7.]])
+</pre>
+
+<p>
+This is the older way to do matrix multiplication.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.dot(A, B)
+</pre>
+</div>
+
+<pre class="example">
+array([[3., 3.],
+       [7., 7.]])
+</pre>
+
+<p>
+These rules are true:
+</p>
+
+<ol class="org-ol">
+<li>\((k \mathbf{A})\mathbf{B} = k(\mathbf{A} \mathbf{B}) = \mathbf{A}(k\mathbf{B})\)</li>
+<li>\(\mathbf{A}(\mathbf{B}\mathbf{C}) = (\mathbf{A}\mathbf{B})\mathbf{C}\)</li>
+<li>\((\mathbf{A} + \mathbf{B})\mathbf{C} = \mathbf{A}\mathbf{B} + \mathbf{A}\mathbf{C}\)</li>
+<li>\(\mathbf{C}(\mathbf{A} + \mathbf{B}) = \mathbf{C}\mathbf{A} + \mathbf{C}\mathbf{A}\)</li>
+</ol>
+
+<p>
+<b>Exercise</b> construct examples of each of these rules.
+</p>
+
+<p>
+We can also multiply a matrix and vector. This is like the shapes of (m, r) * (r, 1) = (m, 1)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x</span> = np.array([1, 2])
+A @ x
+</pre>
+</div>
+
+<pre class="example">
+array([ 5, 11])
+</pre>
+
+<p>
+There is a small subtle point, the x-array is 1-D:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">x.shape
+</pre>
+</div>
+
+<pre class="example">
+(2,)
+</pre>
+
+<p>
+Its shape is not (2, 1)! Numpy does the right thing here and figures out what you want. Not all languages allow this, however, and you have to be careful that everything has the right shape with them.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org6994854" class="outline-2">
+<h2 id="org6994854"><span class="section-number-2">2</span> Linear algebra functions of arrays</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org1f8939d" class="outline-3">
+<h3 id="org1f8939d"><span class="section-number-3">2.1</span> The transpose</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+In the transpose operation you swap the rows and columns of an array. The transpose of A is denoted \(\mathbf{A}^T\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">A.T
+</pre>
+</div>
+
+<pre class="example">
+array([[1, 3],
+       [2, 4]])
+</pre>
+
+<p>
+There is also a function for transposing.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.transpose(A)
+</pre>
+</div>
+
+<pre class="example">
+array([[1, 3],
+       [2, 4]])
+</pre>
+
+<p>
+A matrix is called <i>symmetric</i> if it is equal to its transpose: \(\mathbf{A} == \mathbf{A}^T\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Q</span> = np.array([[1, 2],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [2, 4]])
+
+np.allclose(Q, Q.T)
+</pre>
+</div>
+
+<pre class="example">
+True
+</pre>
+
+<p>
+A matrix is called <i>skew symmetric</i> if \(\mathbf{A}^T = -\mathbf{A}\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Q</span> = np.array([[0, 1],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [-1, 0]])
+
+np.allclose(Q.T, -Q)
+</pre>
+</div>
+
+<pre class="example">
+True
+</pre>
+
+
+
+<p>
+A matrix is called <i>orthogonal</i> if this equation is true: \(\mathbf{A} \mathbf{A}^T = \mathbf{I}\). Here is an example of an orthogonal matrix:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">theta</span> = 12
+<span style="color: #BA36A5;">Q</span> = np.array([[np.cos(theta), -np.sin(theta)],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [np.sin(theta),  np.cos(theta)]])
+
+Q @ Q.T
+</pre>
+</div>
+
+<pre class="example">
+array([[1.00000000e+00, 2.19187673e-17],
+       [2.19187673e-17, 1.00000000e+00]])
+</pre>
+
+<p>
+Here are the four rules for matrix multiplication and transposition
+</p>
+
+<ol class="org-ol">
+<li>\((\mathbf{A}^T)^T = \mathbf{A}\)</li>
+
+<li>\((\mathbf{A}+\mathbf{B})^T = \mathbf{A}^T+\mathbf{B}^T\)</li>
+
+<li>\((\mathit{c}\mathbf{A})^T = \mathit{c}\mathbf{A}^T\)</li>
+
+<li>\((\mathbf{AB})^T = \mathbf{B}^T\mathbf{A}^T\)</li>
+</ol>
+
+<p>
+<b>Exercise</b> Come up with an example for each rule.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4ff2226" class="outline-3">
+<h3 id="org4ff2226"><span class="section-number-3">2.2</span> The determinant</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+The determinant of a matrix is noted: det(A) or |A|. Many matrices are used to linearly transform vectors, and the determinant is related to the scaling magnitude.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.det(A)
+</pre>
+</div>
+
+<pre class="example">
+-2.0000000000000004
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org5751ead" class="outline-3">
+<h3 id="org5751ead"><span class="section-number-3">2.3</span> The inverse</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+A matrix is invertible if and only if the determinant of the matrix is non-zero.
+</p>
+
+<p>
+The inverse is defined by: \(\mathbf{A} \mathbf{A}^{-1} = \mathbf{I}\).
+</p>
+
+<p>
+We compute the inverse as:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.inv(A)
+</pre>
+</div>
+
+<pre class="example">
+array([[-2. ,  1. ],
+       [ 1.5, -0.5]])
+</pre>
+
+<p>
+And here verify the definition.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">A @ np.linalg.inv(A)
+</pre>
+</div>
+
+<pre class="example">
+array([[1.00000000e+00, 1.11022302e-16],
+       [0.00000000e+00, 1.00000000e+00]])
+</pre>
+
+<p>
+Another way to define an orthogonal matrix is \(\mathbf{A}^T = \mathbf{A}^{-1}\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">theta</span> = 12
+<span style="color: #BA36A5;">Q</span> = np.array([[np.cos(theta), -np.sin(theta)],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [np.sin(theta),  np.cos(theta)]])
+
+np.allclose(Q.T, np.linalg.inv(Q))
+</pre>
+</div>
+
+<pre class="example">
+True
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-org6bb9a61" class="outline-3">
+<h3 id="org6bb9a61"><span class="section-number-3">2.4</span> Rank</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+The rank of a matrix is equal to the number of linearly independent rows in it. Rows are linearly independent if and only if they cannot be made by constants times another row or linear combinations of other rows.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.matrix_rank(A)
+</pre>
+</div>
+
+<pre class="example">
+2
+</pre>
+
+<p>
+Here is an example of a rank-deficient array. The last row is a linear combination of the first two rows.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">A1</span> = [[1, 2, 3],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [0, 2, 3],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [2, 6, 9]]
+
+np.linalg.matrix_rank(A1)
+</pre>
+</div>
+
+<pre class="example">
+2
+</pre>
+
+<p>
+Here is an example of a <i>rank-deficient</i> array. It is deficient because the last row is just 0 times any other row.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">A1</span> = [[1, 2, 3],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [0, 2, 3],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [0, 0, 0]]
+
+np.linalg.matrix_rank(A1)
+</pre>
+</div>
+
+<pre class="example">
+2
+</pre>
+
+<p>
+Note the determinant of this array is nearly zero as a result.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.det(A1)
+</pre>
+</div>
+
+<pre class="example">
+0.0
+</pre>
+
+<p>
+Also note the inverse has some enormous numbers in it. This is not a reliable inverse. It is never a good idea to have giant numbers and small numbers in the same calculations!
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.inv(A1)
+</pre>
+</div>
+
+<p>
+LinAlgErrorTraceback (most recent call last)
+&lt;ipython-input-34-ebbe6da30534&gt; in &lt;module&gt;
+-&#x2014;&gt; 1 np.linalg.inv(A1)
+</p>
+
+<p>
+&lt;__array_function__ internals&gt; in inv(*args, **kwargs)
+</p>
+
+<p>
+~/opt/anaconda3/lib/python3.7/site-packages/numpy/linalg/linalg.py in inv(a)
+    545     signature = 'D-&gt;D' if isComplexType(t) else 'd-&gt;d'
+    546     extobj = get_linalg_error_extobj(_raise_linalgerror_singular)
+&#x2013;&gt; 547     ainv = _umath_linalg.inv(a, signature=signature, extobj=extobj)
+    548     return wrap(ainv.astype(result_t, copy=False))
+    549
+</p>
+
+<p>
+~/opt/anaconda3/lib/python3.7/site-packages/numpy/linalg/linalg.py in _raise_linalgerror_singular(err, flag)
+     95
+     96 def _raise_linalgerror_singular(err, flag):
+&#x2014;&gt; 97     raise LinAlgError("Singular matrix")
+     98
+     99 def _raise_linalgerror_nonposdef(err, flag):
+</p>
+
+<p>
+LinAlgError: Singular matrix
+</p>
+
+<p>
+The condition number is a measure of the norm of an array times the inverse of the array. If it is very large, the array is said to be <i>ill-conditioned</i>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.cond(A1)
+</pre>
+</div>
+
+<pre class="example">
+inf
+</pre>
+
+<p>
+What all of these mean is that we only have two independent rows in the array.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgca2099c" class="outline-2">
+<h2 id="orgca2099c"><span class="section-number-2">3</span> Solving linear algebraic equations</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+One of the key reasons to develop the tools above is for solving linear equations. Let's consider an example.
+</p>
+
+<p>
+Given these equations, find [x1, x2, x3]
+</p>
+\begin{eqnarray}
+x_1 - x_2 + x_3 &=& 0 \\
+10 x_2 + 25 x_3 &=& 90 \\
+20 x_1 + 10 x_2 &=& 80
+\end{eqnarray}
+
+<p>
+reference: Kreysig, Advanced Engineering Mathematics, 9th ed. Sec. 7.3
+</p>
+
+<p>
+First, we express this in the form \(\mathbf{A} \mathbf{x} = \mathbf{b}\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">A</span> = np.array([[1, -1, 1],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [0, 10, 25],
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span> [20, 10, 0]])
+
+<span style="color: #BA36A5;">b</span> = np.array([0, 90, 80])
+</pre>
+</div>
+
+<p>
+Now, if we <i>left</i> multiply by \(\mathbf{A}^{-1}\) then we get:
+</p>
+
+<p>
+\(\mathbf{A}^{-1} \mathbf{A} \mathbf{x} = \mathbf{A}^{-1} \mathbf{b}\) which simplifies to:
+</p>
+
+<p>
+\(\mathbf{x} = \mathbf{A}^{-1} \mathbf{b}\)
+</p>
+
+
+<p>
+How do we know if there should be a solution?  First we make the augmented matrix \(\mathbf{A} | \mathbf{b}\). Note for this we need \mathbf{b} as a column vector. Here is one way to make that happen. We make it a row in a 2D array, and transpose that to make it a column.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Awiggle</span> = np.hstack([A, np.array([b]).T])
+Awiggle
+</pre>
+</div>
+
+<pre class="example">
+array([[ 1, -1,  1,  0],
+       [ 0, 10, 25, 90],
+       [20, 10,  0, 80]])
+</pre>
+
+<p>
+If the rank of \(\mathbf{A}\) and the rank of \(\mathbf{\tilde{A}}\) are the same, then we will have one unique solution. if the rank is less than the number of unknowns, there maybe an infinite number of solutions.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.matrix_rank(A), np.linalg.matrix_rank(Awiggle)
+</pre>
+</div>
+
+<pre class="example">
+(3, 3)
+</pre>
+
+<p>
+If \(mathbf{b}\) is not all zeros, we can also use the fact that a non-zero determinant leads to a unique solution.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.det(A)
+</pre>
+</div>
+
+<pre class="example">
+-950.0000000000001
+</pre>
+
+<p>
+It should also be evident that since we use an inverse matrix, it must exist (which is certain since the determinant is non-zero). Now we can evaluate our solution.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x</span> = np.linalg.inv(A) @ b
+x
+</pre>
+</div>
+
+<pre class="example">
+array([2., 4., 2.])
+</pre>
+
+<p>
+Now you might see why we <i>vastly</i> prefer linear algebra to nonlinear algebra; there is no guessing or iteration, we just solve the equations!
+</p>
+
+<p>
+Let us confirm our solution:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">A @ x == b
+</pre>
+</div>
+
+<pre class="example">
+array([False,  True,  True])
+</pre>
+
+<p>
+This fails because of float tolerances:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">A @ x - b
+</pre>
+</div>
+
+<pre class="example">
+array([4.4408921e-16, 0.0000000e+00, 0.0000000e+00])
+</pre>
+
+<p>
+We should instead see if they are all close. You could roll your own comparison, but we instead leverage <code>numpy.allclose</code> for this comparison.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.allclose(A @ x, b)
+</pre>
+</div>
+
+<pre class="example">
+True
+</pre>
+
+<p>
+The formula we used above to solve for \(\mathbf{x}\) is not commonly used. It turns out computing the inverse of a matrix is moderately expensive. For small systems it is negligible, but the time to compute the inverse grows as \(N^3\), and there are more efficient ways to solve these when the number of equations grows large.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">import</span> time
+
+<span style="color: #BA36A5;">t</span> = []
+<span style="color: #BA36A5;">I</span> = np.array(<span style="color: #006FE0;">range</span>(2, 5001, 500))
+<span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> I:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">m</span> = np.eye(i)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">t0</span> = time.time()
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   np.linalg.inv(m)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">t</span> += [time.time() - t0]
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+plt.plot(I, t)
+plt.xlabel(<span style="color: #008000;">'N'</span>)
+plt.ylabel(<span style="color: #008000;">'Time to invert (s)'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'Time to invert (s)')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cca8009371d6aa606718cf6d99c1cd684e512342/0d12af36b8dff026583ebfe0f9f80d9c95f43b91.png" alt="0d12af36b8dff026583ebfe0f9f80d9c95f43b91.png" />
+</p>
+</div>
+
+<p>
+As usual, there is a function we can use to solve this.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.solve(A, b)
+</pre>
+</div>
+
+<pre class="example">
+array([ 2.,  4.,  2.])
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">t</span> = []
+<span style="color: #BA36A5;">I</span> = np.array(<span style="color: #006FE0;">range</span>(2, 5001, 500))
+<span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> I:
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">A</span> = np.eye(i)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">b</span> = np.arange(i)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">t0</span> = time.time()
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   np.linalg.solve(A, b)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">t</span> += [time.time() - t0]
+
+
+plt.plot(I, t)
+plt.xlabel(<span style="color: #008000;">'N'</span>)
+plt.ylabel(<span style="color: #008000;">'Time to solve Ax=b (s)'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'Time to solve Ax=b (s)')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/cca8009371d6aa606718cf6d99c1cd684e512342/b69bff6b25b91334edb33a2cb93b6f20d5b82551.png" alt="b69bff6b25b91334edb33a2cb93b6f20d5b82551.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-ipython">
+</pre>
+</div>
+
+<p>
+You can see by inspection that solve must not be using an inverse to solve these equations; if it did, it would take much longer to solve them. It is remarkable that we can solve ~5000 simultaneous equations here in about 1 second!
+</p>
+
+<p>
+This may seem like a lot of equations, but it isn't really. Problems of this size routinely come up in solving linear boundary value problems where you discretize the problem into a large number of linear equations that are solved.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org186528f" class="outline-2">
+<h2 id="org186528f"><span class="section-number-2">4</span> Summary</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Today we introduced many functions used in linear algebra. One of the main applications of linear algebra is solving linear equations. These arise in many engineering applications like mass balances, reaction network analysis, etc. Because we can solve them directly (not iteratively with a guess like with non-linear algebra) it is highly desirable to formulate problems as linear ones where possible.
+</p>
+
+<p>
+There are many more specialized routines at <a href="https://docs.scipy.org/doc/numpy-1.15.1/reference/routines.linalg.html">https://docs.scipy.org/doc/numpy-1.15.1/reference/routines.linalg.html</a>.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 07:32</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

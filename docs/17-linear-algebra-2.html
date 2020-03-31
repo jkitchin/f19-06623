@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 07:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>More Linear algebra</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="numpy.linalg.solve, scipy.interpolate.interp1d, numpy.linalg.eigvals, numpy.linalg.eig, numpy.argsort" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">More Linear algebra</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orga3234c3">1. Interpolating between data points</a>
+<ul>
+<li><a href="#orgc192b0c">1.1. Interpolation libraries</a></li>
+</ul>
+</li>
+<li><a href="#orga7e6358">2. Eigenvalues</a>
+<ul>
+<li><a href="#org406bf83">2.1. Application to roots of a polynomial</a></li>
+<li><a href="#orgd3ec0ee">2.2. Applications to optimization</a></li>
+</ul>
+</li>
+<li><a href="#orgf6e023f">3. Summary</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga3234c3" class="outline-2">
+<h2 id="orga3234c3"><span class="section-number-2">1</span> Interpolating between data points</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+It is a common need to interpolate between data points, especially when we don't have knowledge of the function relating the data. There are a variety of approaches you can use for interpolation. We will consider a few approaches that use linear algebra here. Given \(N\) points, construct an \(N^{th}\) order polynomial that goes through all the points, and that can be used to estimate new values between the points.
+</p>
+
+<p>
+First we consider some data.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #BA36A5;">x</span> = np.array([1.2, 2.9, 4.1])
+<span style="color: #BA36A5;">y</span> = np.array([4.4, 5.5, 8.9])
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+plt.plot(x, y)
+</pre>
+</div>
+
+<pre class="example">
+[&lt;matplotlib.lines.Line2D at 0x11a3210d0&gt;]
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/2012793be6aae67a5daa37a88fe19d55062378f0/38bc2f1f7b6bf1a4e37658aee236562bb624e6ea.png" alt="38bc2f1f7b6bf1a4e37658aee236562bb624e6ea.png" />
+</p>
+</div>
+
+<p>
+We would like an equation like \(y(x) = a_2 x^2 + a_1 x + a_0\). If we write these out for each data point we get:
+</p>
+
+<p>
+\(y_0 = a_2 x_0^2 + a_1 x_0 + a_0\)
+</p>
+
+<p>
+\(y_1 = a_2 x_1^2 + a_1 x_1 + a_0\)
+</p>
+
+<p>
+and so on. Here, the things we don't know are the parameters \(\mathbf{a} [a_2, a_1, a_0]\). We can write these as:
+</p>
+
+<p>
+\(\mathbf{X} \mathbf{a} = \mathbf{y}\)
+</p>
+
+<p>
+Where \(\mathbf{X} = [\mathbf{x^2}, \mathbf{x}, \mathbf{1}]\), and is called a Vandermonde matrix. We can readily create these with <code>numpy.vander</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.vander?
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.vander([2, 3, 4], 3)
+</pre>
+</div>
+
+<pre class="example">
+array([[ 4,  2,  1],
+       [ 9,  3,  1],
+       [16,  4,  1]])
+</pre>
+
+<p>
+The first column is \(x^2\), the second column is \(x\), and the last column is all ones. To compute the polynomial coefficients, we just make the \(\mathbf{X}\) array and solve the equations.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">X</span> = np.vander(x, 3)
+<span style="color: #BA36A5;">a</span> = np.linalg.solve(X, y)
+a
+</pre>
+</div>
+
+<pre class="example">
+array([ 0.75388776, -2.443881  ,  6.24705882])
+</pre>
+
+<p>
+Now, we can use the parameters to compute new values.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">xfit</span> = np.linspace(0, 5)
+<span style="color: #BA36A5;">Y</span> = np.vander(xfit, 3) @ a
+
+plt.plot(x, y, <span style="color: #008000;">'bo'</span>, xfit, Y);
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/2012793be6aae67a5daa37a88fe19d55062378f0/5f7667aadc01d31503fa35018614ce5b9d3b08e8.png" alt="5f7667aadc01d31503fa35018614ce5b9d3b08e8.png" />
+</p>
+</div>
+
+<p>
+What we have done here is fit an N<sup>th</sup> order polynomial to \(N\) data points. There is a possibility that we have overfit this data, and extrapolation is not reliable. However, interpolation by this method may be useful. We will return to this for larger data sets where \(N\) is much larger than the order of the polynomial when we talk about linear regression next week.
+</p>
+</div>
+
+<div id="outline-container-orgc192b0c" class="outline-3">
+<h3 id="orgc192b0c"><span class="section-number-3">1.1</span> Interpolation libraries</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+There are several interpolating functions available in <a href="https://docs.scipy.org/doc/scipy/reference/interpolate.html">scipy.interpolate</a>. These are usually more flexible and convenient than writing your own interpolating code. They are more sophisticated, and have some <i>features</i> you should be aware of.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.interpolate <span style="color: #0000FF;">import</span> interp1d
+
+interp1d?
+</pre>
+</div>
+
+<p>
+Linear interpolation is the default, and we have to explicitly allow extrapolation.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">xfit</span> = np.linspace(0, 5)
+<span style="color: #BA36A5;">Y</span> = interp1d(x, y, bounds_error=<span style="color: #D0372D;">False</span>, fill_value=<span style="color: #008000;">'extrapolate'</span>)
+
+plt.plot(x, y, <span style="color: #008000;">'bo'</span>, xfit, Y(xfit));
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/2012793be6aae67a5daa37a88fe19d55062378f0/9f7f53fa22b74069421d9deccaa394c85ba22d25.png" alt="9f7f53fa22b74069421d9deccaa394c85ba22d25.png" />
+</p>
+</div>
+
+<p>
+We can also specify quadratic spline interpolation.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">Y</span> = interp1d(x, y, kind=<span style="color: #008000;">'quadratic'</span>, bounds_error=<span style="color: #D0372D;">False</span>, fill_value=<span style="color: #008000;">'extrapolate'</span>)
+
+plt.plot(x, y, <span style="color: #008000;">'bo'</span>, xfit, Y(xfit));
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/2012793be6aae67a5daa37a88fe19d55062378f0/5f7667aadc01d31503fa35018614ce5b9d3b08e8.png" alt="5f7667aadc01d31503fa35018614ce5b9d3b08e8.png" />
+</p>
+</div>
+
+<p>
+With more data points you can also use cubic interpolation, which fits a cubic polynomial between the points, and ensures smoothness and continuity of the derivatives at the endpoints.
+</p>
+
+<p>
+Note that you have to make some decisions about how to interpolate. These functions can introduce <i>wiggles</i> that are not real. Especially when there are step or sharp changes  in values.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">x</span> = np.array([1, 2, 3, 4, 5, 6, 7])
+<span style="color: #BA36A5;">y</span> = np.array([1, 2, 1, 1, 0, 0, 0])
+
+<span style="color: #BA36A5;">s</span> = interp1d(x, y, kind=<span style="color: #008000;">'cubic'</span>)
+<span style="color: #BA36A5;">X</span> = np.linspace(1, 7)
+<span style="color: #BA36A5;">Y</span> = s(X)
+
+plt.plot(x, y, <span style="color: #008000;">'bo'</span>, X, Y)
+</pre>
+</div>
+
+<pre class="example">
+[&lt;matplotlib.lines.Line2D at 0xb1bf9f910&gt;,
+ &lt;matplotlib.lines.Line2D at 0xb1bf9fbd0&gt;]
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/2012793be6aae67a5daa37a88fe19d55062378f0/5e268922c9ee8cc45997f7ee94e2430ff8446979.png" alt="5e268922c9ee8cc45997f7ee94e2430ff8446979.png" />
+</p>
+</div>
+
+<p>
+Interpolation is a kind of data driven model for developing a mathematical model from data that can be used to predict new values. These models are not based on physics, but they can be used for predicting new values, estimating derivatives, integrals, etc. Of course, you must be careful with extrapolation; all polynomials tend to &plusmn; infinity eventually, which is probably not physically relevant in most cases.
+</p>
+
+<p>
+There are multidimensional interpolation functions in <code>scipy.interpolate</code>,
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orga7e6358" class="outline-2">
+<h2 id="orga7e6358"><span class="section-number-2">2</span> Eigenvalues</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Eigenvalues and eigenvectors form an important class of linear algebra problems. They are an unusual class of problems though. Recall that we can interpret the equation \(\mathbf{A}\mathbf{x} = \mathbf{b}\) as a linear transformation of the vector \(\mathbf{x}\) into the vector \(\mathbf{b}\). This will in general lead to rotation and stretching of the input vector. <i>Sometimes</i> though the new vector \(\mathbf{b}\) is simply a rescaling of the original vector, i.e. \(\mathbf{b} = \lambda \mathbf{x}\). &lambda; is the scaling factor, and it just changes the magnitude of the \(\mathbf{x}\) vector. In this case, we call &lambda; an \eigenvalue\, and \(\mathbf{x}\) and \eigenvector\ of the matrix \(\mathbf{A}\).
+</p>
+
+<p>
+When you see a problem in the form:
+</p>
+
+<p>
+\(\mathbf{A}\mathbf{x} = \lambda \mathbf{x}\)
+</p>
+
+<p>
+It is called an eigenvalue problem. It is conventional to write it in the following form:
+</p>
+
+<p>
+\((\mathbf{A} - \lambda \mathbf{I})\mathbf{x} = \mathbf{0}\)
+</p>
+
+<p>
+Based on this equation, since \(\mathbf{x}\) can be anything, it is necessary for the determinant of the matrix on the left to be zero. The eigenvalues of \(\mathbf{A}\) are the ones that are solutions to
+</p>
+
+<p>
+\(det(\mathbf{A} - \lambda \mathbf{I}) = 0\)
+</p>
+
+<p>
+Computing the determinant leads to a <i>characteristic polynomial</i> in &lambda;, and the roots of this polynomial are the eigenvalues of the matrix.
+</p>
+
+<p>
+For an \(N \times N\) array there will be \(N\) eigenvalues, although some may be degenerate. The eigenvalues can be real or complex. For some matrices, we know some properties of the eigenvalues. We will consider some of them here.
+</p>
+
+<p>
+For example, the eigenvalues of a symmetric matrix are always real. We can make a symmetric matrix with some algebra:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">A</span> = np.random.rand(3,3)
+<span style="color: #BA36A5;">A</span> += A.T  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">This makes a symmetric matrix</span>
+A
+</pre>
+</div>
+
+<pre class="example">
+array([[0.3747702 , 0.84510358, 0.76835687],
+       [0.84510358, 0.67912751, 0.56999215],
+       [0.76835687, 0.56999215, 0.27038598]])
+</pre>
+
+<p>
+We get the eigenvalues with <code>numpy.linalg.eigvals</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.eigvals(A)
+</pre>
+</div>
+
+<pre class="example">
+array([ 1.91794385, -0.49554775, -0.09811241])
+</pre>
+
+<p>
+You can see these are all real.
+</p>
+
+<p>
+The <i>trace</i> of a matrix is the sum of the diagonal elements. You can do this manually, or use <code>numpy.trace</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.<span style="color: #006FE0;">sum</span>(np.diag(A)), np.trace(A)
+</pre>
+</div>
+
+<pre class="example">
+(1.3242836950101071, 1.3242836950101071)
+</pre>
+
+<p>
+It is a property that the sum of the eigenvalues is equal to the trace:
+</p>
+
+<p>
+\(trace \mathbf{A} = \sum \lambda_k\)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.<span style="color: #006FE0;">sum</span>(np.linalg.eigvals(A))
+</pre>
+</div>
+
+<pre class="example">
+1.324283695010105
+</pre>
+
+<p>
+It is also true that the product of the eigenvalues is equal to the determinant:
+</p>
+
+<p>
+\(det \mathbf{A} = \prod \lambda_k\)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.prod(np.linalg.eigvals(A)), np.linalg.det(A)
+</pre>
+</div>
+
+<pre class="example">
+(0.09324924785217024, 0.09324924785217031)
+</pre>
+
+<p>
+We can also see the eigenvectors. The <code>numpy.linalg.eig</code> function returns <i>both</i> eigenvalues and eigenvectors. The eigenvectors are in <i>columns</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">e</span>, <span style="color: #BA36A5;">v</span> = np.linalg.eig(A)
+e, v
+</pre>
+</div>
+
+<pre class="example">
+(array([ 1.91794385, -0.49554775, -0.09811241]),
+ array([[ 0.59388307,  0.774131  ,  0.21914399],
+        [ 0.63339747, -0.28191428, -0.72064692],
+        [ 0.4960953 , -0.56678525,  0.65775674]]))
+</pre>
+
+<p>
+These eigenvectors have the property that the are normalized to unit length:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">[np.linalg.norm(v[:, i]) <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> [0, 1, 2]]
+</pre>
+</div>
+
+<pre class="example">
+[1.0, 1.0, 1.0]
+</pre>
+
+<p>
+The eigenvectors are in columns in the order corresponding to the order of the eigenvalues (these are not necessarily sorted). Here, we show that the eigenvalue/eigenvector pairs satisfy \(\mathbf{A} \mathbf{v} = \lambda \mathbf{v}\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">[np.allclose(A @ v[:, 0], e[0] * v[:, 0]),
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>np.allclose(A @ v[:, 1], e[1] * v[:, 1]),
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>np.allclose(A @ v[:, 2], e[2] * v[:, 2])]
+</pre>
+</div>
+
+<pre class="example">
+[True, True, True]
+</pre>
+
+<p>
+If you mix and match these, they do not satisfy the equations.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">[np.allclose(A @ v[:, 0], e[1] * v[:, 2]),
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>np.allclose(A @ v[:, 1], e[0] * v[:, 1]),
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>np.allclose(A @ v[:, 2], e[2] * v[:, 0])]
+</pre>
+</div>
+
+<pre class="example">
+[False, False, False]
+</pre>
+
+<p>
+The eigenvalues are not sorted. It is often useful to know the smallest, or largest eigenvalue, and to have the eigenvalues sorted. The tricky point to consider is the eigenvectors have to be sorted in the same order. It is also tricky that the eigenvectors are stored in columns, but sorting is done on rows. You can simply transpose the eigenvector array, sort on rows, and then transpose it back to columns.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">i</span> = np.argsort(e)
+
+<span style="color: #BA36A5;">sorted_e</span> = e[i]
+<span style="color: #BA36A5;">sorted_v</span> = v.T[i].T
+sorted_e, sorted_v
+</pre>
+</div>
+
+<pre class="example">
+(array([-0.49554775, -0.09811241,  1.91794385]),
+ array([[ 0.774131  ,  0.21914399,  0.59388307],
+        [-0.28191428, -0.72064692,  0.63339747],
+        [-0.56678525,  0.65775674,  0.4960953 ]]))
+</pre>
+
+<p>
+<i>As always</i> it is a good idea to check that we did not mess up:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">for</span> i, se <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">enumerate</span>(sorted_e):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">sv</span> = sorted_v[:, i]
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">print</span>(np.allclose(A @ sv, se * sv))
+</pre>
+</div>
+
+<p>
+True
+True
+True
+</p>
+</div>
+
+
+
+<div id="outline-container-org406bf83" class="outline-3">
+<h3 id="org406bf83"><span class="section-number-3">2.1</span> Application to roots of a polynomial</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+The eigenvalues of a matrix are related to the roots of the characteristic polynomial of the matrix. We can leverage this to find the roots of a polynomial by constructing a matrix that has as its characteristic polynomial the polynomial we want the roots for. Then, the roots of the polynomial are just the eigenvalues of that matrix.
+</p>
+
+<p>
+This example is adapted from <a href="http://www.math.utah.edu/~gustafso/s2018/2270/labs/lab7-polyroot-qrmethod.pdf">http://www.math.utah.edu/~gustafso/s2018/2270/labs/lab7-polyroot-qrmethod.pdf</a>
+</p>
+
+<p>
+First, we construct the <i>companion matrix</i>. For the polynomial \(p(x) = a_0 + a_1 x + ... + a_{n-1} x^{n-1} + x^n\) we construct:
+</p>
+
+<p>
+\(C = \left[\begin{array}{ccccc}
+ 0 & 1 & 0 & ... & 0\\
+ 0 & 0 & 1 & ... & 0\\
+ ... & ... & ... & \ddots & \vdots \\
+ 0 & 0 & 0 & ... & 1\\
+ -a_0 & -a_1 & -a_2 & ... & -a_{n-1}
+ \end{array}\right]\)
+</p>
+
+<p>
+Then, the eigenvalues of this matrix are equal to the roots of the polynomial. This matrix has ones on the diagonal above the main diagonal, and the coefficients up to the leading power on the bottom row. Note the coefficients are in the opposite order as we usually define them for <code>np.roots</code>.
+</p>
+
+<p>
+The main diagonal has <code>N</code> elements in it, and the diagonal above that has <code>N-2</code> elements in it.
+</p>
+
+<p>
+There are a few ways to reverse the coefficients, here we use <code>numpy.flipud</code> which reverses the elements.
+</p>
+
+<p>
+Let \(p(x) = 4 x^2 + 3x - 1\). We write the coefficient vector in the same order as used in np.roots.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">p</span> = np.array([4, 3, -1])
+<span style="color: #BA36A5;">N</span> = <span style="color: #006FE0;">len</span>(p)
+
+<span style="color: #BA36A5;">C</span> = np.diag(np.ones(N - 2), 1)
+<span style="color: #BA36A5;">C</span>[-1, :] = np.flipud(-p[1:] / p[0])
+C
+</pre>
+</div>
+
+<pre class="example">
+array([[ 0.  ,  1.  ],
+       [ 0.25, -0.75]])
+</pre>
+
+<p>
+Now the roots are found as the eigenvalues of the matrix.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.eigvals(C)
+</pre>
+</div>
+
+<pre class="example">
+array([ 0.25, -1.  ])
+</pre>
+
+
+<p>
+This is essentially what the <code>np.roots</code> function does, although it uses a slightly different way to define the companion matrix.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+??np.roots
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">p</span> = [4, 3, -1]
+np.roots(p)
+</pre>
+</div>
+
+<pre class="example">
+array([-1.  ,  0.25])
+</pre>
+
+<p>
+The order of the roots is not important; they may or may not be sorted.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgd3ec0ee" class="outline-3">
+<h3 id="orgd3ec0ee"><span class="section-number-3">2.2</span> Applications to optimization</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+We can use eigenvalues to detect what kind of stationary point (f'(x) = 0) we are at. We have to know the <a href="https://en.wikipedia.org/wiki/Hessian_matrix">Hessian matrix</a> at the stationary point. The eigenvalues of this matrix tell us about the stationary point.
+</p>
+
+<ol class="org-ol">
+<li>If all the eigenvalues are all positive, the matrix is called positive definite, and it means the stationary point is a minimum.</li>
+<li>If all the eigenvalues are negative, the matrix is called negative definite, and it means the stationary point is a maximum.</li>
+<li>If the signs of the eigenvalues are mixed then the stationary point is a saddle point.</li>
+<li>If there are zeros, it is inconclusive, and further analysis is needed.</li>
+</ol>
+
+<p>
+Let's consider an example:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> minimize
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> 2 * x**2 + 2 * x * y + 2 * y**2 - 6 * x
+
+<span style="color: #BA36A5;">sol</span> = minimize(f, [0, 0])
+sol
+</pre>
+</div>
+
+<pre class="example">
+     fun: -6.0
+hess_inv: array([[ 0.33333333, -0.16666667],
+      [-0.16666667,  0.33333333]])
+     jac: array([0., 0.])
+ message: 'Optimization terminated successfully.'
+    nfev: 24
+     nit: 4
+    njev: 6
+  status: 0
+ success: True
+       x: array([ 1.99999999, -0.99999999])
+</pre>
+
+<p>
+We get an estimate of the inverse hessian here, so we convert it to a hessian first.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">h</span> = np.linalg.inv(sol[<span style="color: #008000;">'hess_inv'</span>])
+h
+</pre>
+</div>
+
+<pre class="example">
+array([[3.99999998, 1.99999997],
+       [1.99999997, 3.99999996]])
+</pre>
+
+<p>
+Now we check the eigenvalues:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.eigvals(h)
+</pre>
+</div>
+
+<pre class="example">
+array([5.99999994, 2.        ])
+</pre>
+
+<p>
+We have two positive eigenvalues, so the Hessian is positive definite, and we are at a minimum.
+</p>
+
+<p>
+We can also use tools to compute the Hessian more directly (of course you can derive the partial derivatives by hand also):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numdifftools <span style="color: #0000FF;">as</span> nd
+<span style="color: #BA36A5;">H</span> = nd.Hessian(f)
+np.linalg.eigvals(H(sol.x))
+</pre>
+</div>
+
+<pre class="example">
+array([2., 6.])
+</pre>
+
+
+
+<p>
+Note the order of the eigenvalues is not important.
+</p>
+
+<p>
+We will see more about numerical tools for computing Hessians and derivatives after Thanksgiving.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgf6e023f" class="outline-2">
+<h2 id="orgf6e023f"><span class="section-number-2">3</span> Summary</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Today we introduced the ideas behind interpolation which is a data-drive approach to model building that involves locally fitting functions to a few data points. We also introduced eigenvalues and eigenvectors, and some applications of how they are used.
+</p>
+
+<p>
+Next week we will conclude linear algebra with linear regression.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 07:32</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

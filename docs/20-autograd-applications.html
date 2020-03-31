@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-03-31 Tue 07:32 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mathematical, scientific and engineering applications of autograd</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="John Kitchin" />
+<meta name="keywords" content="autograd" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Mathematical, scientific and engineering applications of autograd</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgc6a4571">1. Mathematical, scientific and engineering applications of autograd</a>
+<ul>
+<li><a href="#org8757d57">1.1. Evaluating line integrals</a></li>
+<li><a href="#org7ee1941">1.2. Constrained optimization with Lagrange multipliers and autograd</a></li>
+<li><a href="#org7bc4568">1.3. Getting derivatives from implicit functions with autograd</a></li>
+</ul>
+</li>
+<li><a href="#org1e14c49">2. Scientific applications</a>
+<ul>
+<li><a href="#orgf127d00">2.1. Compressibility variation from an implicit equation of state</a></li>
+<li><a href="#org895aeb9">2.2. Computing the pressure from a solid equation of state</a></li>
+<li><a href="#orgf3b1f82">2.3. Sensitivity analysis using automatic differentiation in Python</a></li>
+</ul>
+</li>
+<li><a href="#orge00bf85">3. Summary</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc6a4571" class="outline-2">
+<h2 id="orgc6a4571"><span class="section-number-2">1</span> Mathematical, scientific and engineering applications of autograd</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org8757d57" class="outline-3">
+<h3 id="org8757d57"><span class="section-number-3">1.1</span> Evaluating line integrals</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+A line integral is an integral of a function along a curve in space. We usually represent the curve by a parametric equation, e.g. \(\mathbf{r}(t) = [x(t), y(t), z(t)] = x(t)\mathbf{i} + y(t)\mathbf{j} + z(t)\mathbf{k}\).  So, in general the curve will be a vector function, and the function we want to integrate will also be a vector function.
+</p>
+
+<p>
+Then, we can write the line integral definition as:
+</p>
+
+<p>
+\(\int_C \mathbf{F(r)} \cdot d\mathbf{r} = \int_a^b \mathbf{F}(\mathbf{r}(t)) \cdot \mathbf{r'}(t) dt\) where \(\mathbf{r'}(t) = \frac{d\mathbf{r}}{dt}\). This integrand is a scalar function, because of the dot product.
+</p>
+
+<p>
+The following examples are adapted from Chapter 10 in Advanced Engineering Mathematics by Kreysig.
+</p>
+
+<p>
+The first example is the evaluation of  a line integral in the plane. We want to evaluate the integral of \(\mathbf{F(r)}=[-y, -xy]\) on the curve \(\mathbf{r(t)}=[-sin(t), cos(t)]\) from t=0 to t = &pi;/2. The answer in the book is given as 0.4521. Here we evaluate this numerically, using autograd for the relevant derivative. Since the curve has multiple outputs, we have to use the jacobian function to get the derivatives. After that, it is a simple bit of matrix multiplication, and a call to the quad function.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> autograd.numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> jacobian
+<span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> quad
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">F</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -y, -x * y
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">r</span>(t):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> np.array([-np.sin(t), np.cos(t)])
+
+<span style="color: #BA36A5;">drdt</span> = jacobian(r)
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">integrand</span>(t):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> F(r(t)) @ drdt(t)
+
+<span style="color: #BA36A5;">I</span>, <span style="color: #BA36A5;">e</span> = quad(integrand, 0.0, np.pi / 2)
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'The integral is </span><span style="color: #BA36A5;">{I:1.4f}</span><span style="color: #008000;">.'</span>)
+</pre>
+</div>
+
+<p>
+The integral is 0.4521.
+</p>
+
+<p>
+We get the same result as the analytical solution.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7ee1941" class="outline-3">
+<h3 id="org7ee1941"><span class="section-number-3">1.2</span> Constrained optimization with Lagrange multipliers and autograd</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+Constrained optimization is common in engineering problems solving. A prototypical example (from Greenberg, Advanced Engineering Mathematics, Ch 13.7) is to find the point on a plane that is closest to the origin. The plane is defined by the equation \(2x - y + z = 3\), and we seek to minimize \(x^2 + y^2 + z^2\) subject to the equality constraint defined by the plane. <code>scipy.optimize.minimize</code> provides a pretty convenient interface to solve a problem like this, as shown here.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> minimize
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">objective</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span>, <span style="color: #BA36A5;">z</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x**2 + y**2 + z**2
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">eq</span>(X):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span>, <span style="color: #BA36A5;">z</span> = X
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> 2 * x - y + z - 3
+
+<span style="color: #BA36A5;">sol</span> = minimize(objective, [1, -0.5, 0.5], constraints={<span style="color: #008000;">'type'</span>: <span style="color: #008000;">'eq'</span>, <span style="color: #008000;">'fun'</span>: eq})
+sol
+</pre>
+</div>
+
+<pre class="example">
+    fun: 1.5
+    jac: array([ 2.00000001, -0.99999999,  1.00000001])
+message: 'Optimization terminated successfully.'
+   nfev: 5
+    nit: 1
+   njev: 1
+ status: 0
+success: True
+      x: array([ 1. , -0.5,  0.5])
+</pre>
+
+<p>
+I like the minimize function a lot, although I am not crazy for how the constraints are provided.
+Sometimes, it might be desirable to go back to basics though, especially if you are unaware of the <code>minimize</code> function or perhaps suspect it is not working right and want an independent answer. Next we look at how to construct this constrained optimization problem using Lagrange multipliers. This converts the problem into an augmented unconstrained optimization problem we can use <code>fsolve</code> on. The gist of this method is we formulate a new problem:
+</p>
+
+<p>
+\(F(X) = f(X) - \lambda g(X)\)
+</p>
+
+<p>
+and then solve the simultaneous resulting equations:
+</p>
+
+<p>
+\(F_x(X) = F_y(X) = F_z(X) = g(X) = 0\) where \(F_x\) is the derivative of \(F(X)\) with respect to \(x\), and \(g(X)\) is the equality constraint written so it is equal to zero. Since we end up with four equations that equal zero, we can simply use fsolve to get the solution. Many <a href="http://kitchingroup.cheme.cmu.edu/blog/2013/02/03/Using-Lagrange-multipliers-in-optimization/">years ago</a> I used a finite difference approximation to the derivatives. Today we use autograd to get the desired derivatives. Here it is.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> autograd.numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> grad
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">F</span>(L):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #036A07;">'Augmented Lagrange function'</span>
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span>, <span style="color: #BA36A5;">z</span>, <span style="color: #BA36A5;">_lambda</span> = L
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> objective([x, y, z]) - _lambda * eq([x, y, z])
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Gradients of the Lagrange function</span>
+<span style="color: #BA36A5;">dfdL</span> = grad(F, 0)
+
+<span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Find L that returns all zeros in this function.</span>
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">obj</span>(L):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span>, <span style="color: #BA36A5;">z</span>, <span style="color: #BA36A5;">_lambda</span> = L
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dFdx</span>, <span style="color: #BA36A5;">dFdy</span>, <span style="color: #BA36A5;">dFdz</span>, <span style="color: #BA36A5;">dFdlam</span> = dfdL(L)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> [dFdx, dFdy, dFdz, eq([x, y, z])]
+
+<span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> fsolve
+<span style="color: #BA36A5;">x</span>, <span style="color: #BA36A5;">y</span>, <span style="color: #BA36A5;">z</span>, <span style="color: #BA36A5;">_lam</span> = fsolve(obj, [0.0, 0.0, 0.0, 1.0])
+<span style="color: #0000FF;">print</span>(f<span style="color: #008000;">'The answer is at </span><span style="color: #BA36A5;">{x, y, z}</span><span style="color: #008000;">'</span>)
+</pre>
+</div>
+
+<p>
+The answer is at (1.0, -0.5, 0.5)
+</p>
+
+<p>
+That is the same answer as before. Note we have still relied on some black box solver inside of fsolve (instead of inside minimize), but it might be more clear what problem we are solving (e.g. finding zeros). It takes a bit more work to set this up, since we have to construct the augmented function, but autograd makes it pretty convenient to set up the final objective function we want to solve.
+</p>
+
+<p>
+How do we know we are at a minimum? We can check that the Hessian is positive definite in the original function we wanted to minimize. You can see here the array is positive definite, e.g. all the eigenvalues are positive. autograd makes this easy too.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> hessian
+<span style="color: #BA36A5;">h</span> = hessian(objective, 0)
+h(np.array([x, y, z]))
+</pre>
+</div>
+
+<pre class="example">
+array([[2., 0., 0.],
+       [0., 2., 0.],
+       [0., 0., 2.]])
+</pre>
+
+<p>
+In case it isn't evident from that structure that the eigenvalues are all positive, here we compute them:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython">np.linalg.eig(h(np.array([x, y, z])))[0]
+</pre>
+</div>
+
+<pre class="example">
+array([2., 2., 2.])
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org7bc4568" class="outline-3">
+<h3 id="org7bc4568"><span class="section-number-3">1.3</span> Getting derivatives from implicit functions with autograd</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+If we have an implicit function: \(f(x, y(x)) = 0\), but we want to compute the derivative \(dy/dx\) we can use the chain rule to derive:
+</p>
+
+<p>
+\(df/dx + df/dy dy/dx = 0\)
+</p>
+
+<p>
+We can then solve for \(dy/dx\):
+</p>
+
+<p>
+\(dy/dx = -df/dx / df/dy\)
+</p>
+
+<p>
+to get the desired derivative. The interesting point of this is that we can get the two derivatives on the right hand side of this equation using automatic differentiation of the function \(f(x, y)\)! There are a few examples of analytical approaches to derivatives from implicit functions <a href="https://www.math.ucdavis.edu/~kouba/CalcOneDIRECTORY/implicitdiffdirectory/ImplicitDiff.html">here</a> we will use for example.
+</p>
+
+<p>
+In the following examples, we will assume that \(y\) is a function of \(x\) and that \(x\) is independent. We will consider a series of implicit equations, compute \(dy/dx\) using autograd from the formula above, and compare them to the analytical results in the web page referenced above.
+</p>
+
+<p>
+The \(dy/dx\) functions generally depend on both \(x\), and \(y\). Technically, these are the derivatives along the curve \(y(x)\), but since we can evaluate them at any points, we will use some random points for \(x\) and \(y\) to test for equality between the analytical derivatives and the autograd derivatives. This isn't a rigorous proof of equality, but it is the only thing that makes sense to do for now. It is assumed that if these points are ok, all the others are too. That might be a broad claim, since we only sample \(x\) and \(y\) from 0 to 1 here but the approach is general. Here are the imports and the random test points for all the examples that follow.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> autograd.numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> grad
+
+<span style="color: #BA36A5;">xr</span> = np.random.random(50)
+<span style="color: #BA36A5;">yr</span> = np.random.random(50)
+</pre>
+</div>
+
+<p>
+Next we consider \(x^3 + y^3 = 4\) as our implicit function.
+</p>
+
+<p>
+\(df/dx = 3 x^2\)
+</p>
+
+<p>
+\(df/dy = 3 y^2\)
+</p>
+
+<p>
+so \(dy/dx = -x^2 / y^2\) for comparison.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">def</span> <span style="color: #006699;">f1</span>(x, y):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> x**3 + y**3 - 4
+
+<span style="color: #BA36A5;">df1dx</span> = grad(f1, 0)
+<span style="color: #BA36A5;">df1dy</span> = grad(f1, 1)
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">dydx</span>(x, y):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -df1dx(x, y) / df1dy(x, y)
+
+
+np.allclose(-xr**2 / yr**2,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>[dydx(_xr, _yr) <span style="color: #0000FF;">for</span> _xr, _yr <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">zip</span>(xr, yr)])
+</pre>
+</div>
+
+<pre class="example">
+True
+</pre>
+
+<p>
+The output of True means the autograd results and the analytical results are "all close", i.e. within a tolerance the results are the same. The required derivatives of this are not that difficult to derive, but it is nice to see a simple example that "just works". A subtle point of the dydx function is that it is not <i>vectorized</i> which is why I used a list comprehension to evaluate all the points. It is possible a pseudo-vectorized version with the np.vectorize decorator as shown here.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #6434A3;">@np.vectorize</span>
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">dydx</span>(x, y):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -df1dx(x, y) / df1dy(x, y)
+
+
+np.allclose(-xr**2 / yr**2,
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   dydx(xr, yr))
+</pre>
+</div>
+
+<pre class="example">
+True
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1e14c49" class="outline-2">
+<h2 id="org1e14c49"><span class="section-number-2">2</span> Scientific applications</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orgf127d00" class="outline-3">
+<h3 id="orgf127d00"><span class="section-number-3">2.1</span> Compressibility variation from an implicit equation of state</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+There are two ways to explore how some property varies with some parameter. One is if you have an equation relating them, you simply solve it many times for each parameter. Another is if you can derive an equation for how the property changes with parameter changes, then you have an ODE you can integrate. We explore that here. We will use the van der Waal equation of state to derive an equation for how the compressibility changes with the reduced pressure.
+</p>
+
+<p>
+The general strategy to compute the compressibility as a function of pressure is to integrate \(dV / dP_r\) over a range of \(P_r\) to get the molar volume as a function of \(P_r\), and then to directly compute the compressibility from \(Z = PV/(RT)\).
+</p>
+
+<p>
+To use this approach we need to get \(dV / dP_r\) from the van der Waal equation. Here, we follow the work in the previous section to get the derivative from the implicit form of the van der Waal equation:
+</p>
+
+<p>
+\(f(V, P_r, T_r) = \frac{R Tr * Tc}{V - b} - \frac{a}{V^2} - P_r Pc = 0\)
+</p>
+
+<p>
+We can get
+</p>
+
+<p>
+\(dV/dP_r = (-df/dP_r) / (df/dV)\)
+</p>
+
+<p>
+and the two derivatives on the right can be found easily by automatic differentiation. First, we express the van der Waal equation in implicit form, with the variables as \(V, P_r, T_r\). Only two of those variables are independent; if you define two of them you can compute the third one using a tool like fsolve.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">R</span> = 0.08206
+<span style="color: #BA36A5;">Pc</span> = 72.9
+<span style="color: #BA36A5;">Tc</span> = 304.2
+
+<span style="color: #BA36A5;">a</span> = 27 * R**2 * Tc**2 / (Pc * 64)
+<span style="color: #BA36A5;">b</span> = R * Tc / (8 * Pc)
+
+<span style="color: #BA36A5;">Tr</span> = 1.1  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Constant for this example</span>
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">f</span>(V, Pr, Tr):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> R * Tr * Tc / (V - b) - a / V**2 - Pr * Pc
+</pre>
+</div>
+
+<p>
+Now, if we want to know how does the volume vary with \(P_r\), we need to derive the derivative \(dV/dP_r\), and then integrate it. Here we use autograd to define the derivatives, and then we define a function that uses them. Note the arguments in the function dVdPr are in an order that anticipates we want to integrate it in solve_ivp, to get a function \(V(P_r)\).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> grad
+
+<span style="color: #BA36A5;">dfdPr</span> = grad(f, 1)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">derivative of f with respect to arg at index=1: Pr</span>
+<span style="color: #BA36A5;">dfdV</span> = grad(f, 0)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">derivative of f with respect to arg at index=0: V</span>
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">dVdPr</span>(Pr, V):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -dfdPr(V, Pr, Tr) / dfdV(V, Pr, Tr)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Tr is a constant in here</span>
+</pre>
+</div>
+
+<p>
+Now, we need an initial condition to start the integration from. We want the volume at \(P_r=0.1\). We have to use fsolve for this, or some other method that tells you want is the volume at \(P_r=0.1\). We can pass the values of \(P_r\) and \(T_R\) as arguments to our implicit function. Since \(V\) is the first argument, we can directly solve our implicit function. Otherwise you would have to define a helper objective function to use with fsolve.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> scipy.optimize <span style="color: #0000FF;">import</span> fsolve
+
+V0, = fsolve(f, 3.5, args=(0.1, 1.1))
+V0
+</pre>
+</div>
+
+<pre class="example">
+3.6764763125625435
+</pre>
+
+<p>
+Finally, we are ready to integrate the ODE, and plot the solution.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> numpy <span style="color: #0000FF;">as</span> np
+<span style="color: #0000FF;">from</span> scipy.integrate <span style="color: #0000FF;">import</span> solve_ivp
+
+<span style="color: #BA36A5;">Pr_span</span> = (0.1, 10)
+<span style="color: #BA36A5;">Pr_eval</span>, <span style="color: #BA36A5;">h</span> = np.linspace(*Pr_span, retstep=<span style="color: #D0372D;">True</span>)
+
+<span style="color: #BA36A5;">sol</span> = solve_ivp(dVdPr, Pr_span, (V0,), max_step=h)
+<span style="color: #0000FF;">print</span>(sol.message)
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #BA36A5;">Pr</span> = sol.t  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">the P_r steps used in the solution</span>
+<span style="color: #BA36A5;">V</span> = sol.y[0]  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">V(P_r) from the solution</span>
+
+<span style="color: #BA36A5;">Z</span> = Pr * Pc * V / (R * Tr * Tc)  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Compressibility Z(P_r)</span>
+
+plt.plot(Pr, Z)
+plt.xlabel(<span style="color: #008000;">'$P_r$'</span>)
+plt.ylabel(<span style="color: #008000;">'Z'</span>)
+plt.xlim([0, 10])
+plt.ylim([0, 2])
+</pre>
+</div>
+
+<p>
+The solver successfully reached the end of the integration interval.
+</p>
+
+<pre class="example">
+(0, 2)
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/54fed16e2bcd0d5d3d11be0dd2462b9f17015833/e1a44b9bd2195a01ba52b54d2067880f5ac757fe.png" alt="e1a44b9bd2195a01ba52b54d2067880f5ac757fe.png" />
+</p>
+</div>
+
+<p>
+There are several advantages of doing this over iteratively solving with fsolve. The biggest one is no initial guesses! It is also faster. What do you think would happen if there were multiple roots in the equation?
+</p>
+</div>
+</div>
+
+<div id="outline-container-org895aeb9" class="outline-3">
+<h3 id="org895aeb9"><span class="section-number-3">2.2</span> Computing the pressure from a solid equation of state</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+A solid equation of state describes the energy of a solid under isotropic strain. We can readily compute the pressure at a particular volume from the equation:
+</p>
+
+<p>
+\(P = -\frac{dE}{dV}\)
+</p>
+
+<p>
+We just need the derivative of this equation:
+</p>
+
+<p>
+\(E = E_0+\frac{B_0 V}{B'_0}\left[\frac{(V_0/V)^{B'_0}}{B'_0-1}+1\right]-\frac{V_0 B_0}{B'_0-1}\)
+</p>
+
+<p>
+We use autograd to get it for us.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #BA36A5;">E0</span>, <span style="color: #BA36A5;">B0</span>, <span style="color: #BA36A5;">BP</span>, <span style="color: #BA36A5;">V0</span> = -56.466,   0.49,    4.753,  16.573
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">Murnaghan</span>(vol):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">E</span> = E0 + B0 * vol / BP * (((V0 / vol)**BP) / (BP - 1.0) + 1.0) - V0 * B0 / (BP - 1.)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> E
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">P</span>(vol):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #BA36A5;">dEdV</span> = grad(Murnaghan)
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> -dEdV(vol) * 160.21773  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">in Gpa</span>
+
+<span style="color: #0000FF;">print</span>(P(V0)) <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Pressure at the minimum in energy is zero</span>
+<span style="color: #0000FF;">print</span>(P(0.99 * V0))  <span style="color: #8D8D84;"># </span><span style="color: #8D8D84; font-style: italic;">Compressed</span>
+</pre>
+</div>
+
+<p>
+4.446935319979417e-15
+0.8081676846907757
+</p>
+
+
+
+<p>
+So it takes positive pressure to compress the system, as expected, and at the minimum the pressure is equal to zero. Seems pretty clear autograd is better than deriving the required pressure derivative.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf3b1f82" class="outline-3">
+<h3 id="orgf3b1f82"><span class="section-number-3">2.3</span> Sensitivity analysis using automatic differentiation in Python</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+This <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.428.6699&amp;rep=rep1&amp;type=pdf">paper</a> describes how sensitivity analysis requires access to the derivatives of a function. Say, for example we have a function describing the time evolution of the concentration of species A:
+</p>
+
+<p>
+\([A] = \frac{[A]_0}{k_1 + k_{-1}} (k_1 e^{(-(k_1 _ k_{-1})t)} + k_{-1})\)
+</p>
+
+<p>
+The local sensitivity of the concentration of A to the parameters \(k1\) and \(k_1\) are defined as \(\frac{\partial A}{\partial k1}\) and \(\frac{\partial A}{\partial k_1}\). Our goal is to plot the sensitivity as a function of time. We could derive those derivatives, but we will use auto-differentiation instead through the autograd package.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">import</span> autograd.numpy <span style="color: #0000FF;">as</span> np
+
+<span style="color: #BA36A5;">A0</span> = 1.0
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">A</span>(t, k1, k_1):
+<span style="color: #9B9B9B; background-color: #EDEDED;"> </span>   <span style="color: #0000FF;">return</span> A0 / (k1 + k_1) * (k1 * np.exp(-(k1 + k_1) * t) + k_1)
+
+%matplotlib inline
+<span style="color: #0000FF;">import</span> matplotlib.pyplot <span style="color: #0000FF;">as</span> plt
+
+<span style="color: #BA36A5;">t</span> = np.linspace(0, 0.5)
+
+<span style="color: #BA36A5;">k1</span> = 3.0
+<span style="color: #BA36A5;">k_1</span> = 3.0
+plt.plot(t, A(t, k1, k_1))
+plt.xlim([0, 0.5])
+plt.ylim([0, 1])
+plt.xlabel(<span style="color: #008000;">'t'</span>)
+plt.ylabel(<span style="color: #008000;">'A'</span>)
+</pre>
+</div>
+
+<pre class="example">
+Text(0, 0.5, 'A')
+</pre>
+
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/54fed16e2bcd0d5d3d11be0dd2462b9f17015833/89a00241bd75bc322073acf5075491a4eedf5476.png" alt="89a00241bd75bc322073acf5075491a4eedf5476.png" />
+</p>
+</div>
+
+<p>
+The figure above reproduces Fig. 1 from the paper referenced above.  Next, we use autograd to get the derivatives. We need the derivative of the function with respect to the second and third arguments; the default is the first argument. Second, we want to evaluate this derivative at each time value.  Finally, to reproduce Figure 2a, we plot the absolute value of the sensitivities.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ipython"><span style="color: #0000FF;">from</span> autograd <span style="color: #0000FF;">import</span> grad
+
+<span style="color: #BA36A5;">fdAdk1</span> = grad(A, 1)
+<span style="color: #BA36A5;">fdAdk_1</span> = grad(A, 2)
+
+<span style="color: #BA36A5;">dAdk1</span> = [fdAdk1(_t, k1, k_1) <span style="color: #0000FF;">for</span> _t <span style="color: #0000FF;">in</span> t]
+<span style="color: #BA36A5;">dAdk_1</span> = [fdAdk_1(_t, k1, k_1) <span style="color: #0000FF;">for</span> _t <span style="color: #0000FF;">in</span> t]
+
+plt.plot(t, np.<span style="color: #006FE0;">abs</span>(dAdk1))
+plt.plot(t, np.<span style="color: #006FE0;">abs</span>(dAdk_1))
+plt.xlim([0, 0.5])
+plt.ylim([0, 0.1])
+plt.xlabel(<span style="color: #008000;">'t'</span>)
+plt.legend([<span style="color: #008000;">'$S_{k1}$'</span>, <span style="color: #008000;">'$S_{k\_1}$'</span>])
+</pre>
+</div>
+
+<pre class="example">
+&lt;Figure size 432x288 with 1 Axes&gt;
+</pre>
+
+
+
+<div class="figure">
+<p><img src="obipy-resources/54fed16e2bcd0d5d3d11be0dd2462b9f17015833/d407df90e4b43fc308618923e80b777c17921fab.png" alt="d407df90e4b43fc308618923e80b777c17921fab.png" />
+</p>
+</div>
+
+
+<p>
+That looks like the figure in the paper. To summarize the main takeaway, autograd enabled us to readily compute derivatives without having to derive them manually.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge00bf85" class="outline-2">
+<h2 id="orge00bf85"><span class="section-number-2">3</span> Summary</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+These are just some of <i>many</i> possible applications of automatic differentiation in mathematics and engineering. The key points you should take away from this is that it is often possible to program with derivatives, and to compute derivatives automatically in many cases. This enables you to think about writing programs that reflect the mathematical and scientific ideas you are trying to implement more directly, and in many cases less approximately.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: John Kitchin</p>
+<p class="date">Created: 2020-03-31 Tue 07:32</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
